@@ -6,10 +6,10 @@ namespace Web.Services
 {
     public interface IMenuItemService
     {
-        IEnumerable<MenuItem> GetAllMenuItems();
-        MenuItem GetMenuItemById(int id);
-        void AddMenuItem(MenuItem menuItem);
-        void UpdateMenuItem(MenuItem menuItem);
-        void DeleteMenuItem(int id);
+        Task<IEnumerable<MenuItem>> GetAllMenuItems();
+        Task<MenuItem> GetMenuItemByIdAsync(int id);
+        Task AddMenuItemAsync(MenuItem menuItem);
+        Task UpdateMenuItemAsync(MenuItem menuItem);
+        Task DeleteMenuItemAsync(int id);
     }
 }

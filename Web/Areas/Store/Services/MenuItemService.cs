@@ -10,27 +10,27 @@ namespace Web.Areas.Store.Services
     {
         private readonly IMenuItemRepository _menuItemRepository = menuItemRepository;
 
-        public IEnumerable<MenuItem> GetAllMenuItems()
-        {
-            return _menuItemRepository.GetAllAsync().Result ?? throw new Exception("No menu items found");
-        }
-
-        public MenuItem GetMenuItemById(int id)
+        public Task AddMenuItemAsync(MenuItem menuItem)
         {
             throw new NotImplementedException();
         }
 
-        public void AddMenuItem(MenuItem menuItem)
+        public Task DeleteMenuItemAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateMenuItem(MenuItem menuItem)
+        public async Task<IEnumerable<MenuItem>> GetAllMenuItems()
+        {
+            return await _menuItemRepository.GetAllAsync();
+        }
+
+        public Task<MenuItem> GetMenuItemByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteMenuItem(int id)
+        public Task UpdateMenuItemAsync(MenuItem menuItem)
         {
             throw new NotImplementedException();
         }

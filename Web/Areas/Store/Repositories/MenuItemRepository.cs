@@ -34,7 +34,7 @@ namespace Web.Areas.Store.Repositories
 
         public async Task<IEnumerable<MenuItem>> GetAllAsync()
         {
-            return await _context.MenuItems.ToListAsync();
+            return await _context.MenuItems.OrderBy(m => m.Order).ToListAsync();
         }
 
         public Task<MenuItem> GetByIdAsync(int id)

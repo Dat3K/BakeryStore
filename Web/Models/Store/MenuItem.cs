@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Web.Models.Store;
+﻿namespace Web.Models.Store;
 
 public partial class MenuItem
 {

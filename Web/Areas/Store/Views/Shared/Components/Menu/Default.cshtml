@@ -1,0 +1,23 @@
+@model List<MenuItem>
+
+@foreach (var item in Model)
+{
+    @if (item.ParentId == null)
+    {
+        @if (item.InverseParent.Count == 0)
+        {
+            <li><a href="@item.Url">@item.Title</a></li>
+        }
+        else
+        {
+            <li class="dropdown"><a href="@item.Url">@item.Title</a>
+                <ul>
+                    @foreach (var subItem in item.InverseParent)
+                    {
+                        <li><a href="@item.Url">@subItem.Title</a></li>
+                    }
+                </ul>
+            </li>
+        }
+    }
+}

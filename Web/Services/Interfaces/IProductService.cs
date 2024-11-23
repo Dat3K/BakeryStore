@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Web.Areas.Store.ViewModels;
 using Web.Models;
 
-namespace Web.Services
+namespace Web.Services.Interfaces
 {
     public interface IProductService
     {
@@ -12,6 +9,5 @@ namespace Web.Services
         Task AddProductAsync(Product product);
         Task UpdateProductAsync(Product product);
         Task DeleteProductAsync(Guid id);
-        Task<PaginatedResult<Product>> GetPaginatedProductsAsync(int pageNumber, int pageSize);
     }
 }

@@ -1,0 +1,22 @@
+@model Web.Areas.Store.ViewModels.CategoryViewModel
+
+<li>
+    <a asp-action="Index" 
+       asp-controller="Shop" 
+       asp-area="Store"
+       class="@(string.IsNullOrEmpty(Model.SelectedCategory) ? "active" : "")">
+        All Products
+    </a>
+</li>
+@foreach (var category in Model.Categories)
+{
+    <li>
+        <a asp-action="Index" 
+           asp-controller="Shop" 
+           asp-area="Store" 
+           asp-route-category="@category.Name"
+           class="@(Model.SelectedCategory == category.Name ? "active" : "")">
+            @category.Name
+        </a>
+    </li>
+}

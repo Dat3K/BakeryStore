@@ -1,10 +1,12 @@
 using Auth0.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
-using Web.Areas.Store.Repositories;
+using Web.Areas.Store.Services.Interfaces;
 using Web.Areas.Store.Services;
-using Web.Data.Repositories.Store;
+using Web.Data.Repositories.Interfaces;
 using Web.Models;
 using Web.Services;
+using Web.Data.Repositories;
+using Web.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,9 @@ builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IShopService, ShopService>();
 
 builder.Services.AddDbContext<DefaultdbContext>(options =>
 {

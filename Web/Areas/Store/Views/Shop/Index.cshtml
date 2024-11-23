@@ -5,17 +5,16 @@
     <div class="auto-container">
         <div class="content-box">
             <div class="title">
-                <h1>Shop Page 1</h1>
+                <h1>All Products</h1>
             </div>
             <ul class="bread-crumb clearfix">
-                <li><a href="index.html">Home</a></li>
-                <li>Shop 1</li>
+                <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+                <li>All Products</li>
             </ul>
         </div>
     </div>
 </section>
 <!--End Page Title-->
-
 
 <!-- shop-page-section -->
 <section class="shop-page-section shop-page-1">
@@ -37,13 +36,7 @@
                         </div>
                         <div class="widget-content">
                             <ul class="categories-list clearfix">
-                                <li><a href="/Store/Shop/Coffee">Coffee</a></li>
-                                <li><a href="blog-details.html">Pastry Cake</a></li>
-                                <li><a href="blog-details.html">Birthday Cake</a></li>
-                                <li><a href="blog-details.html">Sandwiches</a></li>
-                                <li><a href="blog-details.html">Donuts Cake</a></li>
-                                <li><a href="blog-details.html">Bargar</a></li>
-                                <li><a href="blog-details.html">Ice Cream</a></li>
+                                @await Component.InvokeAsync("Category")
                             </ul>
                         </div>
                     </div>

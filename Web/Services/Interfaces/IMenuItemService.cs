@@ -1,12 +1,10 @@
-﻿using System.Collections;
 using Web.Models;
-using Web.ViewModels;
 
-namespace Web.Services
+namespace Web.Services.Interfaces
 {
     public interface IMenuItemService
     {
-        Task<IEnumerable<MenuItem>> GetAllMenuItems();
+        Task<IEnumerable<MenuItem>> GetAllMenuItemsAsync();
         Task<MenuItem> GetMenuItemByIdAsync(Guid id);
         Task AddMenuItemAsync(MenuItem menuItem);
         Task UpdateMenuItemAsync(MenuItem menuItem);

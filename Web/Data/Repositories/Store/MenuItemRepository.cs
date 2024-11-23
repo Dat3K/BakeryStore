@@ -1,10 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Web.Data;
-using Web.Data.Repositories;
-using Web.Data.Repositories.Store;
+using Web.Data.Repositories.Interfaces;
 using Web.Models;
 
-namespace Web.Areas.Store.Repositories
+namespace Web.Data.Repositories
 {
     public class MenuItemRepository(DefaultdbContext context) : Repository<MenuItem>(context), IMenuItemRepository
     {

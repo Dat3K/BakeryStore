@@ -2,8 +2,8 @@ using Auth0.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Web.Areas.Store.Repositories;
 using Web.Areas.Store.Services;
-using Web.Data;
 using Web.Data.Repositories.Store;
+using Web.Models;
 using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,9 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IMenuItemService, MenuItemService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
-// Add DBContext
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<DefaultdbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });

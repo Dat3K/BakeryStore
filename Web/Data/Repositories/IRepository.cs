@@ -1,9 +1,10 @@
-namespace Web.Data.Repositories.Interfaces;
+namespace Web.Data.Repositories;
 public interface IRepository<T> where T : class
 {
-    IEnumerable<T> GetAll();
-    T Get(int id);
-    void Add(T entity);
-    void Remove(int id);
-    void Update(T entity);
+    Task<IEnumerable<T>> GetAllAsync();
+    Task<T> GetByIdAsync(Guid id);
+    Task<T> AddAsync(T entity);
+    Task UpdateAsync(T entity);
+    Task DeleteAsync(Guid id);
+    Task DeleteAsync(T entity);
 }

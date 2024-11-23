@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Web.Models;
 using Web.Services;
 
 namespace Web.Areas.Store.ViewComponents
@@ -11,7 +12,7 @@ namespace Web.Areas.Store.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var menuItems = await _menuItemService.GetAllMenuItems();
-            return View(menuItems);
+            return View(menuItems.OrderBy(m => m.Order).ToList());
         }
     }
 }

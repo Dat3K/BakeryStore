@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using Web.Data.Repositories.Store;
-using Web.Models.Store;
+using Web.Models;
 using Web.Services;
 using Web.ViewModels;
 
@@ -12,12 +12,14 @@ namespace Web.Areas.Store.Services
 
         public Task AddMenuItemAsync(MenuItem menuItem)
         {
-            throw new NotImplementedException();
+            _menuItemRepository.AddAsync(menuItem);
+            return Task.CompletedTask;
         }
 
-        public Task DeleteMenuItemAsync(int id)
+        public Task DeleteMenuItemAsync(Guid id)
         {
-            throw new NotImplementedException();
+            _menuItemRepository.DeleteAsync(id);
+            return Task.CompletedTask;
         }
 
         public async Task<IEnumerable<MenuItem>> GetAllMenuItems()
@@ -25,14 +27,15 @@ namespace Web.Areas.Store.Services
             return await _menuItemRepository.GetAllAsync();
         }
 
-        public Task<MenuItem> GetMenuItemByIdAsync(int id)
+        public Task<MenuItem> GetMenuItemByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return _menuItemRepository.GetByIdAsync(id);
         }
 
         public Task UpdateMenuItemAsync(MenuItem menuItem)
         {
-            throw new NotImplementedException();
+            _menuItemRepository.UpdateAsync(menuItem);
+            return Task.CompletedTask;
         }
     }
 }

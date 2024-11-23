@@ -1,0 +1,20 @@
+<div class="row clearfix">
+    @foreach (var product in Model.Items)
+    {
+        <div class="col-lg-4 col-md-6 col-sm-12 shop-block">
+            <div class="shop-block-one">
+                <div class="inner-box">
+                    <figure class="image-box">
+                        <img src="@product.Thumbnail" alt="@product.Name" style="width: 300px; height: 300px; object-fit: cover;">
+                    </figure>
+                    <div class="lower-content">
+                        <span class="price-box">$@product.Price</span>
+                        <h3 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a href="shop-details.html">@product.Name</a></h3>
+                        <div class="cart-btn"><a href="shop-details.html" class="theme-btn-two">Add to cart</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

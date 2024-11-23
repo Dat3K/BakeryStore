@@ -1,0 +1,64 @@
+@model Web.Areas.Store.ViewModels.PaginatedResult<Web.Models.Product>
+
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination-wrapper centred">
+        <ul class="pagination">
+            @if (Model.CurrentPage > 1)
+            {
+                <li>
+                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = Model.CurrentPage - 1, pageSize = Model.PageSize })">
+                        Prev
+                    </a>
+                </li>
+            }
+
+            @{
+                var startPage = Math.Max(1, Model.CurrentPage - 2);
+                var endPage = Math.Min(Model.TotalPages, startPage + 4);
+                startPage = Math.Max(1, endPage - 4);
+            }
+
+            @if (startPage > 1)
+            {
+                <li><a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = 1, pageSize = Model.PageSize })">1</a></li>
+                if (startPage > 2)
+                {
+                    <li><span>...</span></li>
+                }
+            }
+
+            @for (var i = startPage; i <= endPage; i++)
+            {
+                <li>
+                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = i, pageSize = Model.PageSize })" 
+                       class="@(i == Model.CurrentPage ? "active" : "")">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (endPage < Model.TotalPages)
+            {
+                if (endPage < Model.TotalPages - 1)
+                {
+                    <li><span>...</span></li>
+                }
+                <li>
+                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = Model.TotalPages, pageSize = Model.PageSize })">
+                        @Model.TotalPages
+                    </a>
+                </li>
+            }
+
+            @if (Model.CurrentPage < Model.TotalPages)
+            {
+                <li>
+                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = Model.CurrentPage + 1, pageSize = Model.PageSize })">
+                        Next
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+}

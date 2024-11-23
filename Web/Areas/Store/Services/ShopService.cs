@@ -2,6 +2,7 @@ using Web.Areas.Store.ViewModels;
 using Web.Areas.Store.Services.Interfaces;
 using Web.Data.Repositories.Interfaces;
 using Web.Models;
+using System.Linq;
 
 namespace Web.Areas.Store.Services
 {
@@ -12,17 +13,22 @@ namespace Web.Areas.Store.Services
 
         public async Task<PaginatedResult<Product>> GetPaginatedProductsAsync(int pageNumber, int pageSize, string? category = null)
         {
-            var query = await _productRepository.GetAllAsync();
+            // Get all products with categories included
+            var products = (await _productRepository.GetAllAsync()).ToList();
             
+            // Filter by category if specified
             if (!string.IsNullOrEmpty(category))
             {
-                query = query.Where(p => p.Category != null && 
-                    p.Category.Name.Equals(category, StringComparison.OrdinalIgnoreCase));
+                products = products
+                    .Where(p => p.Category != null && 
+                           p.Category.Name.Equals(category, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
-            var totalItems = query.Count();
-            var items = query
-                .OrderByDescending(p => p.CreatedAt)
+            // Calculate pagination
+            var totalItems = products.Count;
+            var items = products
+                .OrderBy(p => p.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();

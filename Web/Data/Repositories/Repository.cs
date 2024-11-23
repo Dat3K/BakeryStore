@@ -6,17 +6,22 @@ namespace Web.Data.Repositories
 {
     public class Repository<T>(DefaultdbContext context) : IRepository<T> where T : class
     {
-        private readonly DefaultdbContext _context = context;
-        private readonly DbSet<T> _dbSet = context.Set<T>();
+        protected readonly DefaultdbContext _context = context;
+        protected readonly DbSet<T> _dbSet = context.Set<T>();
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
         {
-            return await _dbSet.Where(filter).ToListAsync();
+            return await _dbSet
+                .AsNoTracking()
+                .Where(filter)
+                .ToListAsync();
         }
 
         public virtual async Task<T?> GetByIdAsync(Guid id)

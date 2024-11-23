@@ -14,7 +14,7 @@ namespace Web.Areas.Store.Services
         public async Task<PaginatedResult<Product>> GetPaginatedProductsAsync(int pageNumber, int pageSize, string? category = null)
         {
             // Get all products with categories included
-            var products = (await _productRepository.GetAllAsync()).ToList();
+            var products = (await _productRepository.GetAllProductAsyncWithCategory()).ToList();
             
             // Filter by category if specified
             if (!string.IsNullOrEmpty(category))

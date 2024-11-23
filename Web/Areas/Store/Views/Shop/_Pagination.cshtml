@@ -2,12 +2,19 @@
 
 @if (Model.TotalPages > 1)
 {
+    var category = Context.Request.Query["category"].ToString();
+
     <div class="pagination-wrapper centred">
         <ul class="pagination">
             @if (Model.CurrentPage > 1)
             {
                 <li>
-                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = Model.CurrentPage - 1, pageSize = Model.PageSize })">
+                    <a asp-controller="Shop" 
+                       asp-action="Index" 
+                       asp-area="Store"
+                       asp-route-pageNumber="@(Model.CurrentPage - 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-category="@category">
                         Prev
                     </a>
                 </li>
@@ -21,7 +28,14 @@
 
             @if (startPage > 1)
             {
-                <li><a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = 1, pageSize = Model.PageSize })">1</a></li>
+                <li>
+                    <a asp-controller="Shop" 
+                       asp-action="Index" 
+                       asp-area="Store"
+                       asp-route-pageNumber="1"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-category="@category">1</a>
+                </li>
                 if (startPage > 2)
                 {
                     <li><span>...</span></li>
@@ -30,11 +44,13 @@
 
             @for (var i = startPage; i <= endPage; i++)
             {
-                <li>
-                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = i, pageSize = Model.PageSize })" 
-                       class="@(i == Model.CurrentPage ? "active" : "")">
-                        @i
-                    </a>
+                <li class="@(i == Model.CurrentPage ? "active" : "")">
+                    <a asp-controller="Shop" 
+                       asp-action="Index" 
+                       asp-area="Store"
+                       asp-route-pageNumber="@i"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-category="@category">@i</a>
                 </li>
             }
 
@@ -45,16 +61,24 @@
                     <li><span>...</span></li>
                 }
                 <li>
-                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = Model.TotalPages, pageSize = Model.PageSize })">
-                        @Model.TotalPages
-                    </a>
+                    <a asp-controller="Shop" 
+                       asp-action="Index" 
+                       asp-area="Store"
+                       asp-route-pageNumber="@Model.TotalPages"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-category="@category">@Model.TotalPages</a>
                 </li>
             }
 
             @if (Model.CurrentPage < Model.TotalPages)
             {
                 <li>
-                    <a href="@Url.Action("Index", "Shop", new { area = "Store", pageNumber = Model.CurrentPage + 1, pageSize = Model.PageSize })">
+                    <a asp-controller="Shop" 
+                       asp-action="Index" 
+                       asp-area="Store"
+                       asp-route-pageNumber="@(Model.CurrentPage + 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-category="@category">
                         Next
                     </a>
                 </li>

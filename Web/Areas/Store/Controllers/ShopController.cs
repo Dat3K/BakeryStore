@@ -16,13 +16,15 @@ namespace Web.Areas.Store.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? pageNumber, int? pageSize, string? category)
+        public async Task<IActionResult> Index(int? pageNumber, int? pageSize, string? category, decimal? minPrice, decimal? maxPrice)
         {
             ViewData["SelectedCategory"] = category;
             var result = await _shopService.GetPaginatedProductsAsync(
                 pageNumber ?? 1,
                 pageSize ?? 9,
-                category);
+                category,
+                minPrice,
+                maxPrice);
             return View(result);
         }
 

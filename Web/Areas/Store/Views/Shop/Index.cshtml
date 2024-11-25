@@ -51,7 +51,7 @@
                             <div class="price-slider-amount w-100 mr-3">
                                 <input type="number" id="max-price" name="max-price" placeholder="Max Price" class="form-control"/>
                             </div>
-                            <button type="submit" class="btn btn-primary" style="background-color: #E3A087; border-color: #E3A087;">Filter</button>
+                            <button type="button" onclick="filterByPrice()" class="btn btn-primary" style="background-color: #E3A087; border-color: #E3A087;">Filter</button>
                         </div>
                     </div>
 
@@ -117,3 +117,40 @@
     </div>
 </section>
 <!-- shop-page-section end -->
+
+<script>
+    function filterByPrice() {
+        var minPrice = document.getElementById('min-price').value;
+        var maxPrice = document.getElementById('max-price').value;
+        
+        // Get current URL parameters
+        var urlParams = new URLSearchParams(window.location.search);
+        
+        // Update or add price parameters
+        if(minPrice) urlParams.set('minPrice', minPrice);
+        else urlParams.delete('minPrice');
+        
+        if(maxPrice) urlParams.set('maxPrice', maxPrice);
+        else urlParams.delete('maxPrice');
+        
+        // Keep existing category if present
+        var category = urlParams.get('category');
+        if(category) urlParams.set('category', category);
+        
+        // Reset to page 1 when filtering
+        urlParams.set('pageNumber', 1);
+        
+        // Redirect with new parameters
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
+    }
+
+    // Set initial values if they exist in URL
+    window.onload = function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var minPrice = urlParams.get('minPrice');
+        var maxPrice = urlParams.get('maxPrice');
+        
+        if(minPrice) document.getElementById('min-price').value = minPrice;
+        if(maxPrice) document.getElementById('max-price').value = maxPrice;
+    }
+</script>

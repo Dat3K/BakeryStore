@@ -11,7 +11,12 @@ namespace Web.Areas.Store.Services
         private readonly IProductRepository _productRepository = productRepository;
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
-        public async Task<PaginatedResult<Product>> GetPaginatedProductsAsync(int pageNumber, int pageSize, string? category = null)
+        public async Task<PaginatedResult<Product>> GetPaginatedProductsAsync(
+            int pageNumber, 
+            int pageSize, 
+            string? category = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null)
         {
             // Get all products with categories included
             var products = (await _productRepository.GetAllProductAsyncWithCategory()).ToList();
@@ -23,6 +28,17 @@ namespace Web.Areas.Store.Services
                     .Where(p => p.Category != null && 
                            p.Category.Name.Equals(category, StringComparison.OrdinalIgnoreCase))
                     .ToList();
+            }
+
+            // Filter by price range if specified
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => p.Price >= minPrice.Value).ToList();
+            }
+
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price <= maxPrice.Value).ToList();
             }
 
             // Calculate pagination

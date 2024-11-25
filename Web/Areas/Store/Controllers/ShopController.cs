@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Web.Areas.Store.Enums;
 using Web.Areas.Store.Services.Interfaces;
 using Web.Models;
 
@@ -16,15 +17,23 @@ namespace Web.Areas.Store.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? pageNumber, int? pageSize, string? category, decimal? minPrice, decimal? maxPrice)
+        public async Task<IActionResult> Index(
+            int? pageNumber, 
+            int? pageSize, 
+            string? category,
+            decimal? minPrice,
+            decimal? maxPrice,
+            ProductSortOrder sortOrder = ProductSortOrder.Default)
         {
             ViewData["SelectedCategory"] = category;
+            ViewData["CurrentSortOrder"] = sortOrder;
             var result = await _shopService.GetPaginatedProductsAsync(
                 pageNumber ?? 1,
                 pageSize ?? 9,
                 category,
                 minPrice,
-                maxPrice);
+                maxPrice,
+                sortOrder);
             return View(result);
         }
 

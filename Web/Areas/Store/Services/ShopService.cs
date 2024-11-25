@@ -3,6 +3,7 @@ using Web.Areas.Store.Services.Interfaces;
 using Web.Data.Repositories.Interfaces;
 using Web.Models;
 using System.Linq;
+using Web.Areas.Store.Enums;
 
 namespace Web.Areas.Store.Services
 {
@@ -16,7 +17,8 @@ namespace Web.Areas.Store.Services
             int pageSize, 
             string? category = null,
             decimal? minPrice = null,
-            decimal? maxPrice = null)
+            decimal? maxPrice = null,
+            ProductSortOrder sortOrder = ProductSortOrder.Default)
         {
             // Get all products with categories included
             var products = (await _productRepository.GetAllProductAsyncWithCategory()).ToList();
@@ -41,10 +43,20 @@ namespace Web.Areas.Store.Services
                 products = products.Where(p => p.Price <= maxPrice.Value).ToList();
             }
 
+            // Apply sorting
+            products = sortOrder switch
+            {
+                ProductSortOrder.NameAsc => products.OrderBy(p => p.Name).ToList(),
+                ProductSortOrder.NameDesc => products.OrderByDescending(p => p.Name).ToList(),
+                ProductSortOrder.PriceAsc => products.OrderBy(p => p.Price).ToList(),
+                ProductSortOrder.PriceDesc => products.OrderByDescending(p => p.Price).ToList(),
+                ProductSortOrder.Newest => products.OrderByDescending(p => p.CreatedAt).ToList(),
+                _ => products.OrderBy(p => p.Name).ToList() // Default sorting
+            };
+
             // Calculate pagination
             var totalItems = products.Count;
             var items = products
-                .OrderBy(p => p.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();

@@ -40,25 +40,22 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="sidebar-widget price-filter">
-                        <div class="widget-title">
-                            <h3>Shop by Price</h3>
-                        </div>
-                        <div class="range-slider clearfix">
-                            <div class="price-range-slider"></div>
-                            <div class="clearfix">
-                                <div class="pull-left">
-                                    <a href="shop-1.html" class="filter-btn">Filter</a>
-                                </div>
-                                <div class="pull-right">
-                                    <p>Price:</p>
-                                    <div class="title"></div>
-                                    <div class="input"><input type="text" class="property-amount" name="field-name"
-                                            readonly=""></div>
-                                </div>
+
+                    <div class="sidebar-widget price-range mb-50">
+                        <h4 class="pro-sidebar-title mb-3">Price Range</h4>
+                        <div class="price-filter d-flex align-items-center">
+                            <div class="price-slider-amount w-100 mr-3">
+                                <input type="number" id="min-price" name="min-price" placeholder="Min Price" class="form-control"/>
                             </div>
+                            <span class="mr-3">to</span>
+                            <div class="price-slider-amount w-100 mr-3">
+                                <input type="number" id="max-price" name="max-price" placeholder="Max Price" class="form-control"/>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="background-color: #E3A087; border-color: #E3A087;">Filter</button>
                         </div>
                     </div>
+
+
                     <div class="sidebar-widget post-widget">
                         <div class="widget-title">
                             <h3>Featured Products</h3>

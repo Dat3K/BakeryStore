@@ -6,21 +6,23 @@ namespace Web.Areas.Store.Controllers
 {
     [Area("Store")]
     [Route("Store/[controller]")]
-    public class ShopController(IShopService shopService) : Controller
+    public class ShopController : Controller
     {
-        private readonly IShopService _shopService = shopService;
+        private readonly IShopService _shopService;
+
+        public ShopController(IShopService shopService)
+        {
+            _shopService = shopService;
+        }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? pageNumber, int? pageSize, string category, string search)
+        public async Task<IActionResult> Index(int? pageNumber, int? pageSize, string? category)
         {
-            ViewData["Search"] = search;
             ViewData["SelectedCategory"] = category;
-            
             var result = await _shopService.GetPaginatedProductsAsync(
-                pageNumber ?? 1, 
+                pageNumber ?? 1,
                 pageSize ?? 9,
                 category);
-                
             return View(result);
         }
 

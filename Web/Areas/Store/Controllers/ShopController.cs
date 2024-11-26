@@ -23,26 +23,21 @@ namespace Web.Areas.Store.Controllers
             string? category,
             decimal? minPrice,
             decimal? maxPrice,
-            ProductSortOrder sortOrder = ProductSortOrder.Default)
+            ProductSortOrder sortOrder = ProductSortOrder.Default,
+            string? searchTerm = null)
         {
             ViewData["SelectedCategory"] = category;
             ViewData["CurrentSortOrder"] = sortOrder;
+            ViewData["SearchTerm"] = searchTerm;
             var result = await _shopService.GetPaginatedProductsAsync(
                 pageNumber ?? 1,
                 pageSize ?? 9,
                 category,
                 minPrice,
                 maxPrice,
-                sortOrder);
+                sortOrder,
+                searchTerm);
             return View(result);
-        }
-
-        [HttpGet]
-        [Route("Products")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
-        {
-            var result = await _shopService.GetPaginatedProductsAsync(1, 9);
-            return Ok(result);
         }
     }
 }

@@ -12,7 +12,8 @@ namespace Web.Areas.Store.Services.Interfaces
             string? category = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
-            ProductSortOrder sortOrder = ProductSortOrder.Default);
+            ProductSortOrder sortOrder = ProductSortOrder.Default,
+            string? searchTerm = null);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
     }
 }

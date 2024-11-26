@@ -6,6 +6,7 @@
     var minPrice = Context.Request.Query["minPrice"].ToString();
     var maxPrice = Context.Request.Query["maxPrice"].ToString();
     var sortOrder = Context.Request.Query["sortOrder"].ToString();
+    var searchTerm = Context.Request.Query["searchTerm"].ToString();
 
     <div class="pagination-wrapper centred">
         <ul class="pagination">
@@ -20,7 +21,8 @@
                        asp-route-category="@category"
                        asp-route-minPrice="@minPrice"
                        asp-route-maxPrice="@maxPrice"
-                       asp-route-sortOrder="@sortOrder">
+                       asp-route-sortOrder="@sortOrder"
+                       asp-route-searchTerm="@searchTerm">
                         Prev
                     </a>
                 </li>
@@ -43,7 +45,8 @@
                        asp-route-category="@category"
                        asp-route-minPrice="@minPrice"
                        asp-route-maxPrice="@maxPrice"
-                       asp-route-sortOrder="@sortOrder">1</a>
+                       asp-route-sortOrder="@sortOrder"
+                       asp-route-searchTerm="@searchTerm">1</a>
                 </li>
                 if (startPage > 2)
                 {
@@ -62,7 +65,8 @@
                        asp-route-category="@category"
                        asp-route-minPrice="@minPrice"
                        asp-route-maxPrice="@maxPrice"
-                       asp-route-sortOrder="@sortOrder">@i</a>
+                       asp-route-sortOrder="@sortOrder"
+                       asp-route-searchTerm="@searchTerm">@i</a>
                 </li>
             }
 
@@ -81,7 +85,8 @@
                        asp-route-category="@category"
                        asp-route-minPrice="@minPrice"
                        asp-route-maxPrice="@maxPrice"
-                       asp-route-sortOrder="@sortOrder">@Model.TotalPages</a>
+                       asp-route-sortOrder="@sortOrder"
+                       asp-route-searchTerm="@searchTerm">@Model.TotalPages</a>
                 </li>
             }
 
@@ -96,7 +101,8 @@
                        asp-route-category="@category"
                        asp-route-minPrice="@minPrice"
                        asp-route-maxPrice="@maxPrice"
-                       asp-route-sortOrder="@sortOrder">
+                       asp-route-sortOrder="@sortOrder"
+                       asp-route-searchTerm="@searchTerm">
                         Next
                     </a>
                 </li>

@@ -18,11 +18,24 @@ namespace Web.Areas.Store.Services
             string? category = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
-            ProductSortOrder sortOrder = ProductSortOrder.Default)
+            ProductSortOrder sortOrder = ProductSortOrder.Default,
+            string? searchTerm = null)
         {
             // Get all products with categories included
             var products = (await _productRepository.GetAllProductAsyncWithCategory()).ToList();
             
+            // Apply search filter if search term is provided
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.Trim();
+                products = products
+                    .Where(p => 
+                        (p.Name?.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ?? false) ||
+                        (p.Description?.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ?? false) ||
+                        (p.Category?.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ?? false))
+                    .ToList();
+            }
+
             // Filter by category if specified
             if (!string.IsNullOrEmpty(category))
             {

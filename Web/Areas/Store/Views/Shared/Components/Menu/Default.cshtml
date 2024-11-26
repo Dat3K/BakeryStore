@@ -1,12 +1,23 @@
-@model List<MenuItem>
+@model Web.Areas.Store.ViewModels.MenuViewModel
 <nav class="main-menu navbar-expand-md navbar-light">
     <div class="collapse navbar-collapse show clearfix" id="navbarSupportedContent">
         <ul class="navigation clearfix">
-            @foreach (var item in Model)
+            @foreach (var item in Model.MenuItems)
             {
                 @if (item.ParentId == null)
                 {
-                    @if (item.InverseParent.Count == 0)
+                    @if (item.Title == "Categories")
+                    {
+                        <li class="dropdown"><a href="@item.Url">@item.Title</a>
+                            <ul>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <li><a href="/Store/Shop?category=@category.Name">@category.Name</a></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    else if (item.InverseParent.Count == 0)
                     {
                         <li><a href="@item.Url">@item.Title</a></li>
                     }

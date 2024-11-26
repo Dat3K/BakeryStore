@@ -1,13 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Web.Models.Enums;
 
 namespace Web.Models;
 
 public partial class User
 {
     public Guid Sid { get; set; }
-
-
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
@@ -20,10 +19,7 @@ public partial class User
 
     public string Email { get; set; } = null!;
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-}
+    public UserRole? Role { get; set; }
 
-enum UserRole {
-    Admin,
-    Customer
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

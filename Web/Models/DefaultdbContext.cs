@@ -1,18 +1,28 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Web.Models.Enums;
+using Microsoft.Extensions.Configuration;
 
 namespace Web.Models;
 
 public partial class DefaultdbContext : DbContext
 {
+    private readonly IConfiguration _configuration;
+
     public DefaultdbContext()
     {
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        _configuration = builder.Build();
     }
 
-    public DefaultdbContext(DbContextOptions<DefaultdbContext> options)
+    public DefaultdbContext(DbContextOptions<DefaultdbContext> options, IConfiguration configuration)
         : base(options)
     {
+        _configuration = configuration;
     }
 
     public virtual DbSet<Category> Categories { get; set; }
@@ -32,22 +42,24 @@ public partial class DefaultdbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=aspnet-dat3k.c.aivencloud.com;Port=21085;Username=avnadmin;Password=AVNS_1WZdxDR6KNlu5Esdf-Z;Database=defaultdb;SslMode=Require");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseNpgsql(connectionString);
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .HasPostgresEnum("discount_type", new[] { "percentage", "fixed_amount" })
-            .HasPostgresEnum("inventory_action_enum", new[] { "in", "out", "adjustment" })
-            .HasPostgresEnum("order_status", new[] { "pending", "processing", "shipped", "delivered", "cancelled" })
-            .HasPostgresEnum("order_status_enum", new[] { "pending", "processing", "completed", "cancelled" })
-            .HasPostgresEnum("order_type_enum", new[] { "online", "pos" })
-            .HasPostgresEnum("payment_method", new[] { "credit_card", "debit_card", "paypal", "cash" })
-            .HasPostgresEnum("payment_method_enum", new[] { "cash", "credit_card", "bank_transfer", "e_wallet" })
-            .HasPostgresEnum("payment_status", new[] { "pending", "completed", "failed", "refunded" })
-            .HasPostgresEnum("payment_status_enum", new[] { "pending", "paid", "failed" })
-            .HasPostgresEnum("user_role", new[] { "admin", "customer" })
+            .HasPostgresEnum<DiscountType>("discount_type")
+            .HasPostgresEnum<InventoryActionType>("inventory_action_enum")
+            .HasPostgresEnum<OrderStatus>("order_status")
+            .HasPostgresEnum<OrderType>("order_type_enum")
+            .HasPostgresEnum<PaymentMethod>("payment_method_enum")
+            .HasPostgresEnum<PaymentStatus>("payment_status_enum")
+            .HasPostgresEnum<UserRole>("user_role")
             .HasPostgresExtension("uuid-ossp");
 
         modelBuilder.Entity<Category>(entity =>
@@ -81,6 +93,9 @@ public partial class DefaultdbContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.Notes).HasColumnName("notes");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.ActionType)
+                .HasColumnName("action_type")
+                .HasDefaultValue(InventoryActionType.In);
 
             entity.HasOne(d => d.Product).WithMany(p => p.InventoryLogs)
                 .HasForeignKey(d => d.ProductId)
@@ -158,6 +173,18 @@ public partial class DefaultdbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Status)
+                .HasColumnName("status")
+                .HasDefaultValue(OrderStatus.Pending);
+            entity.Property(e => e.Type)
+                .HasColumnName("type")
+                .HasDefaultValue(OrderType.Online);
+            entity.Property(e => e.PaymentMethod)
+                .HasColumnName("payment_method")
+                .HasDefaultValue(PaymentMethod.Cash);
+            entity.Property(e => e.PaymentStatus)
+                .HasColumnName("payment_status")
+                .HasDefaultValue(PaymentStatus.Pending);
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
@@ -294,6 +321,10 @@ public partial class DefaultdbContext : DbContext
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
+            entity.Property(e => e.Role)
+                .HasColumnName("role")
+                .HasDefaultValue(UserRole.Customer)
+                .IsRequired(false);
         });
 
         OnModelCreatingPartial(modelBuilder);

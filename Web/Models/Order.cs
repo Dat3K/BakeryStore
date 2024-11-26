@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Web.Models.Enums;
 
 namespace Web.Models;
 
@@ -20,6 +21,14 @@ public partial class Order
     public string? ShippingAddress { get; set; }
 
     public string? Notes { get; set; }
+
+    public OrderStatus Status { get; set; }
+
+    public OrderType Type { get; set; }
+
+    public PaymentMethod PaymentMethod { get; set; }
+
+    public PaymentStatus PaymentStatus { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

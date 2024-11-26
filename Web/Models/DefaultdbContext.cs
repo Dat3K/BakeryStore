@@ -41,6 +41,10 @@ public partial class DefaultdbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Cart> Carts { get; set; }
+
+    public virtual DbSet<CartItem> CartItems { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -325,6 +329,71 @@ public partial class DefaultdbContext : DbContext
                 .HasColumnName("role")
                 .HasDefaultValue(UserRole.Customer)
                 .IsRequired(false);
+        });
+
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("carts_pkey");
+
+            entity.ToTable("carts");
+
+            entity.HasIndex(e => e.UserId, "idx_carts_user");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.TotalAmount)
+                .HasPrecision(12, 2)
+                .HasDefaultValue(0)
+                .HasColumnName("total_amount");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("carts_user_id_fkey");
+        });
+
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("cart_items_pkey");
+
+            entity.ToTable("cart_items");
+
+            entity.HasIndex(e => e.CartId, "idx_cart_items_cart");
+            entity.HasIndex(e => e.ProductId, "idx_cart_items_product");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .HasColumnName("id");
+            entity.Property(e => e.CartId).HasColumnName("cart_id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(1)
+                .HasColumnName("quantity");
+            entity.Property(e => e.UnitPrice)
+                .HasPrecision(12, 2)
+                .HasColumnName("unit_price");
+            entity.Property(e => e.Subtotal)
+                .HasPrecision(12, 2)
+                .HasColumnName("subtotal");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+
+            entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.CartId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("cart_items_cart_id_fkey");
+
+            entity.HasOne(d => d.Product).WithMany()
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("cart_items_product_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -203,12 +203,16 @@
                 </div>
               </div>
             </li>
-            <li class="user-btn">
-              <a asp-controller="Home" asp-action="Index" asp-area="Store" style="
+            <li class="dropdown user-btn">
+              <a asp-controller="Home" asp-action="Index" asp-area="Store" data-toggle="dropdown" style="
                   background-image: url(~/Store/images/icons/icon-bg-1.png);
                 ">
                 <i class="icon-Profile"></i>
               </a>
+              <ul class="dropdown-menu">
+                <li class="banner-btn"><a asp-controller="Account" asp-action="Login" asp-area="Store">Login</a></li>
+                <li class="banner-btn"><a asp-controller="Account" asp-action="Register" asp-area="Store">Register</a></li>
+              </ul>
             </li>
             <li class="cart-btn">
               <a href="shop-1.html" style="

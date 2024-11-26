@@ -310,25 +310,45 @@ public partial class DefaultdbContext : DbContext
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.Email, "idx_users_email");
+            entity.HasIndex(e => e.Email)
+                .HasDatabaseName("users_email_key")
+                .IsUnique();
 
             entity.Property(e => e.Sid)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("sid");
+
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Email).HasColumnName("email");
-            entity.Property(e => e.Name).HasColumnName("name");
-            entity.Property(e => e.Nickname).HasColumnName("nickname");
-            entity.Property(e => e.Picture).HasColumnName("picture");
+
             entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
+
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(255)
+                .HasColumnName("first_name");
+
+            entity.Property(e => e.LastName)
+                .HasMaxLength(255)
+                .HasColumnName("last_name");
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+
+            entity.Property(e => e.Picture)
+                .HasMaxLength(1000)
+                .HasColumnName("picture");
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(255)
+                .HasColumnName("email");
+
             entity.Property(e => e.Role)
                 .HasColumnName("role")
-                .HasDefaultValue(UserRole.Customer)
-                .IsRequired(false);
+                .HasDefaultValue(UserRole.Customer);
         });
 
         modelBuilder.Entity<Cart>(entity =>
@@ -372,23 +392,17 @@ public partial class DefaultdbContext : DbContext
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("id");
             entity.Property(e => e.CartId).HasColumnName("cart_id");
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Quantity)
-                .HasDefaultValue(1)
-                .HasColumnName("quantity");
-            entity.Property(e => e.UnitPrice)
-                .HasPrecision(12, 2)
-                .HasColumnName("unit_price");
-            entity.Property(e => e.Subtotal)
-                .HasPrecision(12, 2)
-                .HasColumnName("subtotal");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.Subtotal)
+                .HasPrecision(10, 2)
+                .HasColumnName("subtotal");
 
             entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.CartId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("cart_items_cart_id_fkey");
 
             entity.HasOne(d => d.Product).WithMany()

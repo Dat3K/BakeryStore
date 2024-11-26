@@ -1,12 +1,13 @@
 using Auth0.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Web.Data.Repositories;
+using Web.Data.Repositories.Interfaces;
+using Web.Services;
+using Web.Config;
+using Web.Services.Interfaces;
 using Web.Areas.Store.Services.Interfaces;
 using Web.Areas.Store.Services;
-using Web.Data.Repositories.Interfaces;
 using Web.Models;
-using Web.Services;
-using Web.Data.Repositories;
-using Web.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,17 +20,25 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IShopService, ShopService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Configure Auth0
+var auth0Settings = builder.Configuration.GetSection("Auth0").Get<Auth0Settings>();
+builder.Services.AddSingleton(auth0Settings);
+
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+    options.Domain = auth0Settings.Domain;
+    options.ClientId = auth0Settings.ClientId;
+});
+
+// Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<DefaultdbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
-// Add Auth0
-builder.Services.AddAuth0WebAppAuthentication(options =>
-{
-    options.Domain = builder.Configuration["Auth0:Domain"];
-    options.ClientId = builder.Configuration["Auth0:ClientId"];
 });
 
 var app = builder.Build();
@@ -45,7 +54,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCookiePolicy();
-app.UseAuthorization();
+
+// Add authentication middleware
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

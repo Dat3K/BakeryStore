@@ -7,12 +7,10 @@ namespace Web.Data.Repositories
 {
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        private readonly DefaultdbContext _context;
 
         public OrderRepository(DefaultdbContext context) : base(context)
         {
-            _context = context;
-        }
+        }   
 
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId)
         {
@@ -29,7 +27,7 @@ namespace Web.Data.Repositories
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
+                .FirstOrDefaultAsync(o => o.Id == orderId)?? throw new KeyNotFoundException($"Order with ID {orderId} not found.");
         }
 
         public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status)

@@ -7,11 +7,9 @@ namespace Web.Data.Repositories;
 
 public class UserRepository : Repository<User>, IUserRepository
 {
-    private readonly DefaultdbContext _context;
 
     public UserRepository(DefaultdbContext context) : base(context)
     {
-        _context = context;
     }
 
     public async Task<User?> GetByNameAsync(string name)
@@ -31,11 +29,5 @@ public class UserRepository : Repository<User>, IUserRepository
         return await _context.Users
             .Where(u => u.Role == role)
             .ToListAsync();
-    }
-
-    public async Task UpdateAsync(User user)
-    {
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync();
     }
 }

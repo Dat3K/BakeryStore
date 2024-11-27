@@ -8,5 +8,4 @@ public interface IUserRepository : IRepository<User>
     Task<User?> GetByNameAsync(string name);
     Task<bool> IsNameExistAsync(string name);
     Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role);
-    Task UpdateAsync(User user);
 }

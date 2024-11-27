@@ -9,6 +9,7 @@ using Web.Areas.Store.Services.Interfaces;
 using Web.Areas.Store.Services;
 using Web.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,7 +64,11 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<DefaultdbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+    dataSourceBuilder.EnableUnmappedTypes();
+    var dataSource = dataSourceBuilder.Build();
+    options.UseNpgsql(dataSource);
 });
 
 var app = builder.Build();

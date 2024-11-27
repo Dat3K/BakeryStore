@@ -46,7 +46,7 @@ namespace Web.Areas.Store.Controllers
             catch (Exception ex)
             {
                 // Log the error
-                return RedirectToAction("Error", "Home", new { message = "An error occurred during login." });
+                throw;
             }
         }
 
@@ -59,12 +59,13 @@ namespace Web.Areas.Store.Controllers
             try
             {
                 await _auth0Service.LogoutAsync();
-                return RedirectToAction("Index", "Home", new { area = "Store" });
+                // Không cần redirect vì LogoutAsync đã xử lý chuyển hướng
+                return new EmptyResult();
             }
             catch (Exception ex)
             {
                 // Log the error
-                return RedirectToAction("Error", "Home", new { message = "An error occurred during logout." });
+                throw;
             }
         }
 

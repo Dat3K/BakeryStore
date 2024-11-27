@@ -45,6 +45,16 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = Auth0Constants.AuthenticationScheme;
 });
 
+// Add session configuration
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 // Add HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
@@ -69,6 +79,8 @@ app.UseRouting();
 // Add authentication middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "Store",

@@ -65,15 +65,39 @@ public class Auth0Service : IAuth0Service
 
     public async Task LogoutAsync()
     {
-        var context = _httpContextAccessor.HttpContext ?? 
-            throw new InvalidOperationException("HttpContext is not available");
+        var context = _httpContextAccessor.HttpContext;
+        if (context == null) return;
 
-        var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
-            .WithRedirectUri("/Store")
-            .Build();
+        try
+        {
+            // 1. Đăng xuất khỏi Auth0
+            var auth0LogoutUrl = $"https://{_auth0Settings.Domain}/v2/logout?client_id={_auth0Settings.ClientId}&returnTo={context.Request.Scheme}://{context.Request.Host}";
+            
+            // 2. Xóa cookie xác thực của ứng dụng
+            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await context.SignOutAsync(Auth0Constants.AuthenticationScheme);
 
-        await context.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
-        await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // 3. Xóa tất cả các cookie trong domain hiện tại
+            foreach (var cookie in context.Request.Cookies.Keys)
+            {
+                context.Response.Cookies.Delete(cookie, new CookieOptions 
+                { 
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax
+                });
+            }
+
+            // 4. Xóa claims và identity
+            context.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+            // 5. Chuyển hướng đến trang logout của Auth0
+            context.Response.Redirect(auth0LogoutUrl);
+        }
+        catch (Exception ex)
+        {
+            // Log error
+            throw;
+        }
     }
 
     public async Task<User> ProcessLoginCallbackAsync(AuthenticationProperties props)

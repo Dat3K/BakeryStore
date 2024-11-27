@@ -21,20 +21,14 @@
                         }
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-sm-6">
-                            <h6 class="text-muted">First Name</h6>
-                            <p class="mb-0">@(Model.FirstName ?? "Not provided")</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <h6 class="text-muted">Last Name</h6>
-                            <p class="mb-0">@(Model.LastName ?? "Not provided")</p>
-                        </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted">Name</h6>
+                        <p class="mb-0">@(Model.Name ?? "Not provided")</p>
                     </div>
 
                     <div class="mb-3">
-                        <h6 class="text-muted">Email</h6>
-                        <p class="mb-0">@Model.Email</p>
+                        <h6 class="text-muted">Nickname</h6>
+                        <p class="mb-0">@(Model.NickName ?? "Not provided")</p>
                     </div>
 
                     <div class="mb-3">
@@ -45,11 +39,11 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <h6 class="text-muted">Member Since</h6>
-                            <p class="mb-0">@(Model.CreatedAt?.ToString("MMMM dd, yyyy") ?? "Not available")</p>
+                            <p class="mb-0">@Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
                         </div>
                         <div class="col-sm-6">
                             <h6 class="text-muted">Last Updated</h6>
-                            <p class="mb-0">@(Model.UpdatedAt?.ToString("MMMM dd, yyyy") ?? "Not available")</p>
+                            <p class="mb-0">@Model.UpdatedAt.ToString("MMMM dd, yyyy")</p>
                         </div>
                     </div>
                 </div>

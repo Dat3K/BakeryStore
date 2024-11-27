@@ -1,3 +1,4 @@
+using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace Web.Areas.Store.Controllers
                 if (currentUser != null)
                 {
                     // Redirect admin users to dashboard
-                    if (currentUser.Role == UserRole.Admin)
+                    if (currentUser.Role == UserRole.admin)
                     {
                         return RedirectToAction("Index", "Dashboard", new { area = "POS" });
                     }
@@ -72,26 +73,35 @@ namespace Web.Areas.Store.Controllers
         /// <summary>
         /// Handles the callback from Auth0 after successful authentication
         /// </summary>
-        public async Task<IActionResult> Callback()
-        {
-            try
-            {
-                var props = new Microsoft.AspNetCore.Authentication.AuthenticationProperties();
-                var returnUrl = props.GetParameter<string>("returnUrl") ?? "/Store";
+        // public async Task<IActionResult> Callback()
+        // {
+        //     try
+        //     {
+        //         // Lấy AuthenticationProperties từ quá trình authentication
+        //         var result = await HttpContext.AuthenticateAsync(Auth0Constants.AuthenticationScheme);
+        //         if (result?.Properties == null)
+        //         {
+        //             throw new Exception("Invalid authentication properties");
+        //         }
+
+        //         var user = await _auth0Service.ProcessLoginCallbackAsync(result.Properties, result);
+        //         Console.WriteLine($"Callback processed for user: {user?.Sid}");
+
+        //         // Lấy returnUrl từ properties hoặc dùng giá trị mặc định
+        //         var returnUrl = result.Properties.RedirectUri ?? "/Store";
                 
-                var user = await _auth0Service.ProcessLoginCallbackAsync(props);
-                
-                if (user.Role == UserRole.Admin)
-                {
-                    return RedirectToAction("Index", "Dashboard", new { area = "POS" });
-                }
-                return Redirect(returnUrl);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Error", "Home", new { message = "An error occurred during authentication." });
-            }
-        }
+        //         if (user.Role == UserRole.Admin)
+        //         {
+        //             return RedirectToAction("Index", "Dashboard", new { area = "POS" });
+        //         }
+        //         return Redirect(returnUrl);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Console.WriteLine($"Error in callback: {ex.Message}");
+        //         return RedirectToAction("Error", "Home", new { message = "An error occurred during authentication." });
+        //     }
+        // }
 
         /// <summary>
         /// Displays user profile information
@@ -104,6 +114,7 @@ namespace Web.Areas.Store.Controllers
                 var user = await _auth0Service.GetCurrentUserAsync();
                 if (user == null)
                 {
+                    Console.WriteLine("User is null");
                     return RedirectToAction("Login");
                 }
                 return View(user);
@@ -128,8 +139,8 @@ namespace Web.Areas.Store.Controllers
         /// <returns>User object</returns>
         [Authorize]
         [HttpGet]
-        [Route("api/current-user")]
-        public async Task<IActionResult> GetCurrentUser()
+        [Route("Store/[controller]/current-user")]
+        public async Task<IActionResult> GetCurrentUserAPI()
         {
             try
             {

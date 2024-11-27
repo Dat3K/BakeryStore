@@ -37,6 +37,9 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.ClientSecret = auth0Settings.ClientSecret;
 });
 
+builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth0"));
+builder.Services.AddHttpClient();
+
 // Configure cookie authentication
 builder.Services.AddAuthentication(options =>
 {

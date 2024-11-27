@@ -2,9 +2,9 @@ namespace Web.Models.Enums
 {
     public enum PaymentMethod
     {
-        Cash,
-        CreditCard,
-        BankTransfer,
-        EWallet
+        cash,
+        credit_card,
+        bank_transfer,
+        e_wallet
     }
 }

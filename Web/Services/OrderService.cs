@@ -34,10 +34,10 @@ namespace Web.Services
                 TotalAmount = cartItems.Sum(ci => ci.Quantity * ci.UnitPrice),
                 ShippingAddress = shippingAddress,
                 Notes = notes,
-                Status = OrderStatus.Pending,
-                Type = OrderType.Online,
-                PaymentMethod = PaymentMethod.Cash,
-                PaymentStatus = PaymentStatus.Pending,
+                Status = OrderStatus.pending,
+                Type = OrderType.online,
+                PaymentMethod = PaymentMethod.cash,
+                PaymentStatus = PaymentStatus.pending,
                 CreatedAt = DateTime.UtcNow
             };
 

@@ -2,7 +2,7 @@ namespace Web.Models.Enums
 {
     public enum UserRole
     {
-        Admin,
-        Customer
+        admin,    // Must match PostgreSQL value exactly
+        customer  // Must match PostgreSQL value exactly
     }
 }

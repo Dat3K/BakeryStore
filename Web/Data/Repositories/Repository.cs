@@ -26,7 +26,12 @@ namespace Web.Data.Repositories
 
         public virtual async Task<T?> GetByIdAsync(Guid id)
         {
-            return await _dbSet.FindAsync(id);
+            var entity = await _dbSet.FindAsync(id);
+            if (entity is null)
+            {
+                throw new KeyNotFoundException($"Entity of type {typeof(T).Name} with ID {id} not found.");
+            }
+            return entity;
         }
 
         public virtual async Task<T> AddAsync(T entity)

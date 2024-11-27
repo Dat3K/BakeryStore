@@ -39,15 +39,6 @@ public class UserService : IUserService
         return await _unitOfWork.UserRepository.GetByIdAsync(id);
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            throw new ArgumentException("Email cannot be empty", nameof(email));
-        }
-        return await _unitOfWork.UserRepository.GetByEmailAsync(email);
-    }
-
     public async Task<User> CreateUserAsync(UserDTO userDto)
     {
         if (userDto == null)
@@ -55,77 +46,90 @@ public class UserService : IUserService
             throw new ArgumentNullException(nameof(userDto));
         }
 
-        if (string.IsNullOrWhiteSpace(userDto.Email))
+        if (string.IsNullOrWhiteSpace(userDto.Name))
         {
-            throw new ArgumentException("Email is required", nameof(userDto));
-        }
-
-        // Check if user already exists
-        var existingUser = await GetByEmailAsync(userDto.Email);
-        if (existingUser != null)
-        {
-            throw new BusinessException("User with this email already exists");
+            throw new ArgumentException("Name is required", nameof(userDto));
         }
 
         var user = new User
         {
             Sid = Guid.NewGuid(),
-            Email = userDto.Email,
-            FirstName = userDto.FirstName,
-            LastName = userDto.LastName,
+            Name = userDto.Name,
+            NickName = userDto.NickName,
             Picture = userDto.Picture,
+            Role = UserRole.customer,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-            Role = UserRole.Customer
+            UpdatedAt = DateTime.UtcNow
         };
 
-        await _unitOfWork.UserRepository.AddAsync(user);
-        await _unitOfWork.SaveChangesAsync();
-        return user;
+        try 
+        {
+            await _unitOfWork.UserRepository.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+            return user;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating user: {ex.Message}");
+            throw;
+        }
     }
 
-    public async Task<User> UpdateUserAsync(Guid id, UserUpdateDTO userDto)
+    public async Task<User> UpdateUserAsync(Guid userId, UserUpdateDTO userDto)
     {
         var currentUser = await GetCurrentUserAsync();
-        var user = await _unitOfWork.UserRepository.GetByIdAsync(id)
-            ?? throw new NotFoundException($"User with ID {id} not found");
+        var user = await _unitOfWork.UserRepository.GetByIdAsync(userId)
+            ?? throw new NotFoundException($"User with ID {userId} not found");
 
         // Only allow users to update their own profile unless they are an admin
-        if (currentUser?.Sid != user.Sid && currentUser?.Role != UserRole.Admin)
+        if (currentUser?.Sid != user.Sid && currentUser?.Role != UserRole.admin)
         {
             throw new UnauthorizedException("You are not authorized to update this user's profile");
         }
 
-        if (userDto.FirstName != null)
-        {
-            user.FirstName = userDto.FirstName;
-        }
-        if (userDto.LastName != null)
-        {
-            user.LastName = userDto.LastName;
-        }
-        if (userDto.Picture != null) user.Picture = userDto.Picture;
-
+        user.Name = userDto.Name ?? user.Name;
+        user.NickName = userDto.NickName ?? user.NickName;
+        user.Picture = userDto.Picture ?? user.Picture;
         user.UpdatedAt = DateTime.UtcNow;
-        await _unitOfWork.SaveChangesAsync();
-        return user;
+
+        try 
+        {
+            await _unitOfWork.UserRepository.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+            return user;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating user: {ex.Message}");
+            throw;
+        }
     }
 
-    public async Task<bool> DeleteUserAsync(Guid id)
+    public async Task<bool> DeleteUserAsync(Guid userId)
     {
         var currentUser = await GetCurrentUserAsync();
-        var user = await _unitOfWork.UserRepository.GetByIdAsync(id)
-            ?? throw new NotFoundException($"User with ID {id} not found");
+        var user = await _unitOfWork.UserRepository.GetByIdAsync(userId)
+            ?? throw new NotFoundException($"User with ID {userId} not found");
 
         // Only allow users to delete their own account unless they are an admin
-        if (currentUser?.Sid != user.Sid && currentUser?.Role != UserRole.Admin)
+        if (currentUser?.Sid != user.Sid && currentUser?.Role != UserRole.admin)
         {
             throw new UnauthorizedException("You are not authorized to delete this user");
         }
 
         await _unitOfWork.UserRepository.DeleteAsync(user);
         await _unitOfWork.SaveChangesAsync();
+
         return true;
+    }
+
+    public async Task<User?> GetByNameAsync(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Name cannot be empty", nameof(name));
+        }
+        return await _unitOfWork.UserRepository.GetByNameAsync(name);
     }
 
     public async Task<IEnumerable<User>> GetUsersByRoleAsync(string role)
@@ -136,7 +140,7 @@ public class UserService : IUserService
         }
 
         var currentUser = await GetCurrentUserAsync();
-        if (currentUser?.Role != UserRole.Admin)
+        if (currentUser?.Role != UserRole.admin)
         {
             throw new UnauthorizedException("Only administrators can view users by role");
         }

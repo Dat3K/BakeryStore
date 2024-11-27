@@ -14,16 +14,16 @@ public class UserRepository : Repository<User>, IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByNameAsync(string name)
     {
         return await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Name == name);
     }
 
-    public async Task<bool> IsEmailExistAsync(string email)
+    public async Task<bool> IsNameExistAsync(string name)
     {
         return await _context.Users
-            .AnyAsync(u => u.Email == email);
+            .AnyAsync(u => u.Name == name);
     }
 
     public async Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role)
@@ -31,5 +31,11 @@ public class UserRepository : Repository<User>, IUserRepository
         return await _context.Users
             .Where(u => u.Role == role)
             .ToListAsync();
+    }
+
+    public async Task UpdateAsync(User user)
+    {
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
     }
 }

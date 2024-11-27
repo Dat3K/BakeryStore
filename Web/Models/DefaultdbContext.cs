@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Web.Models.Enums;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Web.Models;
 
@@ -66,6 +67,20 @@ public partial class DefaultdbContext : DbContext
             .HasPostgresEnum<UserRole>("user_role")
             .HasPostgresExtension("uuid-ossp");
 
+        // Configure enum value conversions
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            var properties = entityType.GetProperties()
+                .Where(p => p.ClrType.IsEnum);
+
+            foreach (var property in properties)
+            {
+                property.SetProviderClrType(typeof(string));
+                property.SetValueConverter(
+                    typeof(EnumToStringConverter<>).MakeGenericType(property.ClrType));
+            }
+        }
+
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("categories_pkey");
@@ -99,7 +114,7 @@ public partial class DefaultdbContext : DbContext
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.ActionType)
                 .HasColumnName("action_type")
-                .HasDefaultValue(InventoryActionType.In);
+                .HasDefaultValue(InventoryActionType.in_stock);
 
             entity.HasOne(d => d.Product).WithMany(p => p.InventoryLogs)
                 .HasForeignKey(d => d.ProductId)
@@ -179,16 +194,16 @@ public partial class DefaultdbContext : DbContext
             entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.Status)
                 .HasColumnName("status")
-                .HasDefaultValue(OrderStatus.Pending);
+                .HasDefaultValue(OrderStatus.pending);
             entity.Property(e => e.Type)
                 .HasColumnName("type")
-                .HasDefaultValue(OrderType.Online);
+                .HasDefaultValue(OrderType.online);
             entity.Property(e => e.PaymentMethod)
                 .HasColumnName("payment_method")
-                .HasDefaultValue(PaymentMethod.Cash);
+                .HasDefaultValue(PaymentMethod.cash);
             entity.Property(e => e.PaymentStatus)
                 .HasColumnName("payment_status")
-                .HasDefaultValue(PaymentStatus.Pending);
+                .HasDefaultValue(PaymentStatus.pending);
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
@@ -310,41 +325,40 @@ public partial class DefaultdbContext : DbContext
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.Email)
-                .HasDatabaseName("users_email_key")
-                .IsUnique();
+            entity.HasIndex(e => e.Email, "email_1732724362502_index");
 
             entity.Property(e => e.Sid)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("sid");
 
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasColumnName("name");
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasColumnName("email");
+
+            entity.Property(e => e.NickName)
+                .HasColumnName("nickname");
+
+            entity.Property(e => e.Picture)
+                .HasColumnName("picture");
+
+            entity.Property(e => e.Role)
+                .HasColumnType("user_role")
+                .HasColumnName("role")
+                .HasDefaultValue(UserRole.customer);
+
             entity.Property(e => e.CreatedAt)
+                .HasColumnType("timestamp with time zone")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
 
             entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp with time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
-
-            entity.Property(e => e.FirstName)
-                .HasMaxLength(255)
-                .HasColumnName("first_name");
-
-            entity.Property(e => e.LastName)
-                .HasMaxLength(255)
-                .HasColumnName("last_name");
-
-            entity.Property(e => e.Picture)
-                .HasMaxLength(1000)
-                .HasColumnName("picture");
-
-            entity.Property(e => e.Email)
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnName("email");
-
-            entity.Property(e => e.Role)
-                .HasColumnName("role")
-                .HasDefaultValue(UserRole.Customer);
         });
 
         modelBuilder.Entity<Cart>(entity =>

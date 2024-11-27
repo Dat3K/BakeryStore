@@ -2,10 +2,10 @@ namespace Web.Models.Enums
 {
     public enum OrderStatus
     {
-        Pending,
-        Processing,
-        Shipped,
-        Delivered,
-        Cancelled
+        pending,
+        processing,
+        shipped,
+        delivered,
+        cancelled
     }
 }

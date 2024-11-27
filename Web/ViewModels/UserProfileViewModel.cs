@@ -2,10 +2,10 @@ namespace Web.ViewModels
 {
     public class UserProfileViewModel
     {
-        public required string Email { get; set; }
-
-        public required string Name { get; set; }
-
-        public required string Picture { get; set; }
+        public string? Name { get; set; }
+        public string? NickName { get; set; }
+        public string? Picture { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

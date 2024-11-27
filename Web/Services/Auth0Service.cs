@@ -56,6 +56,25 @@ public class Auth0Service : IAuth0Service
             return null;
         }
 
+        foreach (var claim in context.User.Claims)
+        {
+            _logger.LogInformation($"Claim: {claim.Type} = {claim.Value}");
+        }
+        
+        UserRole? role = null;
+        var roleClaim = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value?.ToLowerInvariant();
+        if (roleClaim != null)
+        {
+            try
+            {
+                role = (UserRole)Enum.Parse(typeof(UserRole), roleClaim);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error parsing role claim");
+            }
+        }
+
         // Get the nameIdentifier (sub) claim which contains the Auth0 ID
         var nameIdentifier = context.User.Claims.FirstOrDefault(c => 
             c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -79,7 +98,6 @@ public class Auth0Service : IAuth0Service
 
             // Try to find existing user by email
             var user = await _unitOfWork.UserRepository.FirstOrDefaultAsync(u => u.Email == email);
-
             if (user == null)
             {
                 // Create new user
@@ -89,7 +107,7 @@ public class Auth0Service : IAuth0Service
                     Name = name,
                     NickName = nickname,
                     Picture = picture,
-                    Role = UserRole.customer,
+                    Role = role ?? UserRole.customer,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };

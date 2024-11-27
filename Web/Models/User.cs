@@ -10,7 +10,6 @@ public class User
     [Key]
     public Guid Sid { get; set; }
 
-    [Required]
     public string Name { get; set; } = null!;
 
     [Required]
@@ -22,7 +21,7 @@ public class User
     public string? Picture { get; set; }
 
     [Required]
-    public UserRole Role { get; set; } = UserRole.customer;
+    public UserRole Role { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

@@ -19,8 +19,8 @@ public class AuthController : ControllerBase
     [HttpGet("login")]
     public async Task<IActionResult> Login()
     {
-        var redirectUrl = await _auth0Service.LoginAsync();
-        return Ok(new { redirectUrl });
+        await _auth0Service.LoginAsync();
+        return Ok(new { });
     }
 
     [HttpGet("logout")]

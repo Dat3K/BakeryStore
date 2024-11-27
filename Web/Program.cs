@@ -8,6 +8,7 @@ using Web.Services.Interfaces;
 using Web.Areas.Store.Services.Interfaces;
 using Web.Areas.Store.Services;
 using Web.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IShopService, ShopService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuth0Service, Auth0Service>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 // Configure Auth0
 var auth0Settings = builder.Configuration.GetSection("Auth0").Get<Auth0Settings>();
@@ -31,6 +34,15 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 {
     options.Domain = auth0Settings.Domain;
     options.ClientId = auth0Settings.ClientId;
+    options.ClientSecret = auth0Settings.ClientSecret;
+});
+
+// Configure cookie authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = Auth0Constants.AuthenticationScheme;
 });
 
 // Add HttpContextAccessor
@@ -53,7 +65,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCookiePolicy();
 
 // Add authentication middleware
 app.UseAuthentication();

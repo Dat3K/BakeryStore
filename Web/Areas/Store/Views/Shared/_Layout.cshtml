@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 
-  <link rel="icon" href="~/Store/images/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="~/Store/images/favicon.ico" type="image/x-icon" asp-append-version="true" />
 
   <link
     href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
@@ -17,17 +17,18 @@
     rel="stylesheet" />
 
   <!-- Stylesheets -->
-  <link href="~/Store/css/font-awesome-all.css" rel="stylesheet" />
-  <link href="~/Store/css/flaticon.css" rel="stylesheet" />
-  <link href="~/Store/css/owl.css" rel="stylesheet" />
-  <link href="~/Store/css/bootstrap.css" rel="stylesheet" />
-  <link href="~/Store/css/jquery.fancybox.min.css" rel="stylesheet" />
-  <link href="~/Store/css/animate.css" rel="stylesheet" />
-  <link href="~/Store/css/color.css" rel="stylesheet" />
-  <link href="~/Store/css/nice-select.css" rel="stylesheet" />
-  <link href="~/Store/css/global.css" rel="stylesheet" />
-  <link href="~/Store/css/style.css" rel="stylesheet" />
-  <link href="~/Store/css/responsive.css" rel="stylesheet" />
+  <link href="~/Store/css/font-awesome-all.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/flaticon.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/owl.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/bootstrap.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/jquery.fancybox.min.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/animate.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/color.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/nice-select.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/global.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/jquery.bootstrap-touchspin.css" rel="stylesheet">
+  <link href="~/Store/css/style.css" rel="stylesheet" asp-append-version="true" />
+  <link href="~/Store/css/responsive.css" rel="stylesheet" asp-append-version="true" />
 </head>
 
 <body>
@@ -81,7 +82,7 @@
                 </div>
                 <div class="single-item">
                   <figure class="image">
-                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-1.jpg" alt="" /></a>
+                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-1.jpg" asp-append-version="true" alt="" /></a>
                   </figure>
                   <div class="item-name clearfix">
                     <h6><a href="shop-details.html">Coffee Chef</a></h6>
@@ -92,7 +93,7 @@
                 </div>
                 <div class="single-item">
                   <figure class="image">
-                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-2.jpg" alt="" /></a>
+                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-2.jpg" asp-append-version="true" alt="" /></a>
                   </figure>
                   <div class="item-name clearfix">
                     <h6><a href="shop-details.html">Baking Breads</a></h6>
@@ -108,7 +109,7 @@
                 </div>
                 <div class="single-item">
                   <figure class="image">
-                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-3.jpg" alt="" /></a>
+                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-3.jpg" asp-append-version="true" alt="" /></a>
                   </figure>
                   <div class="item-name clearfix">
                     <h6><a href="shop-details.html">Chocolate Cake</a></h6>
@@ -119,7 +120,7 @@
                 </div>
                 <div class="single-item">
                   <figure class="image">
-                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-4.jpg" alt="" /></a>
+                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-4.jpg" asp-append-version="true" alt="" /></a>
                   </figure>
                   <div class="item-name clearfix">
                     <h6><a href="shop-details.html">French Croissants</a></h6>
@@ -135,7 +136,7 @@
                 </div>
                 <div class="single-item">
                   <figure class="image">
-                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-5.jpg" alt="" /></a>
+                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-5.jpg" asp-append-version="true" alt="" /></a>
                   </figure>
                   <div class="item-name clearfix">
                     <h6><a href="shop-details.html">Donuts Cake</a></h6>
@@ -146,7 +147,7 @@
                 </div>
                 <div class="single-item">
                   <figure class="image">
-                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-6.jpg" alt="" /></a>
+                    <a href="shop-details.html"><img src="~/Store/images/resource/shop/product-6.jpg" asp-append-version="true" alt="" /></a>
                   </figure>
                   <div class="item-name clearfix">
                     <h6><a href="shop-details.html">Ice Crem</a></h6>
@@ -169,7 +170,9 @@
         <div class="outer-box">
           <div class="logo-box">
             <figure class="logo">
-              <a asp-controller="Home" asp-action="Index" asp-area="Store"><img src="~/Store/images/logo-5.png" alt="" /></a>
+              <a asp-controller="Home" asp-action="Index" asp-area="Store">
+                <img src="~/Store/images/logo-5.png" asp-append-version="true" alt="" />
+              </a>
             </figure>
           </div>
           <div class="menu-area">
@@ -185,7 +188,7 @@
             <li class="search-box-outer">
               <div class="dropdown">
                 <button class="search-box-btn" style="
-                    background-image: url(~/Store/images/icons/icon-bg-1.png);
+                    background-image: url('@Url.Content("~/Store/images/icons/icon-bg-6.png")');
                   " type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="icon-Search"></i>
                 </button>
@@ -205,7 +208,7 @@
             </li>
             <li class="dropdown user-btn">
               <a asp-controller="Home" asp-action="Index" asp-area="Store" data-toggle="dropdown" style="
-                  background-image: url(~/Store/images/icons/icon-bg-1.png);
+                  background-image: url('@Url.Content("~/Store/images/icons/icon-bg-6.png")');
                 ">
                 <i class="icon-Profile"></i>
               </a>
@@ -229,7 +232,7 @@
                             <i class="fas fa-user-cog" style="width: 16px; margin-right: 10px; color: #666; font-size: 16px;"></i>
                             <span style="font-size: 16px;">Profile</span>
                         </a>
-                        <a asp-controller="Account" asp-action="Logout" asp-area="Store" 
+                        <a asp-controller="Account" asp-action="Logout" asp-area="Store"
                            style="padding: 8px 20px; display: flex; align-items: center; color: #dc3545; text-decoration: none; transition: background 0.2s;">
                             <i class="fas fa-sign-out-alt" style="width: 16px; margin-right: 10px; font-size: 16px;"></i>
                             <span style="font-size: 16px;">Logout</span>
@@ -239,12 +242,12 @@
                 else
                 {
                   <div style="display: flex; flex-direction: column;">
-                    <a asp-controller="Account" asp-action="Login" asp-area="Store" 
+                    <a asp-controller="Account" asp-action="Login" asp-area="Store"
                         style="padding: 5px 20px; display: flex; align-items: center; color: #333; text-decoration: none; transition: background 0.2s;">
                         <i class="fas fa-sign-in-alt" style="width: 16px; margin-right: 15px; color: #666; font-size: 16px;"></i>
                         <span style="font-size: 16px;">Login</span>
                     </a>
-                    <a asp-controller="Account" asp-action="Register" asp-area="Store" 
+                    <a asp-controller="Account" asp-action="Register" asp-area="Store"
                         style="padding: 5px 20px; display: flex; align-items: center; color: #333; text-decoration: none; transition: background 0.2s; border-top: 1px solid #eee;">
                         <i class="fas fa-user-plus" style="width: 16px; margin-right: 15px; color: #666; font-size: 16px;"></i>
                         <span style="font-size: 16px;">Register</span>
@@ -253,14 +256,17 @@
                 }
               </ul>
             </li>
+            @if (User.Identity.IsAuthenticated)
+            {
             <li class="cart-btn">
-              <a href="shop-1.html" style="
-                  background-image: url(~/Store/images/icons/icon-bg-1.png);
+              <a asp-controller="Cart" asp-action="Index" asp-area="Store" style="
+                  background-image: url('@Url.Content("~/Store/images/icons/icon-bg-6.png")');
                 ">
                 <i class="icon-Bag"></i>
                 <span>3</span>
               </a>
             </li>
+            }
           </ul>
         </div>
       </div>
@@ -270,7 +276,9 @@
         <div class="outer-box">
           <div class="logo-box">
             <figure class="logo">
-              <a asp-controller="Home" asp-action="Index" asp-area="Store"><img src="~/Store/images/small-logo.png" alt="" /></a>
+              <a asp-controller="Home" asp-action="Index" asp-area="Store">
+                <img src="~/Store/images/small-logo.png" asp-append-version="true" alt="" />
+              </a>
             </figure>
           </div>
           <div class="menu-area">
@@ -282,7 +290,7 @@
             <li class="search-box-outer">
               <div class="dropdown">
                 <button class="search-box-btn" style="
-                    background-image: url(~/Store/images/icons/icon-bg-1.png);
+                    background-image: url('@Url.Content("~/Store/images/icons/icon-bg-1.png")');
                   " type="button" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="icon-Search"></i>
                 </button>
@@ -300,21 +308,67 @@
                 </div>
               </div>
             </li>
-            <li class="user-btn">
-              <a asp-controller="Home" asp-action="Index" asp-area="Store" style="
-                  background-image: url(~/Store/images/icons/icon-bg-1.png);
+            <li class="dropdown user-btn">
+              <a asp-controller="Home" asp-action="Index" asp-area="Store" data-toggle="dropdown" style="
+                  background-image: url('@Url.Content("~/Store/images/icons/icon-bg-1.png")');
                 ">
                 <i class="icon-Profile"></i>
               </a>
+              <ul class="dropdown-menu" style="min-width: 220px; padding: 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); background-color: #E3A087;">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="padding: 12px; text-align: center; border-bottom: 1px solid #eee;">
+                            <div style="margin-bottom: 8px;">
+                                <i class="fas fa-user-circle" style="font-size: 42px; color: #fff;"></i>
+                            </div>
+                            <div style="font-weight: 600; color: #fff; font-size: 14px; line-height: 1.2;">
+                                @User.Identity.Name
+                            </div>
+                            <div style="font-size: 12px; color: #fff; margin-top: 2px; line-height: 1.2;">
+                                @User.Claims.FirstOrDefault(c => c.Type == "email")?.Value
+                            </div>
+                        </div>
+                        <a asp-controller="Account" asp-action="Profile" asp-area="Store" 
+                           style="padding: 8px 20px; display: flex; align-items: center; color: #fff; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid #eee;">
+                            <i class="fas fa-user-cog" style="width: 16px; margin-right: 10px; color: #fff; font-size: 16px;"></i>
+                            <span style="font-size: 16px;">Profile</span>
+                        </a>
+                        <a asp-controller="Account" asp-action="Logout" asp-area="Store"
+                           style="padding: 8px 20px; display: flex; align-items: center; color: #fff; text-decoration: none; transition: background 0.2s;">
+                            <i class="fas fa-sign-out-alt" style="width: 16px; margin-right: 10px; color: #fff; font-size: 16px;"></i>
+                            <span style="font-size: 16px;">Logout</span>
+                        </a>
+                    </div>
+                }
+                else
+                {
+                  <div style="display: flex; flex-direction: column;">
+                    <a asp-controller="Account" asp-action="Login" asp-area="Store"
+                        style="padding: 5px 20px; display: flex; align-items: center; color: #fff; text-decoration: none; transition: background 0.2s;">
+                        <i class="fas fa-sign-in-alt" style="width: 16px; margin-right: 15px; color: #fff; font-size: 16px;"></i>
+                        <span style="font-size: 16px;">Login</span>
+                    </a>
+                    <a asp-controller="Account" asp-action="Register" asp-area="Store"
+                        style="padding: 5px 20px; display: flex; align-items: center; color: #fff; text-decoration: none; transition: background 0.2s; border-top: 1px solid #eee;">
+                        <i class="fas fa-user-plus" style="width: 16px; margin-right: 15px; color: #fff; font-size: 16px;"></i>
+                        <span style="font-size: 16px;">Register</span>
+                    </a>
+                  </div>
+                }
+              </ul>
             </li>
+            @if (User.Identity.IsAuthenticated)
+            {
             <li class="cart-btn">
-              <a href="shop-1.html" style="
-                  background-image: url(~/Store/images/icons/icon-bg-1.png);
+              <a asp-controller="Cart" asp-action="Index" asp-area="Store" style="
+                  background-image: url('@Url.Content("~/Store/images/icons/icon-bg-1.png")');
                 ">
                 <i class="icon-Bag"></i>
                 <span>3</span>
               </a>
             </li>
+            }
           </ul>
         </div>
       </div>
@@ -328,7 +382,7 @@
 
       <nav class="menu-box">
         <div class="nav-logo">
-          <a asp-controller="Home" asp-action="Index" asp-area="Store"><img src="~/Store/images/logo-3.png" alt="" title="" /></a>
+          <a asp-controller="Home" asp-action="Index" asp-area="Store"><img src="~/Store/images/logo-3.png" asp-append-version="true" alt="" title="" /></a>
         </div>
         <div class="menu-outer">
           <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->
@@ -340,9 +394,7 @@
             <li><a href="tel:+8801682648101">+88 01682648101</a></li>
             <li><a href="mailto:info@example.com">info@example.com</a></li>
           </ul>
-        </div>
-        <div class="social-links">
-          <ul class="clearfix">
+          <ul class="social-links clearfix">
             <li>
               <a asp-controller="Home" asp-action="Index" asp-area="Store"><span class="fab fa-twitter"></span></a>
             </li>
@@ -365,7 +417,7 @@
     <!-- End Mobile Menu -->
     @RenderBody()
     <!-- main-footer -->
-    <footer class="main-footer" style="background-image: url(~/Store/images/background/footer-1.jpg)">
+    <footer class="main-footer" style="background-image: url('@Url.Content("~/Store/images/background/footer-1.jpg")')">
       <div class="auto-container">
         <div class="subscribe-inner clearfix">
           <div class="text pull-left">
@@ -388,7 +440,7 @@
               <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
                 <div class="footer-widget logo-widget">
                   <figure class="footer-logo">
-                    <a asp-controller="Home" asp-action="Index" asp-area="Store"><img src="~/Store/images/footer-logo.png" alt="" /></a>
+                    <a asp-controller="Home" asp-action="Index" asp-area="Store"><img src="~/Store/images/footer-logo.png" asp-append-version="true" alt="" /></a>
                   </figure>
                 </div>
               </div>
@@ -448,7 +500,7 @@
               <div class="col-lg-4 col-md-6 col-sm-12 footer-column">
                 <div class="footer-widget shediul-widget">
                   <div class="border-shape" style="
-                        background-image: url(~/Store/images/shape/shape-4.png);
+                        background-image: url('@Url.Content("~/Store/images/shape/shape-4.png")');
                       "></div>
                   <div class="widget-title">
                     <h3>Opening hours</h3>
@@ -487,8 +539,33 @@
 
     <!--Scroll to top-->
     <button class="scroll-top scroll-to-target" data-target="html">
-      <span class="icon-Arrow-Up"></span>
+      <i class="fas fa-arrow-up"></i>
     </button>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color: #ff6e5a; color: white;">
+            <h5 class="modal-title" id="loginModalLabel" style="font-family: 'Nunito', sans-serif; font-weight: 700;">Đăng nhập</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="font-family: 'Nunito', sans-serif; padding: 2rem;">
+            <div class="text-center mb-4">
+              <i class="fas fa-user-lock" style="font-size: 3rem; color: #ff6e5a;"></i>
+            </div>
+            <p class="text-center" style="font-size: 1.1rem;">Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng</p>
+          </div>
+          <div class="modal-footer" style="border-top: none; padding: 1rem 2rem 2rem;">
+            <button type="button" class="theme-btn-two" data-dismiss="modal" style="background: #222222;">Đóng</button>
+            <a href="/Account/Login" class="theme-btn-two" style="background: #ff6e5a;">Đăng nhập</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
   <!-- jequery plugins -->
   <script src="~/Store/js/jquery.js"></script>
@@ -503,7 +580,7 @@
   <script src="~/Store/js/scrollbar.js"></script>
   <script src="~/Store/js/jquery.nice-select.min.js"></script>
   <script src="~/Store/js/nav-tool.js"></script>
-
+  <script src="~/Store/js/cart.js"></script>
   <!-- main-js -->
   <script src="~/Store/js/script.js"></script>
 </body>

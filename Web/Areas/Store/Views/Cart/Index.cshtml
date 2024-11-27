@@ -1,0 +1,154 @@
+@model Web.Models.Cart
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<!--Page Title-->
+<section class="page-title centred" style="background-image: url(~/Store/images/background/page-title.jpg);">
+    <div class="auto-container">
+        <div class="content-box">
+            <div class="title">
+                <h1>Cart Page</h1>
+            </div>
+            <ul class="bread-crumb clearfix">
+                <li><a href="/">Home</a></li>
+                <li>Cart Page</li>
+            </ul>
+        </div>
+    </div>
+</section>
+<!--End Page Title-->
+
+<!-- cart section -->
+<section class="cart-section cart-page">
+    <div class="auto-container">
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 table-column">
+                <div class="table-outer">
+                    <table class="cart-table">
+                        <thead class="cart-header">
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th class="prod-column">Product Name</th>
+                                <th class="price">Price</th>
+                                <th class="quantity">Quantity</th>
+                                <th>Subtotal</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.CartItems != null && Model.CartItems.Any())
+                            {
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    <tr>
+                                        <td colspan="2" class="prod-column">
+                                            <div class="column-box">
+                                                <div class="remove-btn">
+                                                    <a href="javascript:void(0);" class="remove-cart-item" data-item-id="@item.Id"><i class="fal fa-times"></i></a>
+                                                </div>
+                                                <div class="prod-thumb">
+                                                    <a href="/Store/Shop/Details/@item.Product.Id"><img src="@item.Product.Thumbnail" alt="@item.Product.Name" style="width: 100px; height: 100px; object-fit: cover;"></a>
+                                                </div>
+                                                <div class="prod-title">
+                                                    <a href="/Store/Shop/Details/@item.Product.Id">@item.Product.Name</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="price">$@item.Product.Price.ToString("0.00")</td>
+                                        <td class="qty">
+                                            <div class="quantity-box">
+                                                <div class="item-quantity">
+                                                    <input type="number" class="quantity-spinner" value="@item.Quantity" min="1" data-item-id="@item.Id">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="sub-total">$@((item.Product.Price * item.Quantity).ToString("0.00"))</td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <p>Your cart is empty</p>
+                                        <a href="/Store/Shop" class="theme-btn-one">Continue Shopping</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @if (Model?.CartItems != null && Model.CartItems.Any())
+        {
+            <div class="row mt-4">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="cart-total">
+                        <div class="total-cart-box clearfix">
+                            <h4>Cart Totals</h4>
+                            <ul class="list clearfix">
+                                <li>Subtotal:<span>$@Model.CartItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
+                                <li>Total:<span>$@Model.CartItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
+                            </ul>
+                            <a href="/Store/Checkout" class="theme-btn-one">Proceed to Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+<!-- cart section end -->
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle quantity change
+            $('.quantity-spinner').on('change', function() {
+                var quantity = $(this).val();
+                var itemId = $(this).data('item-id');
+                
+                // Call API to update quantity
+                $.ajax({
+                    url: '/api/cart/update-quantity',
+                    method: 'POST',
+                    data: {
+                        itemId: itemId,
+                        quantity: quantity
+                    },
+                    success: function(response) {
+                        // Reload page to reflect changes
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error updating quantity:', error);
+                    }
+                });
+            });
+
+            // Handle remove item
+            $('.remove-cart-item').on('click', function() {
+                var itemId = $(this).data('item-id');
+                
+                // Call API to remove item
+                $.ajax({
+                    url: '/api/cart/remove-item',
+                    method: 'POST',
+                    data: {
+                        itemId: itemId
+                    },
+                    success: function(response) {
+                        // Reload page to reflect changes
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error removing item:', error);
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -333,10 +333,6 @@ public partial class DefaultdbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("last_name");
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-
             entity.Property(e => e.Picture)
                 .HasMaxLength(1000)
                 .HasColumnName("picture");

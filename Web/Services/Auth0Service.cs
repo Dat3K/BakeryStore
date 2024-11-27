@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using System.Security.Claims;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
@@ -12,7 +13,7 @@ namespace Web.Services;
 public interface IAuth0Service
 {
     Task<User?> GetCurrentUserAsync();
-    Task<string> LoginAsync();
+    Task LoginAsync(string returnUrl = "/");
     Task LogoutAsync();
     Task<User> ProcessLoginCallbackAsync(AuthenticationProperties props);
 }
@@ -22,86 +23,102 @@ public class Auth0Service : IAuth0Service
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Auth0Settings _auth0Settings;
+    private const string PictureClaimType = "picture";
 
     public Auth0Service(
         IHttpContextAccessor httpContextAccessor,
         IUnitOfWork unitOfWork,
         Auth0Settings auth0Settings)
     {
-        _httpContextAccessor = httpContextAccessor;
-        _unitOfWork = unitOfWork;
-        _auth0Settings = auth0Settings;
+        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _auth0Settings = auth0Settings ?? throw new ArgumentNullException(nameof(auth0Settings));
     }
 
     public async Task<User?> GetCurrentUserAsync()
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-        if (user == null || !user.Identity?.IsAuthenticated == true)
+        var context = _httpContextAccessor.HttpContext;
+        if (context?.User?.Identity == null || !context.User.Identity.IsAuthenticated)
             return null;
 
-        var email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        var email = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         if (string.IsNullOrEmpty(email))
             return null;
 
         return await _unitOfWork.UserRepository.GetByEmailAsync(email);
     }
 
-    public async Task<string> LoginAsync()
+    public async Task LoginAsync(string returnUrl = "/")
     {
+        var context = _httpContextAccessor.HttpContext ?? 
+            throw new InvalidOperationException("HttpContext is not available");
+
         var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
-            .WithRedirectUri("/callback")
+            .WithRedirectUri($"/Store/Account/Callback")
+            .WithParameter("returnUrl", returnUrl)
             .Build();
 
-        await _httpContextAccessor.HttpContext!.ChallengeAsync(
+        await context.ChallengeAsync(
             Auth0Constants.AuthenticationScheme,
             authenticationProperties);
-
-        return "/callback";
     }
 
     public async Task LogoutAsync()
     {
+        var context = _httpContextAccessor.HttpContext ?? 
+            throw new InvalidOperationException("HttpContext is not available");
+
         var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
-            .WithRedirectUri("/")
+            .WithRedirectUri("/Store")
             .Build();
 
-        await _httpContextAccessor.HttpContext!.SignOutAsync(
-            Auth0Constants.AuthenticationScheme,
-            authenticationProperties);
-        await _httpContextAccessor.HttpContext!.SignOutAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
+        await context.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
+        await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     public async Task<User> ProcessLoginCallbackAsync(AuthenticationProperties props)
     {
-        var result = await _httpContextAccessor.HttpContext!.AuthenticateAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
+        var context = _httpContextAccessor.HttpContext ?? 
+            throw new InvalidOperationException("HttpContext is not available");
 
-        if (!result.Succeeded)
-            throw new Exception("Authentication failed");
+        var result = await context.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        if (!result?.Succeeded ?? true)
+            throw new AuthenticationException("Authentication failed");
 
-        var email = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        var claims = result.Principal.Claims;
+        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         if (string.IsNullOrEmpty(email))
-            throw new Exception("Email claim not found");
+            throw new AuthenticationException("Email claim not found");
 
         var user = await _unitOfWork.UserRepository.GetByEmailAsync(email);
+        
         if (user == null)
         {
-            // Create new user
             user = new User
             {
                 Sid = Guid.NewGuid(),
                 Email = email,
-                FirstName = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value,
-                LastName = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value,
+                FirstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value,
+                LastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value,
+                Picture = claims.FirstOrDefault(c => c.Type == PictureClaimType)?.Value,
                 Role = UserRole.Customer,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             await _unitOfWork.UserRepository.AddAsync(user);
-            await _unitOfWork.SaveChangesAsync();
+        }
+        else
+        {
+            user.FirstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
+            user.LastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
+            user.Picture = claims.FirstOrDefault(c => c.Type == PictureClaimType)?.Value ?? user.Picture;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.UserRepository.UpdateAsync(user);
         }
 
+        await _unitOfWork.SaveChangesAsync();
         return user;
     }
 }

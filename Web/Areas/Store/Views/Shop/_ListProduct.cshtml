@@ -10,11 +10,19 @@
                     <div class="lower-content">
                         <span class="price-box">$@product.Price</span>
                         <h3 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a href="shop-details.html">@product.Name</a></h3>
-                        <div class="cart-btn"><a href="shop-details.html" class="theme-btn-two">Add to cart</a></div>
+                        <div class="cart-btn">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a href="javascript:void(0);" class="theme-btn-two addtocart-btn" data-authenticated="true">Add to cart</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:void(0);" class="theme-btn-two addtocart-btn" data-authenticated="false">Add to cart</a>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     }
 </div>
-

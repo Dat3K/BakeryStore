@@ -225,7 +225,11 @@
                                 </figure>
                                 <div class="lower-content">
                                     <span class="price-box">$@relatedProduct.Price.ToString("N2")</span>
-                                    <h3><a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@relatedProduct.Id">@relatedProduct.Name</a></h3>
+                                    <h3>
+                                        <a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@relatedProduct.Id" style="display: inline-block; width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            @relatedProduct.Name
+                                        </a>
+                                    </h3>
                                     <div class="cart-btn">
                                         <button type="button" class="theme-btn-two" onclick="addToCart('@relatedProduct.Id', 1)">Add to cart</button>
                                     </div>

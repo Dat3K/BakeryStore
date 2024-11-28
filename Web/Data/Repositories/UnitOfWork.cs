@@ -7,7 +7,6 @@ namespace Web.Data.Repositories;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly DefaultdbContext _context;
-    private ICartRepository? _cartRepository;
     private IProductRepository? _productRepository;
     private IOrderRepository? _orderRepository;
     private ICategoryRepository? _categoryRepository;
@@ -18,9 +17,6 @@ public class UnitOfWork : IUnitOfWork
     {
         _context = context;
     }
-
-    public ICartRepository CartRepository => 
-        _cartRepository ??= new CartRepository(_context);
 
     public IProductRepository ProductRepository =>
         _productRepository ??= new ProductRepository(_context);

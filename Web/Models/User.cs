@@ -23,7 +23,5 @@ public partial class User
 
     public string NameIdentifier { get; set; } = null!;
 
-    public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
-
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

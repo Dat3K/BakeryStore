@@ -38,7 +38,6 @@ builder.Services.AddScoped<IShopService, ShopService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuth0Service, Auth0Service>();
-builder.Services.AddScoped<ICartService, CartService>();
 
 // Configure Auth0
 var auth0Settings = builder.Configuration.GetSection("Auth0").Get<Auth0Settings>();

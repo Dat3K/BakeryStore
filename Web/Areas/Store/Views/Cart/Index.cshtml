@@ -1,4 +1,4 @@
-@model Web.Models.Cart
+@model Web.Models.Order
 @{
     ViewData["Title"] = "Cart";
 }
@@ -37,9 +37,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if (Model?.CartItems != null && Model.CartItems.Any())
+                            @if (Model?.OrderItems != null && Model.OrderItems.Any())
                             {
-                                @foreach (var item in Model.CartItems)
+                                @foreach (var item in Model.OrderItems)
                                 {
                                     <tr>
                                         <td colspan="2" class="prod-column">
@@ -82,7 +82,7 @@
                 </div>
             </div>
         </div>
-        @if (Model?.CartItems != null && Model.CartItems.Any())
+        @if (Model?.OrderItems != null && Model.OrderItems.Any())
         {
             <div class="row mt-4">
                 <div class="col-lg-12 col-md-12 col-sm-12">
@@ -90,8 +90,8 @@
                         <div class="total-cart-box clearfix">
                             <h4>Cart Totals</h4>
                             <ul class="list clearfix">
-                                <li>Subtotal:<span>$@Model.CartItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
-                                <li>Total:<span>$@Model.CartItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
+                                <li>Subtotal:<span>$@Model.OrderItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
+                                <li>Total:<span>$@Model.OrderItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
                             </ul>
                             <a href="/Store/Checkout" class="theme-btn-one">Proceed to Checkout</a>
                         </div>

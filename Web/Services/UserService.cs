@@ -12,16 +12,13 @@ namespace Web.Services;
 public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuth0Service _auth0Service;
 
     public UserService(
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
         IAuth0Service auth0Service)
     {
         _unitOfWork = unitOfWork;
-        _httpContextAccessor = httpContextAccessor;
         _auth0Service = auth0Service;
     }
 
@@ -39,18 +36,8 @@ public class UserService : IUserService
         return await _unitOfWork.UserRepository.GetByNameAsync(name);
     }
 
-    public async Task<IEnumerable<User>> GetUsersByRoleAsync(string role)
+    public async Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role)
     {
-        if (string.IsNullOrWhiteSpace(role))
-        {
-            throw new ArgumentException("Role cannot be empty", nameof(role));
-        }
-
-        var currentUser = await GetCurrentUserAsync();
-        {
-            throw new UnauthorizedException("Only administrators can view users by role");
-        }
-
-        return await _unitOfWork.UserRepository.GetUsersByRoleAsync((UserRole)Enum.Parse(typeof(UserRole), role));
+        return await _unitOfWork.UserRepository.GetUsersByRoleAsync(role);
     }
 }

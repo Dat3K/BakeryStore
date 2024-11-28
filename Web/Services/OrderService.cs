@@ -24,48 +24,9 @@ namespace Web.Services
             return await _orderRepository.GetOrderWithDetailsAsync(orderId);
         }
 
-        public async Task<Order> CreateOrderAsync(Guid userId, IEnumerable<CartItem> cartItems, string shippingAddress, string notes)
-        {
-            var order = new Order
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                OrderNumber = GenerateOrderNumber(),
-                TotalAmount = cartItems.Sum(ci => ci.Quantity * ci.UnitPrice),
-                ShippingAddress = shippingAddress,
-                Notes = notes,
-                OrderStatus = OrderStatus.Pending.ToString(),
-                OrderType = OrderType.Online.ToString(),
-                PaymentMethod = PaymentMethod.Cash.ToString(),
-                PaymentStatus = PaymentStatus.Pending.ToString(),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            order.FinalAmount = order.TotalAmount - (order.DiscountAmount ?? 0);
-
-            order.OrderItems = cartItems.Select(ci => new OrderItem
-            {
-                Id = Guid.NewGuid(),
-                OrderId = order.Id,
-                ProductId = ci.ProductId,
-                Quantity = ci.Quantity,
-                UnitPrice = ci.UnitPrice,
-                Subtotal = ci.Quantity * ci.UnitPrice,
-                CreatedAt = DateTime.UtcNow
-            }).ToList();
-
-            await _orderRepository.AddAsync(order);
-            return order;
-        }
-
         public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status)
         {
             await _orderRepository.UpdateOrderStatusAsync(orderId, status);
-        }
-
-        private string GenerateOrderNumber()
-        {
-            return $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8)}";
         }
     }
 }

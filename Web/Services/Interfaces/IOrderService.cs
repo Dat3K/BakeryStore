@@ -7,7 +7,6 @@ namespace Web.Services.Interfaces
     {
         Task<IEnumerable<Order>> GetUserOrdersAsync(Guid userId);
         Task<Order> GetOrderDetailsAsync(Guid orderId);
-        Task<Order> CreateOrderAsync(Guid userId, IEnumerable<CartItem> cartItems, string shippingAddress, string notes);
         Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status);
     }
 }

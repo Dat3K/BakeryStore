@@ -11,16 +11,5 @@ namespace Web.Areas.POS.Controllers
         {
             return View();
         }
-        //     [Authorize]
-        //     public IActionResult Product()
-        //     {
-        //         return View();
-        //     }
-
-        //     [Authorize]
-        //     public IActionResult AddProduct()
-        //     {
-        //         return View();
-        //     }
     }
 }

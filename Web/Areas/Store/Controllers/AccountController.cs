@@ -33,6 +33,7 @@ namespace Web.Areas.Store.Controllers
                 if (currentUser != null)
                 {
                     // Redirect admin users to dashboard
+                    if (currentUser.Role == UserRole.Admin.ToString())
                     {
                         return RedirectToAction("Index", "Dashboard", new { area = "POS" });
                     }
@@ -46,7 +47,7 @@ namespace Web.Areas.Store.Controllers
             catch (Exception ex)
             {
                 // Log the error
-                throw;
+                throw new Exception($"An error occurred while logging in. Error: {ex.Message}");
             }
         }
 
@@ -65,7 +66,7 @@ namespace Web.Areas.Store.Controllers
             catch (Exception ex)
             {
                 // Log the error
-                throw;
+                throw new Exception($"An error occurred while logging out. Error: {ex.Message}");
             }
         }
 

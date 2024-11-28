@@ -39,5 +39,18 @@ namespace Web.Areas.Store.Controllers
                 searchTerm);
             return View(result);
         }
+
+        [HttpGet("Detail/{id}")]
+        public async Task<IActionResult> Detail(Guid id)
+        {
+            var product = await _shopService.GetProductByIdAsync(id);
+            if (product == null)
+                return NotFound();
+
+            var relatedProducts = await _shopService.GetRelatedProductsAsync(id);
+            ViewBag.RelatedProducts = relatedProducts;
+
+            return View(product);
+        }
     }
 }

@@ -15,5 +15,7 @@ namespace Web.Areas.Store.Services.Interfaces
             ProductSortOrder sortOrder = ProductSortOrder.Default,
             string? searchTerm = null);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
+        Task<Product?> GetProductByIdAsync(Guid id);
+        Task<IEnumerable<Product>> GetRelatedProductsAsync(Guid productId, int count = 4);
     }
 }

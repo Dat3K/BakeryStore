@@ -1,0 +1,278 @@
+@model Web.Models.Product
+
+<!--Page Title-->
+<section class="page-title centred" style="background-image: url(~/Store/images/background/page-title.jpg);">
+    <div class="auto-container">
+        <div class="content-box">
+            <div class="title">
+                <h1>Shop Details</h1>
+            </div>
+            <ul class="bread-crumb clearfix">
+                <li><a asp-area="Store" asp-controller="Home" asp-action="Index">Home</a></li>
+                <li><a asp-area="Store" asp-controller="Shop" asp-action="Index">Shop</a></li>
+                <li>@Model.Name</li>
+            </ul>
+        </div>
+    </div>
+</section>
+<!--End Page Title-->
+
+<!-- single-product -->
+<section class="single-product">
+    <div class="product-details-content" style="background-image: url(~/Store/images/background/single-shop-1.jpg);">
+        <div class="auto-container">
+            <div class="row clearfix">
+                <div class="col-lg-6 col-md-12 col-sm-12 image-column">
+                    <div class="bxslider">
+                        <div class="slider-content">
+                            <div class="slider-pager">
+                                <ul class="thumb-box">
+                                    <li>
+                                        <a class="active" data-slide-index="0" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                    <li>
+                                        <a data-slide-index="1" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                    <li>
+                                        <a data-slide-index="2" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="product-image">
+                                <figure class="image"><a href="@Model.Thumbnail" class="lightbox-image" data-fancybox="gallery"><img src="@Model.Thumbnail" alt=""></a></figure>
+                            </div>
+                        </div>
+                        <div class="slider-content">
+                            <div class="slider-pager">
+                                <ul class="thumb-box">
+                                    <li>
+                                        <a class="active" data-slide-index="0" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                    <li>
+                                        <a data-slide-index="1" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                    <li>
+                                        <a data-slide-index="2" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="product-image">
+                                <figure class="image"><a href="@Model.Thumbnail" class="lightbox-image" data-fancybox="gallery"><img src="@Model.Thumbnail" alt=""></a></figure>
+                            </div>
+                        </div>
+                        <div class="slider-content">
+                            <div class="slider-pager">
+                                <ul class="thumb-box">
+                                    <li>
+                                        <a class="active" data-slide-index="0" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                    <li>
+                                        <a data-slide-index="1" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                    <li>
+                                        <a data-slide-index="2" href="#"><figure><img src="@Model.Thumbnail" alt=""></figure></a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="product-image">
+                                <figure class="image"><a href="@Model.Thumbnail" class="lightbox-image" data-fancybox="gallery"><img src="@Model.Thumbnail" alt=""></a></figure>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 content-column">
+                    <div class="product-details">
+                        <h2>@Model.Name</h2>
+                        <h3>$@Model.Price.ToString("N2")</h3>
+                        <div class="text">
+                            <p>@Model.Description</p>
+                        </div>
+                        <div class="addto-cart-box"> 
+                            <ul class="clearfix">
+                                <li>
+                                    <input type="text" id="quentity" value="1" min="1" max="@Model.StockQuantity">
+                                </li>
+                                <li>
+                                    <button type="button" class="theme-btn-one" onclick="addToCart('@Model.Id', document.getElementById('quentity').value)">
+                                        Add To Cart
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="other-links">
+                            <ul class="category list">
+                                <li>Category:</li>
+                                <li><a href="/Store/Shop?category=@Model.Category?.Name">@(Model.Category?.Name ?? "Uncategorized")</a></li>
+                            </ul>
+                            <ul class="category list">
+                                <li>SKU:</li>
+                                <li>@Model.Sku</li>
+                            </ul>
+                            <ul class="category list">
+                                <li>Availability:</li>
+                                <li>@(Model.StockQuantity > 0 ? "In Stock" : "Out of Stock")</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="product-discription">
+        <div class="auto-container">
+            <div class="tabs-box">
+                <div class="tab-btn-box">
+                    <ul class="tab-btns tab-buttons clearfix">
+                        <li class="tab-btn active-btn" data-tab="#tab-1">Description</li>
+                        <li class="tab-btn" data-tab="#tab-2">Reviews (2)</li>
+                    </ul>
+                </div>
+                <div class="tabs-content">
+                    <div class="tab active-tab" id="tab-1">
+                        <div class="content-box">
+                            <h3>Product Description</h3>
+                            <p>@Model.Description</p>
+                        </div>
+                    </div>
+                    <div class="tab" id="tab-2">
+                        <div class="row clearfix">
+                            <div class="col-lg-6 col-md-6 col-sm-12 review-block">
+                                <div class="customer-review">
+                                    <h3>Reviews</h3>
+                                    <div class="single-review">
+                                        <figure class="image-box"><img src="~/Store/images/resource/shop/review-1.png" alt=""></figure>
+                                        <div class="inner">
+                                            <ul class="rating">
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                            </ul>
+                                            <h5>Eileen Alene<span> - May 2, 2020</span></h5>
+                                            <p>Excepteur sint occaecat cupidatat non proident sunt in culpa  qui officia deserunt mollit anim  est laborum. Sed perspiciatis unde omnis natus.</p>
+                                        </div>
+                                    </div>
+                                    <div class="single-review">
+                                        <figure class="image-box"><img src="~/Store/images/resource/shop/review-2.png" alt=""></figure>
+                                        <div class="inner">
+                                            <ul class="rating">
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                                <li><i class="icon-Star"></i></li>
+                                            </ul>
+                                            <h5>Jhon Matter<span> - May 1, 2020</span></h5>
+                                            <p>Excepteur sint occaecat cupidatat non proident sunt in culpa  qui officia deserunt mollit anim  est laborum. Sed perspiciatis unde omnis natus.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 comment-column">
+                                <div class="customer-comments">
+                                    <h3>Be First To Rate It</h3>
+                                    <div class="rating-box clearfix">
+                                        <p>Your Rating</p>
+                                        <ul class="rating clearfix">
+                                            <li><i class="icon-Star"></i></li>
+                                            <li><i class="icon-Star"></i></li>
+                                            <li><i class="icon-Star"></i></li>
+                                            <li><i class="icon-Star"></i></li>
+                                            <li><i class="icon-Star"></i></li>
+                                        </ul>
+                                    </div>
+                                    <form action="single-shop-1.html" method="post" class="comment-form">
+                                        <div class="row clearfix">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+                                                <label>Your Review</label>
+                                                <textarea name="message"></textarea>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-sm-12 form-group">
+                                                <label>Your Name</label>
+                                                <input type="text" name="name" required="">
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-sm-12 form-group">
+                                                <label>Your Email</label>
+                                                <input type="email" name="email" required="">
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 form-group message-btn">
+                                                <button type="submit" class="theme-btn-one">Submit Now</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-product" style="background-image: url(~/Store/images/background/shop-2.jpg);">
+        <div class="auto-container">
+            <div class="top-title centred">
+                <h2>Related Products</h2>
+            </div>
+            <div class="row clearfix">
+                @foreach (var relatedProduct in ViewBag.RelatedProducts)
+                {
+                    <div class="col-lg-3 col-md-6 col-sm-12 shop-block">
+                        <div class="shop-block-one">
+                            <div class="inner-box">
+                                <figure class="image-box">
+                                    <img src="@relatedProduct.Thumbnail" alt="@relatedProduct.Name">
+                                </figure>
+                                <div class="lower-content">
+                                    <span class="price-box">$@relatedProduct.Price.ToString("N2")</span>
+                                    <h3><a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@relatedProduct.Id">@relatedProduct.Name</a></h3>
+                                    <div class="cart-btn">
+                                        <button type="button" class="theme-btn-two" onclick="addToCart('@relatedProduct.Id', 1)">Add to cart</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- single-product end -->
+
+@section Scripts {
+    <script>
+        function addToCart(productId, quantity) {
+            $.ajax({
+                url: '@Url.Action("AddToCart", "Cart", new { area = "Store" })',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    quantity: quantity
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Product added to cart successfully!'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while adding the product to cart.'
+                    });
+                }
+            });
+        }
+    </script>
+}

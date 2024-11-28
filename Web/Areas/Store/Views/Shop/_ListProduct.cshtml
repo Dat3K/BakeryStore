@@ -9,7 +9,7 @@
                     </figure>
                     <div class="lower-content">
                         <span class="price-box">$@product.Price</span>
-                        <h3 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a href="shop-details.html">@product.Name</a></h3>
+                        <h3 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@product.Id">@product.Name</a></h3>
                         <div class="cart-btn">
                             @if (User.Identity.IsAuthenticated)
                             {

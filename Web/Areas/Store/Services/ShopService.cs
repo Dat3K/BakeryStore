@@ -89,5 +89,23 @@ namespace Web.Areas.Store.Services
             var categories = await _categoryRepository.GetAllAsync();
             return categories.OrderBy(c => c.Name);
         }
+
+        public async Task<Product?> GetProductByIdAsync(Guid id)
+        {
+            return await _productRepository.GetProductByIdWithCategoryAsync(id);
+        }
+
+        public async Task<IEnumerable<Product>> GetRelatedProductsAsync(Guid productId, int count = 4)
+        {
+            var product = await _productRepository.GetProductByIdWithCategoryAsync(productId);
+            if (product?.CategoryId == null)
+                return Enumerable.Empty<Product>();
+
+            var relatedProducts = await _productRepository.GetProductsByCategoryAsync(product.CategoryId.Value);
+            return relatedProducts
+                .Where(p => p.Id != productId)
+                .OrderBy(r => Guid.NewGuid())
+                .Take(count);
+        }
     }
 }

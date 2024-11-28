@@ -33,7 +33,6 @@ namespace Web.Areas.Store.Controllers
                 if (currentUser != null)
                 {
                     // Redirect admin users to dashboard
-                    if (currentUser.Role == UserRole.admin)
                     {
                         return RedirectToAction("Index", "Dashboard", new { area = "POS" });
                     }
@@ -70,38 +69,40 @@ namespace Web.Areas.Store.Controllers
             }
         }
 
-        /// <summary>
-        /// Handles the callback from Auth0 after successful authentication
-        /// </summary>
-        // public async Task<IActionResult> Callback()
-        // {
-        //     try
-        //     {
-        //         // Lấy AuthenticationProperties từ quá trình authentication
-        //         var result = await HttpContext.AuthenticateAsync(Auth0Constants.AuthenticationScheme);
-        //         if (result?.Properties == null)
-        //         {
-        //             throw new Exception("Invalid authentication properties");
-        //         }
+        // / <summary>
+        // / Handles the callback from Auth0 after successful authentication
+        // / </summary>
+        [Route("/callback")]
+        public async Task<IActionResult> Callback()
+        {
+            try
+            {
+                Console.WriteLine("Callback called");
+                // Lấy AuthenticationProperties từ quá trình authentication
+                var result = await HttpContext.AuthenticateAsync(Auth0Constants.AuthenticationScheme);
+                if (result?.Properties == null)
+                {
+                    throw new Exception("Invalid authentication properties");
+                }
 
-        //         var user = await _auth0Service.ProcessLoginCallbackAsync(result.Properties, result);
-        //         Console.WriteLine($"Callback processed for user: {user?.Sid}");
+                var user = await _auth0Service.ProcessLoginCallbackAsync();
+                Console.WriteLine($"Callback processed for user: {user?.Sid}");
 
-        //         // Lấy returnUrl từ properties hoặc dùng giá trị mặc định
-        //         var returnUrl = result.Properties.RedirectUri ?? "/Store";
+                // Lấy returnUrl từ properties hoặc dùng giá trị mặc định
+                var returnUrl = result.Properties.RedirectUri ?? "/Store";
                 
-        //         if (user.Role == UserRole.Admin)
-        //         {
-        //             return RedirectToAction("Index", "Dashboard", new { area = "POS" });
-        //         }
-        //         return Redirect(returnUrl);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine($"Error in callback: {ex.Message}");
-        //         return RedirectToAction("Error", "Home", new { message = "An error occurred during authentication." });
-        //     }
-        // }
+                if (user != null && user.Role == UserRole.Admin.ToString())
+                {
+                    return RedirectToAction("Index", "Dashboard", new { area = "POS" });
+                }
+                return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in callback: {ex.Message}");
+                return RedirectToAction("Error", "Home", new { message = "An error occurred during authentication." });
+            }
+        }
 
         /// <summary>
         /// Displays user profile information

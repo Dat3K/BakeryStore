@@ -149,10 +149,10 @@ public class CartService : ICartService
             FinalAmount = CalculateFinalAmount(cart.TotalAmount, orderDto.DiscountAmount),
             ShippingAddress = orderDto.ShippingAddress,
             Notes = orderDto.Notes,
-            Status = OrderStatus.pending,
-            Type = OrderType.online,
-            PaymentMethod = orderDto.PaymentMethod,
-            PaymentStatus = PaymentStatus.pending,
+            OrderStatus = OrderStatus.Pending.ToString(),
+            OrderType = OrderType.Online.ToString(),
+            PaymentMethod = orderDto.PaymentMethod.ToString(),
+            PaymentStatus = PaymentStatus.Pending.ToString(),
             CreatedAt = DateTime.UtcNow,
             OrderItems = CreateOrderItems(cart.CartItems, Guid.NewGuid())
         };

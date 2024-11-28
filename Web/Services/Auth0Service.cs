@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using System.Runtime.Serialization;
 
 namespace Web.Services;
 
@@ -19,7 +20,7 @@ public interface IAuth0Service
     Task<User?> GetCurrentUserAsync();
     Task LoginAsync(string returnUrl = "/");
     Task LogoutAsync();
-    Task<User> ProcessLoginCallbackAsync(AuthenticationProperties properties, AuthenticationTicket result);
+    Task<User> ProcessLoginCallbackAsync();
 }
 
 public class Auth0Service : IAuth0Service
@@ -60,60 +61,70 @@ public class Auth0Service : IAuth0Service
         {
             _logger.LogInformation($"Claim: {claim.Type} = {claim.Value}");
         }
-        
-        UserRole? role = null;
-        var roleClaim = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value?.ToLowerInvariant();
-        if (roleClaim != null)
-        {
-            try
-            {
-                role = (UserRole)Enum.Parse(typeof(UserRole), roleClaim);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error parsing role claim");
-            }
-        }
 
-        // Get the nameIdentifier (sub) claim which contains the Auth0 ID
-        var nameIdentifier = context.User.Claims.FirstOrDefault(c => 
-            c.Type == ClaimTypes.NameIdentifier)?.Value;
-        _logger.LogInformation($"Looking up user by nameIdentifier: {nameIdentifier}");
+        var nameIdentifier = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(nameIdentifier))
         {
-            _logger.LogWarning("NameIdentifier claim not found in token");
+            _logger.LogWarning("Required claims missing. NameIdentifier: {NameIdentifier}", nameIdentifier);
             return null;
+        }
+
+        var auth0User = await GetAuth0UserAsync(nameIdentifier);
+        var email = auth0User.GetProperty("email").GetString();
+        var name = auth0User.GetProperty("name").GetString();
+        var picture = auth0User.GetProperty("picture").GetString();
+        var nickname = auth0User.GetProperty("nickname").GetString();
+
+        // Parse role from claims, defaulting to customer if not found or invalid
+        var role = UserRole.Customer;
+        var roleClaim = context.User.Claims
+            .FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value?.ToLowerInvariant();
+
+        if (!string.IsNullOrEmpty(roleClaim))
+        {
+            try
+            {
+                // Use the same conversion logic as PostgresEnumConverter
+                var enumType = typeof(UserRole);
+                foreach (var nameOfEnum in Enum.GetNames(enumType))
+                {
+                    var memberInfo = enumType.GetMember(nameOfEnum)[0];
+                    var enumMemberAttribute = (EnumMemberAttribute)Attribute.GetCustomAttribute(memberInfo, typeof(EnumMemberAttribute));
+                    if (enumMemberAttribute?.Value == roleClaim || nameOfEnum.ToLowerInvariant() == roleClaim)
+                    {
+                        role = (UserRole)Enum.Parse(enumType, nameOfEnum);
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error parsing role claim: {RoleClaim}, defaulting to customer", roleClaim);
+            }
         }
 
         try
         {
-            var auth0User = await GetAuth0UserAsync(nameIdentifier);
-            
-            // Extract user information from Auth0
-            var email = auth0User.GetProperty("email").GetString()?? throw new AuthenticationException("Email claim not found");
-            var name = auth0User.GetProperty("name").GetString()?? throw new AuthenticationException("Name claim not found");
-            var picture = auth0User.TryGetProperty("picture", out var pictureElement) ? pictureElement.GetString() : null;
-            var nickname = auth0User.TryGetProperty("nickname", out var nicknameElement) ? nicknameElement.GetString() : null;
-
-            // Try to find existing user by email
-            var user = await _unitOfWork.UserRepository.FirstOrDefaultAsync(u => u.Email == email);
+            // Find existing user or create new one
+            var user = await _unitOfWork.UserRepository.GetByNameIdentifierAsync(nameIdentifier);
             if (user == null)
             {
-                // Create new user
                 user = new User
                 {
                     Email = email,
                     Name = name,
-                    NickName = nickname,
+                    Nickname = nickname,
                     Picture = picture,
-                    Role = role ?? UserRole.customer,
+                    NameIdentifier = nameIdentifier,
+                    Role = role.ToString(),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
+
                 await _unitOfWork.UserRepository.AddAsync(user);
                 await _unitOfWork.SaveChangesAsync();
-                _logger.LogInformation($"Created new user with email: {email}");
+                _logger.LogInformation("Created new user. Email: {Email}, Role: {Role}", email, role.ToString());
             }
             else
             {
@@ -130,18 +141,24 @@ public class Auth0Service : IAuth0Service
                     user.Picture = picture;
                     needsUpdate = true;
                 }
-                if (user.NickName != nickname)
+                if (user.Nickname != nickname)
                 {
-                    user.NickName = nickname;
+                    user.Nickname = nickname;
+                    needsUpdate = true;
+                }
+                if (user.NameIdentifier != nameIdentifier)
+                {
+                    user.NameIdentifier = nameIdentifier;
                     needsUpdate = true;
                 }
 
                 if (needsUpdate)
                 {
+                    _logger.LogInformation($"Updating user information for email: {email}");
                     user.UpdatedAt = DateTime.UtcNow;
                     await _unitOfWork.UserRepository.UpdateAsync(user);
                     await _unitOfWork.SaveChangesAsync();
-                    _logger.LogInformation($"Updated user information for email: {email}");
+                    _logger.LogInformation("Updated user information for email: {Email}", email);
                 }
             }
 
@@ -150,13 +167,13 @@ public class Auth0Service : IAuth0Service
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing Auth0 user information");
-            return null;
+            throw;
         }
     }
 
     public async Task LoginAsync(string returnUrl = "/")
     {
-        var context = _httpContextAccessor.HttpContext ?? 
+        var context = _httpContextAccessor.HttpContext ??
             throw new InvalidOperationException("HttpContext is not available");
 
         var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
@@ -178,7 +195,7 @@ public class Auth0Service : IAuth0Service
         {
             // 1. Đăng xuất khỏi Auth0
             var auth0LogoutUrl = $"https://{_auth0Settings.Value.Domain}/v2/logout?client_id={_auth0Settings.Value.ClientId}&returnTo={context.Request.Scheme}://{context.Request.Host}";
-            
+
             // 2. Xóa cookie xác thực của ứng dụng
             await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             await context.SignOutAsync(Auth0Constants.AuthenticationScheme);
@@ -186,8 +203,8 @@ public class Auth0Service : IAuth0Service
             // 3. Xóa tất cả các cookie trong domain hiện tại
             foreach (var cookie in context.Request.Cookies.Keys)
             {
-                context.Response.Cookies.Delete(cookie, new CookieOptions 
-                { 
+                context.Response.Cookies.Delete(cookie, new CookieOptions
+                {
                     Secure = true,
                     SameSite = SameSiteMode.Lax
                 });
@@ -206,89 +223,10 @@ public class Auth0Service : IAuth0Service
         }
     }
 
-    public async Task<User> ProcessLoginCallbackAsync(AuthenticationProperties properties, AuthenticationTicket result)
+    public async Task<User> ProcessLoginCallbackAsync()
     {
-        var claims = result.Principal.Claims;
-        var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-
-        if (string.IsNullOrEmpty(email))
-            throw new AuthenticationException("Email claim not found");
-
-        if (string.IsNullOrEmpty(name))
-            throw new AuthenticationException("Name claim not found");
-
-        // Try to find user by email first
-        var user = await _unitOfWork.UserRepository.FirstOrDefaultAsync(u => u.Email == email);
-
-        if (user == null)
-        {
-            // Get the nameIdentifier (sub) claim which contains the Auth0 ID
-            var nameIdentifier = claims.FirstOrDefault(c => 
-                c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-            // Create new user
-            user = new User
-            {
-                Sid = Guid.NewGuid(),
-                Email = email,
-                Name = name,
-                NickName = claims.FirstOrDefault(c => c.Type == "nickname")?.Value,
-                Picture = claims.FirstOrDefault(c => c.Type == "picture")?.Value,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Role = UserRole.customer // Default role for new users
-            };
-
-            // Get email provider if available
-            if (!string.IsNullOrEmpty(nameIdentifier))
-            {
-                try
-                {
-                    var provider = await GetUserEmailProviderAsync(nameIdentifier);
-                    _logger.LogInformation($"User {email} authenticated with provider: {provider}");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Could not get email provider for user {Email}", email);
-                }
-            }
-
-            await _unitOfWork.UserRepository.AddAsync(user);
-        }
-        else
-        {
-            // Update existing user information
-            bool needsUpdate = false;
-            
-            var picture = claims.FirstOrDefault(c => c.Type == "picture")?.Value;
-            var nickname = claims.FirstOrDefault(c => c.Type == "nickname")?.Value;
-            
-            if (user.Name != name)
-            {
-                user.Name = name;
-                needsUpdate = true;
-            }
-            if (user.Picture != picture)
-            {
-                user.Picture = picture;
-                needsUpdate = true;
-            }
-            if (user.NickName != nickname)
-            {
-                user.NickName = nickname;
-                needsUpdate = true;
-            }
-            
-            if (needsUpdate)
-            {
-                user.UpdatedAt = DateTime.UtcNow;
-                await _unitOfWork.UserRepository.UpdateAsync(user);
-            }
-        }
-
-        await _unitOfWork.SaveChangesAsync();
-        return user;
+        var user = await GetCurrentUserAsync();
+        return user ?? throw new AuthenticationException("User not found");
     }
 
     private async Task<JsonElement> GetAuth0UserAsync(string userId)
@@ -358,7 +296,7 @@ public class Auth0Service : IAuth0Service
             response.EnsureSuccessStatusCode();
             var user = await response.Content.ReadFromJsonAsync<JsonElement>();
 
-            if (user.TryGetProperty("identities", out var identities) && 
+            if (user.TryGetProperty("identities", out var identities) &&
                 identities.GetArrayLength() > 0)
             {
                 var identity = identities[0];

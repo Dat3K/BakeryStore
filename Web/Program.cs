@@ -12,6 +12,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add DbContext
+builder.Services.AddDbContext<DefaultdbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
@@ -60,11 +66,6 @@ builder.Services.AddSession(options =>
 
 // Add HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddDbContext<DefaultdbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
 
 var app = builder.Build();
 

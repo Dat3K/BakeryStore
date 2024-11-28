@@ -37,7 +37,7 @@ namespace Web.Data.Repositories
             var order = await _context.Orders.FindAsync(orderId);
             if (order != null)
             {
-                order.Status = status;
+                order.OrderStatus = status.ToString();
                 await _context.SaveChangesAsync();
             }
         }

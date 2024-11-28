@@ -30,99 +30,6 @@ public class UserService : IUserService
         return await _auth0Service.GetCurrentUserAsync();
     }
 
-    public async Task<User?> GetByIdAsync(Guid id)
-    {
-        if (id == Guid.Empty)
-        {
-            throw new ArgumentException("Invalid user ID", nameof(id));
-        }
-        return await _unitOfWork.UserRepository.GetByIdAsync(id);
-    }
-
-    public async Task<User> CreateUserAsync(UserDTO userDto)
-    {
-        if (userDto == null)
-        {
-            throw new ArgumentNullException(nameof(userDto));
-        }
-
-        if (string.IsNullOrWhiteSpace(userDto.Name))
-        {
-            throw new ArgumentException("Name is required", nameof(userDto));
-        }
-
-        var user = new User
-        {
-            Sid = Guid.NewGuid(),
-            Name = userDto.Name,
-            NickName = userDto.NickName,
-            Picture = userDto.Picture,
-            Role = UserRole.customer,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        try 
-        {
-            await _unitOfWork.UserRepository.AddAsync(user);
-            await _unitOfWork.SaveChangesAsync();
-            return user;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error creating user: {ex.Message}");
-            throw;
-        }
-    }
-
-    public async Task<User> UpdateUserAsync(Guid userId, UserUpdateDTO userDto)
-    {
-        var currentUser = await GetCurrentUserAsync();
-        var user = await _unitOfWork.UserRepository.GetByIdAsync(userId)
-            ?? throw new NotFoundException($"User with ID {userId} not found");
-
-        // Only allow users to update their own profile unless they are an admin
-        if (currentUser?.Sid != user.Sid && currentUser?.Role != UserRole.admin)
-        {
-            throw new UnauthorizedException("You are not authorized to update this user's profile");
-        }
-
-        user.Name = userDto.Name ?? user.Name;
-        user.NickName = userDto.NickName ?? user.NickName;
-        user.Picture = userDto.Picture ?? user.Picture;
-        user.UpdatedAt = DateTime.UtcNow;
-
-        try 
-        {
-            await _unitOfWork.UserRepository.UpdateAsync(user);
-            await _unitOfWork.SaveChangesAsync();
-            return user;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating user: {ex.Message}");
-            throw;
-        }
-    }
-
-    public async Task<bool> DeleteUserAsync(Guid userId)
-    {
-        var currentUser = await GetCurrentUserAsync();
-        var user = await _unitOfWork.UserRepository.GetByIdAsync(userId)
-            ?? throw new NotFoundException($"User with ID {userId} not found");
-
-        // Only allow users to delete their own account unless they are an admin
-        if (currentUser?.Sid != user.Sid && currentUser?.Role != UserRole.admin)
-        {
-            throw new UnauthorizedException("You are not authorized to delete this user");
-        }
-
-        await _unitOfWork.UserRepository.DeleteAsync(user);
-        await _unitOfWork.SaveChangesAsync();
-
-        return true;
-    }
-
     public async Task<User?> GetByNameAsync(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -140,7 +47,6 @@ public class UserService : IUserService
         }
 
         var currentUser = await GetCurrentUserAsync();
-        if (currentUser?.Role != UserRole.admin)
         {
             throw new UnauthorizedException("Only administrators can view users by role");
         }

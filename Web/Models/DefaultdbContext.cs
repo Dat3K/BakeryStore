@@ -1,30 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
-using Web.Models.Enums;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Web.Models;
 
 public partial class DefaultdbContext : DbContext
 {
-    private readonly IConfiguration _configuration;
-
     public DefaultdbContext()
     {
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-        _configuration = builder.Build();
     }
 
-    public DefaultdbContext(DbContextOptions<DefaultdbContext> options, IConfiguration configuration)
+    public DefaultdbContext(DbContextOptions<DefaultdbContext> options)
         : base(options)
     {
-        _configuration = configuration;
     }
+
+    public virtual DbSet<Cart> Carts { get; set; }
+
+    public virtual DbSet<CartItem> CartItems { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
 
@@ -42,50 +35,91 @@ public partial class DefaultdbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<Cart> Carts { get; set; }
-
-    public virtual DbSet<CartItem> CartItems { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseNpgsql(connectionString);
+            optionsBuilder.UseNpgsql("Name=ConnectionStrings:DefaultConnection");
         }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .HasPostgresEnum<DiscountType>("discount_type")
-            .HasPostgresEnum<InventoryActionType>("inventory_action_enum")
-            .HasPostgresEnum<OrderStatus>("order_status")
-            .HasPostgresEnum<OrderType>("order_type_enum")
-            .HasPostgresEnum<PaymentMethod>("payment_method_enum")
-            .HasPostgresEnum<PaymentStatus>("payment_status_enum")
-            .HasPostgresEnum<UserRole>("user_role")
-            .HasPostgresExtension("uuid-ossp");
+        modelBuilder.HasPostgresExtension("uuid-ossp");
 
-        // Configure enum value conversions
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        modelBuilder.Entity<Cart>(entity =>
         {
-            var properties = entityType.GetProperties()
-                .Where(p => p.ClrType.IsEnum);
+            entity.HasKey(e => e.Id).HasName("carts_pkey");
 
-            foreach (var property in properties)
-            {
-                property.SetProviderClrType(typeof(string));
-                property.SetValueConverter(
-                    typeof(EnumToStringConverter<>).MakeGenericType(property.ClrType));
-            }
-        }
+            entity.ToTable("carts");
+
+            entity.HasIndex(e => e.UserId, "idx_carts_user");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+            entity.Property(e => e.TotalAmount)
+                .HasPrecision(12, 2)
+                .HasColumnName("total_amount");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Carts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("carts_user_id_fkey");
+        });
+
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("cart_items_pkey");
+
+            entity.ToTable("cart_items");
+
+            entity.HasIndex(e => e.CartId, "idx_cart_items_cart");
+
+            entity.HasIndex(e => e.ProductId, "idx_cart_items_product");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("uuid_generate_v4()")
+                .HasColumnName("id");
+            entity.Property(e => e.CartId).HasColumnName("cart_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(1)
+                .HasColumnName("quantity");
+            entity.Property(e => e.Subtotal)
+                .HasPrecision(12, 2)
+                .HasColumnName("subtotal");
+            entity.Property(e => e.UnitPrice)
+                .HasPrecision(12, 2)
+                .HasColumnName("unit_price");
+
+            entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.CartId)
+                .HasConstraintName("cart_items_cart_id_fkey");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("cart_items_product_id_fkey");
+        });
 
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("categories_pkey");
 
             entity.ToTable("categories");
+
+            entity.HasIndex(e => e.Name, "name_1732101575752_index");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("uuid_generate_v4()")
@@ -106,15 +140,13 @@ public partial class DefaultdbContext : DbContext
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("id");
+            entity.Property(e => e.Action).HasColumnName("action");
             entity.Property(e => e.ChangeQuantity).HasColumnName("change_quantity");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
             entity.Property(e => e.Notes).HasColumnName("notes");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.ActionType)
-                .HasColumnName("action_type")
-                .HasDefaultValue(InventoryActionType.in_stock);
 
             entity.HasOne(d => d.Product).WithMany(p => p.InventoryLogs)
                 .HasForeignKey(d => d.ProductId)
@@ -184,6 +216,10 @@ public partial class DefaultdbContext : DbContext
                 .HasColumnName("final_amount");
             entity.Property(e => e.Notes).HasColumnName("notes");
             entity.Property(e => e.OrderNumber).HasColumnName("order_number");
+            entity.Property(e => e.OrderStatus).HasColumnName("order_status");
+            entity.Property(e => e.OrderType).HasColumnName("order_type");
+            entity.Property(e => e.PaymentMethod).HasColumnName("payment_method");
+            entity.Property(e => e.PaymentStatus).HasColumnName("payment_status");
             entity.Property(e => e.ShippingAddress).HasColumnName("shipping_address");
             entity.Property(e => e.TotalAmount)
                 .HasPrecision(12, 2)
@@ -192,18 +228,6 @@ public partial class DefaultdbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.Status)
-                .HasColumnName("status")
-                .HasDefaultValue(OrderStatus.pending);
-            entity.Property(e => e.Type)
-                .HasColumnName("type")
-                .HasDefaultValue(OrderType.online);
-            entity.Property(e => e.PaymentMethod)
-                .HasColumnName("payment_method")
-                .HasDefaultValue(PaymentMethod.cash);
-            entity.Property(e => e.PaymentStatus)
-                .HasColumnName("payment_status")
-                .HasDefaultValue(PaymentStatus.pending);
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
@@ -260,7 +284,7 @@ public partial class DefaultdbContext : DbContext
                 .HasColumnName("id");
             entity.Property(e => e.CategoryId).HasColumnName("category_id");
             entity.Property(e => e.CostPrice)
-                .HasPrecision(12)
+                .HasPrecision(10, 2)
                 .HasColumnName("cost_price");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -271,7 +295,7 @@ public partial class DefaultdbContext : DbContext
                 .HasColumnName("is_active");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Price)
-                .HasPrecision(12)
+                .HasPrecision(10, 2)
                 .HasColumnName("price");
             entity.Property(e => e.Sku).HasColumnName("sku");
             entity.Property(e => e.StockQuantity)
@@ -284,7 +308,7 @@ public partial class DefaultdbContext : DbContext
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("products_category_id_fkey");
+                .HasConstraintName("fk_category");
         });
 
         modelBuilder.Entity<ProductImage>(entity =>
@@ -327,97 +351,23 @@ public partial class DefaultdbContext : DbContext
 
             entity.HasIndex(e => e.Email, "email_1732724362502_index");
 
+            entity.HasIndex(e => e.NameIdentifier, "name_identifier_1732789681418_index");
+
             entity.Property(e => e.Sid)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("sid");
-
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasColumnName("name");
-
-            entity.Property(e => e.Email)
-                .IsRequired()
-                .HasColumnName("email");
-
-            entity.Property(e => e.NickName)
-                .HasColumnName("nickname");
-
-            entity.Property(e => e.Picture)
-                .HasColumnName("picture");
-
-            entity.Property(e => e.Role)
-                .HasColumnType("user_role")
-                .HasColumnName("role")
-                .HasDefaultValue(UserRole.customer);
-
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamp with time zone")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnName("created_at");
-
-            entity.Property(e => e.UpdatedAt)
-                .HasColumnType("timestamp with time zone")
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnName("updated_at");
-        });
-
-        modelBuilder.Entity<Cart>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("carts_pkey");
-
-            entity.ToTable("carts");
-
-            entity.HasIndex(e => e.UserId, "idx_carts_user");
-
-            entity.Property(e => e.Id)
-                .HasDefaultValueSql("uuid_generate_v4()")
-                .HasColumnName("id");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.TotalAmount)
-                .HasPrecision(12, 2)
-                .HasDefaultValue(0)
-                .HasColumnName("total_amount");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
+            entity.Property(e => e.Email).HasColumnName("email");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.NameIdentifier).HasColumnName("name_identifier");
+            entity.Property(e => e.Nickname).HasColumnName("nickname");
+            entity.Property(e => e.Picture).HasColumnName("picture");
+            entity.Property(e => e.Role).HasColumnName("role");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.User).WithMany()
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("carts_user_id_fkey");
-        });
-
-        modelBuilder.Entity<CartItem>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("cart_items_pkey");
-
-            entity.ToTable("cart_items");
-
-            entity.HasIndex(e => e.CartId, "idx_cart_items_cart");
-            entity.HasIndex(e => e.ProductId, "idx_cart_items_product");
-
-            entity.Property(e => e.Id)
-                .HasDefaultValueSql("uuid_generate_v4()")
-                .HasColumnName("id");
-            entity.Property(e => e.CartId).HasColumnName("cart_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnName("created_at");
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.Subtotal)
-                .HasPrecision(10, 2)
-                .HasColumnName("subtotal");
-
-            entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
-                .HasForeignKey(d => d.CartId)
-                .HasConstraintName("cart_items_cart_id_fkey");
-
-            entity.HasOne(d => d.Product).WithMany()
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("cart_items_product_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

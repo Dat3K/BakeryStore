@@ -7,11 +7,9 @@ namespace Web.Data.Repositories
 {
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        private readonly DefaultdbContext _context;
 
         public OrderRepository(DefaultdbContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId)

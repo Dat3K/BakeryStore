@@ -10,6 +10,7 @@ namespace Web.Data.Repositories
 
         public OrderRepository(DefaultdbContext context) : base(context)
         {
+        }   
         }
 
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId)
@@ -27,7 +28,7 @@ namespace Web.Data.Repositories
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
+                .FirstOrDefaultAsync(o => o.Id == orderId)?? throw new KeyNotFoundException($"Order with ID {orderId} not found.");
         }
 
         public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status)

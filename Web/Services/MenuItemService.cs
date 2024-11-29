@@ -1,5 +1,6 @@
 using Web.Data.Repositories.Interfaces;
 using Web.Models;
+using Web.Services.Exceptions;
 using Web.Services.Interfaces;
 
 namespace Web.Services
@@ -15,7 +16,8 @@ namespace Web.Services
 
         public async Task<MenuItem> GetMenuItemByIdAsync(Guid id)
         {
-            return await _menuItemRepository.GetByIdAsync(id);
+            var menuItem = await _menuItemRepository.GetByIdAsync(id) ?? throw new NotFoundException($"MenuItem with ID {id} was not found");
+            return menuItem;
         }
 
         public async Task AddMenuItemAsync(MenuItem menuItem)

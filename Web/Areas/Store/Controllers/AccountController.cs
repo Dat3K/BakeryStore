@@ -123,7 +123,7 @@ namespace Web.Areas.Store.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home", new { message = "An error occurred while loading profile." });
+                return RedirectToAction("Error", "Home", new { message = $"An error occurred while loading profile. {ex.Message}" });
             }
         }
 
@@ -151,7 +151,7 @@ namespace Web.Areas.Store.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("An error occurred while getting current user.");
+                return BadRequest($"An error occurred while getting current user. {ex.Message}");
             }
         }
 

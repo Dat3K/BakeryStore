@@ -9,6 +9,7 @@ using Web.Areas.Store.Services.Interfaces;
 using Web.Areas.Store.Services;
 using Web.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 

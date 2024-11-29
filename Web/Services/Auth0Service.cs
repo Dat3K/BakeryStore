@@ -219,7 +219,7 @@ public class Auth0Service : IAuth0Service
         catch (Exception ex)
         {
             // Log error
-            throw;
+            throw new Exception("Error when logging out", ex);
         }
     }
 
@@ -278,7 +278,7 @@ public class Auth0Service : IAuth0Service
         _managementApiToken = tokenResponse.GetProperty("access_token").GetString();
         _tokenExpirationTime = DateTime.UtcNow.AddSeconds(tokenResponse.GetProperty("expires_in").GetInt32() - 60);
 
-        return _managementApiToken;
+        return _managementApiToken?? throw new InvalidOperationException("Failed to get management API token");
     }
 
     public async Task<string?> GetUserEmailProviderAsync(string userId)

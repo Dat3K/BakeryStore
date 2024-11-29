@@ -49,4 +49,4 @@ appsettings.Development.json
 appsettings.Production.json
 appsettings.Staging.json
 
-ApplicationDbContext.cs
+DefaultDbContext.cs

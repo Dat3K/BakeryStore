@@ -73,6 +73,25 @@ namespace Web.Areas.Store.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+
+            
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetCartCount()
+        {
+            try
+            {
+                var user = await _userService.GetCurrentUserAsync() ?? throw new Exception("User not found");
+                var order = await _orderService.GetCurrentOrderAsync(user.Sid);
+                var count = order?.OrderItems?.Sum(x => x.Quantity) ?? 0;
+                return Json(new { success = true, count });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

@@ -45,20 +45,32 @@
                                         <td colspan="2" class="prod-column">
                                             <div class="column-box">
                                                 <div class="remove-btn">
-                                                    <a href="javascript:void(0);" class="remove-cart-item" data-item-id="@item.Id"><i class="fal fa-times"></i></a>
+                                                    <a href="#" class="remove-cart-item" data-item-id="@item.Id"><i class="fal fa-times"></i></a>
                                                 </div>
                                                 <div class="prod-thumb">
-                                                    <a href="/Store/Shop/Details/@item.Product.Id"><img src="@item.Product.Thumbnail" alt="@item.Product.Name" style="width: 100px; height: 100px; object-fit: cover;"></a>
+                                                    <a asp-controller="Shop" asp-action="Detail" asp-area="Store" asp-route-id="@item.Product.Id"><img src="@item.Product.Thumbnail" alt="@item.Product.Name" style="width: 100px; height: 100px; object-fit: cover;"></a>
                                                 </div>
                                                 <div class="prod-title">
-                                                    <a href="/Store/Shop/Details/@item.Product.Id">@item.Product.Name</a>
+                                                    <a style="color: #222222;" asp-controller="Shop" asp-action="Detail" asp-area="Store" asp-route-id="@item.Product.Id">@item.Product.Name</a>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="price">$@item.Product.Price.ToString("0.00")</td>
-                                        <td class="qty">
-                                            <div class="item-quantity">
-                                                <input type="text" name="quantity" class="quantity-spinner" value="@item.Quantity" min="1" data-item-id="@item.Id">
+                                        <td>
+                                            <div class="quantity-input">
+                                                <div class="input-group">
+                                                    <button class="btn btn-outline-secondary decrease-btn" type="button">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                                            <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+                                                        </svg>
+                                                    </button>
+                                                    <input type="text" class="form-control quantity-field" value="@item.Quantity" min="1" max="100" data-item-id="@item.Id">
+                                                    <button class="btn btn-outline-secondary increase-btn" type="button">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="sub-total">$@((item.Product.Price * item.Quantity).ToString("0.00"))</td>

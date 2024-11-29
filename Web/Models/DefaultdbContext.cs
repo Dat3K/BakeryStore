@@ -33,10 +33,7 @@ public partial class DefaultdbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
             optionsBuilder.UseNpgsql("Name=ConnectionStrings:DefaultConnection");
-        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

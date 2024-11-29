@@ -79,7 +79,9 @@ namespace Web.Services
                 {
                     order = new Order
                     {
+                        UserId = userId,
                         OrderStatus = "Pending",
+                        OrderType = "Online",
                         CreatedAt = DateTime.UtcNow
                     };
                     await _unitOfWork.OrderRepository.AddAsync(order);

@@ -11,7 +11,6 @@ namespace Web.Data.Repositories
         public OrderRepository(DefaultdbContext context) : base(context)
         {
         }   
-        }
 
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId)
         {

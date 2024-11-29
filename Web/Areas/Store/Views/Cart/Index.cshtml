@@ -112,7 +112,7 @@
                                 <li>Subtotal:<span>$@Model.OrderItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
                                 <li>Total:<span>$@Model.OrderItems.Sum(x => x.Product.Price * x.Quantity).ToString("0.00")</span></li>
                             </ul>
-                            <a href="/Store/Checkout" class="theme-btn-one">Proceed to Checkout</a>
+                            <a asp-action="Checkout" asp-controller="Cart" asp-area="Store" class="theme-btn-one">Proceed to Checkout</a>
                         </div>
                     </div>
                 </div>

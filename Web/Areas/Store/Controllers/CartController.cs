@@ -28,6 +28,12 @@ namespace Web.Areas.Store.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> Checkout()
+        {
+            return View();
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddToCart(Guid productId, int quantity)
         {
@@ -74,7 +80,7 @@ namespace Web.Areas.Store.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
 
-            
+
         }
 
         [Authorize]

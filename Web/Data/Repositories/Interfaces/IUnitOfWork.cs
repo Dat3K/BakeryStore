@@ -6,5 +6,6 @@ public interface IUnitOfWork : IDisposable
     IOrderRepository OrderRepository { get; }
     ICategoryRepository CategoryRepository { get; }
     IUserRepository UserRepository { get; }
+    IOrderItemRepository OrderItemRepository { get; }
     Task<int> SaveChangesAsync();
 }

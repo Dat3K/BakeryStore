@@ -39,5 +39,13 @@ namespace Web.Data.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<Order> GetCurrentOrderAsync(Guid userId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.UserId == userId && o.OrderType == "Online" && o.OrderStatus == "Pending");
+        }
     }
 }

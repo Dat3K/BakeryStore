@@ -8,5 +8,6 @@ namespace Web.Data.Repositories.Interfaces
         Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId);
         Task<Order> GetOrderWithDetailsAsync(Guid orderId);
         Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status);
+        Task<Order> GetCurrentOrderAsync(Guid userId);
     }
 }

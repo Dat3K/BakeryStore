@@ -90,11 +90,11 @@
                         <div class="addto-cart-box"> 
                             <ul class="clearfix">
                                 <li>
-                                    <input type="text" id="quentity" value="1" min="1" max="@Model.StockQuantity">
+                                    <input type="text" id="quantity" value="1" min="1" max="@Model.StockQuantity">
                                 </li>
                                 <li>
-                                    <button type="button" class="theme-btn-one" onclick="addToCart('@Model.Id', document.getElementById('quentity').value)">
-                                        Add To Cart
+                                    <button type="button" class="theme-btn-one" onclick="addToCart('@Model.Id', $('#quantity').val())">
+                                        Add to cart
                                     </button>
                                 </li>
                             </ul>
@@ -231,7 +231,7 @@
                                         </a>
                                     </h3>
                                     <div class="cart-btn">
-                                        <button type="button" class="theme-btn-two" onclick="addToCart('@relatedProduct.Id', 1)">Add to cart</button>
+                                        <button type="button" class="theme-btn-two addtocart-btn" onclick="addToCart('@relatedProduct.Id', 1)">Add to cart</button>
                                     </div>
                                 </div>
                             </div>
@@ -243,40 +243,3 @@
     </div>
 </section>
 <!-- single-product end -->
-
-@section Scripts {
-    <script>
-        function addToCart(productId, quantity) {
-            $.ajax({
-                url: '@Url.Action("AddToCart", "Cart", new { area = "Store" })',
-                type: 'POST',
-                data: {
-                    productId: productId,
-                    quantity: quantity
-                },
-                success: function (response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Product added to cart successfully!'
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: response.message
-                        });
-                    }
-                },
-                error: function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while adding the product to cart.'
-                    });
-                }
-            });
-        }
-    </script>
-}

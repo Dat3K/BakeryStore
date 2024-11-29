@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Web.Data.Repositories.Interfaces;
@@ -13,6 +14,7 @@ public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuth0Service _auth0Service;
+    private static User? _currentUser;
 
     public UserService(
         IUnitOfWork unitOfWork,
@@ -24,7 +26,12 @@ public class UserService : IUserService
 
     public async Task<User?> GetCurrentUserAsync()
     {
-        return await _auth0Service.GetCurrentUserAsync();
+        if (_currentUser is null)
+        {
+            Console.WriteLine("Current user is null");
+            _currentUser = await _auth0Service.GetCurrentUserAsync() ?? throw new AuthenticationException("User is null in service");
+        }
+        return _currentUser;
     }
 
     public async Task<User?> GetByNameAsync(string name)

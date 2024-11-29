@@ -11,14 +11,7 @@
                         <span class="price-box">$@product.Price</span>
                         <h3 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@product.Id">@product.Name</a></h3>
                         <div class="cart-btn">
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <a href="javascript:void(0);" class="theme-btn-two addtocart-btn" data-authenticated="true">Add to cart</a>
-                            }
-                            else
-                            {
-                                <a href="javascript:void(0);" class="theme-btn-two addtocart-btn" data-authenticated="false">Add to cart</a>
-                            }
+                                <a href="javascript:void(0)" onclick="addToCart('@product.Id', 1)" class="theme-btn-two addtocart-btn">Add to cart</a>
                         </div>
                     </div>
                 </div>

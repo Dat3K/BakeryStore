@@ -43,4 +43,10 @@ msbuild.err
 msbuild.wrn
 .fake
 appsettings.json
+
+# Configuration files
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/appsettings.Staging.json
+
 ApplicationDbContext.cs

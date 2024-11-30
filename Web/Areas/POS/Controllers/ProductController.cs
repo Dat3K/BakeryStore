@@ -1,15 +1,25 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Web.Services.Interfaces;
+using Web.Models;
 
 namespace Web.Areas.POS.Controllers
 {
     [Area("POS")]
-    public class POSController : Controller
+    public class ProductController : Controller
     {
-        [Authorize]
-        public IActionResult Index()
+        private readonly IProductService _productService;
+
+        public ProductController(IProductService productService)
         {
-            return View();
+            _productService = productService;
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+            var products = await _productService.GetAllProductsAsync();
+            return View(products);
         }
     }
 }

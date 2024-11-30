@@ -16,14 +16,12 @@ namespace Web.Services
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            return await _productRepository.GetAllAsync();
+            return await _productRepository.GetAllProductAsyncWithCategory();
         }
 
         public async Task<Product> GetProductByIdAsync(Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-                throw new NotFoundException($"Product with ID {id} was not found");
+            var product = await _productRepository.GetProductByIdWithCategoryAsync(id) ?? throw new NotFoundException($"Product with ID {id} was not found");
             return product;
         }
 

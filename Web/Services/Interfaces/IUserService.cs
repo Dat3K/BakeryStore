@@ -1,6 +1,5 @@
 using Web.Models;
 using Web.Models.Enums;
-using Web.Services.DTOs;
 
 namespace Web.Services.Interfaces;
 

@@ -30,7 +30,7 @@
     <div class="wrapper">
         <div class="iq-sidebar  sidebar-default ">
             <div class="iq-sidebar-logo d-flex align-items-center justify-content-between">
-                <a href="/" class="header-logo">
+                <a asp-area="POS" asp-controller="Dashboard" asp-action="Index" class="header-logo">
                     <img src="~/POS/images/logo.png" class="img-fluid rounded-normal light-logo" alt="logo">
                     <h5 class="logo-title light-logo ml-3">POSDash</h5>
                 </a>
@@ -181,25 +181,35 @@
     <script src="~/POS/js/backend-bundle.min.js"></script>
     <script src="~/POS/js/app.js"></script>
     <script>
-        const path = location.pathname.split('/')[1]
-
+        // Get the current path from the URL
+        const fullPath = location.pathname;
+        const path = fullPath.split('/POS/')[1];
+        
+        // Remove active class from all menu items
+        $('#iq-sidebar-toggle li').removeClass('active');
+        
         if (path) {
-            $('#iq-sidebar-toggle li').removeClass('active')
-            $(`#iq-sidebar-toggle li a[href="/${path}"]`).parent().addClass('active')
-        } else if (path === '') {
-            $('#iq-sidebar-toggle li').removeClass('active')
-            $(`#iq-sidebar-toggle li a[href="/POS"]`).parent().addClass('active')
+            // Try to find exact match first
+            const exactMatch = $(`#iq-sidebar-toggle li a[href="${fullPath}"]`);
+            if (exactMatch.length) {
+                exactMatch.parent().addClass('active');
+            } else {
+                // Try to match by controller name
+                const controller = path.split('/')[0];
+                $(`#iq-sidebar-toggle li a[href^="/POS/${controller}"]`).first().parent().addClass('active');
+            }
         } else {
-            $('#iq-sidebar-toggle li').removeClass('active')
+            // If we're at the root POS path, activate Dashboard
+            $(`#iq-sidebar-toggle li a[href^="/POS/Dashboard"]`).parent().addClass('active');
         }
 
         $('#logout').click((e) => {
             e.preventDefault()
             $.ajax({
-                url: '/auth/logout',
+                url: '@Url.Action("Logout", "Account", new { area = "Store" })',
                 method: 'POST',
                 success: () => {
-                    location.href = '/login'
+                    location.href = '@Url.Action("Login", "Login", new { area = "POS" })'
                 }
             })
         })

@@ -1,0 +1,802 @@
+<style>
+    .search-group {
+        position: relative;
+    }
+
+    .menu-search {
+        display: none;
+        position: absolute;
+        left: 0;
+        bottom: 55px;
+        z-index: 10;
+        width: 100%;
+    }
+
+    .menu-search.show {
+        display: block;
+        z-index: 99;
+    }
+
+    .menu-search__inner {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 40px 90px 20px rgba(200, 200, 200, 0.4);
+    }
+
+    .product {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid #000;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .product .product-name {
+        flex-grow: 1;
+    }
+
+    .product .product-price {
+        flex-shrink: 0;
+        text-align: center;
+    }
+
+    .product img {
+        flex-shrink: 0;
+    }
+
+    .product:hover {
+        background-color: #f2eeee;
+    }
+
+    .input-quantity {
+        width: 80px;
+    }
+
+    #product-table td {
+        padding: 15px 10px !important;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group.errors label {
+        color: red;
+    }
+
+    .form-group.errors input {
+        border-color: red;
+    }
+
+    .form-group .text-danger {
+        font-size: 13px;
+        color: red !important;
+        min-height: 30px;
+    }
+
+    #invoice-POS {
+        position: fixed;
+        z-index: 999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+        padding: 2mm;
+        margin: 0 auto;
+        width: 450px;
+        background: #fff;
+        display: none;
+    }
+
+    #invoice-POS.show {
+        display: block;
+    }
+
+    #invoice-POS ::selection {
+        background: #f31544;
+        color: #fff;
+    }
+
+    #invoice-POS ::moz-selection {
+        background: #f31544;
+        color: #fff;
+    }
+
+    #invoice-POS h1 {
+        font-size: 1.5em;
+        color: #222;
+    }
+
+    #invoice-POS h2 {
+        font-size: 0.9em;
+    }
+
+    #invoice-POS h3 {
+        font-size: 1.2em;
+        font-weight: 300;
+        line-height: 2em;
+    }
+
+    #invoice-POS p {
+        font-size: 0.7em;
+        color: #666;
+        line-height: 1.2em;
+    }
+
+    #invoice-POS #top,
+    #invoice-POS #mid {
+        /* Targets all id with 'col-' */
+        border-bottom: 1px solid #eee;
+    }
+
+    #invoice-POS #top {
+        min-height: 100px;
+    }
+
+    #invoice-POS #mid {
+        min-height: 80px;
+    }
+
+    #invoice-POS #bot {
+        min-height: 50px;
+    }
+
+    #invoice-POS #top .logo {
+        height: 60px;
+        width: 60px;
+        background: url(images/logo.png) no-repeat;
+        background-size: 60px 60px;
+    }
+
+    #invoice-POS .clientlogo {
+        float: left;
+        height: 60px;
+        width: 60px;
+        background: url(images/logo.png) no-repeat;
+        background-size: 60px 60px;
+        border-radius: 50px;
+    }
+
+    #invoice-POS .info {
+        display: block;
+        margin-left: 0;
+    }
+
+    #invoice-POS .title {
+        float: right;
+    }
+
+    #invoice-POS .title p {
+        text-align: right;
+    }
+
+    #invoice-POS table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #invoice-POS td {
+        word-break: break-word;
+        max-width: 100px;
+    }
+
+    #invoice-POS .tabletitle {
+        background: #eee;
+    }
+
+    #invoice-POS .service {
+        border-bottom: 1px solid #eee;
+    }
+
+    #invoice-POS #legalcopy {
+        margin-top: 5mm;
+    }
+</style>
+<div class='container-fluid add-form-list'>
+    <div class='row'>
+        <div class='col-sm-12 col-md-5'>
+            <div class='col-sm-12'>
+                <div class='card'>
+                    <div class='card-header d-flex justify-content-between'>
+                        <div class='header-title'>
+                            <h4 class='card-title'>Customer</h4>
+                        </div>
+                    </div>
+                    <div class='card-body'>
+
+                        <div class='row'>
+                            <div class='col-md-6'>
+                                <div class='form-group'>
+                                    <label>Phone Number *</label>
+                                    <input type='text' class='form-control' placeholder='Enter Phone Number'
+                                        id="phone_number" />
+                                    <div class='text-danger'></div>
+                                </div>
+                            </div>
+                            <div class='col-md-6'>
+                                <div class='form-group'>
+                                    <label>Name *</label>
+                                    <input type='text' class='form-control' placeholder='Enter Name' id="full_name"
+                                        disabled />
+                                    <div class='text-danger'></div>
+                                </div>
+                            </div>
+                            <div class='col-md-12'>
+                                <div class='form-group'>
+                                    <label>Address *</label>
+                                    <input type='text' class='form-control' placeholder='Enter Address' id="address"
+                                        disabled />
+                                    <div class='text-danger'></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='col-sm-12'>
+                <div class='card'>
+                    <div class='card-body'>
+                        <div class='row'>
+                            <div class='col-md-12'>
+                                <div class='form-group search-group'>
+                                    <label>Search Product</label>
+                                    <input id="searchProduct" type='text' class='form-control'
+                                        placeholder='Enter Name or Barcode' />
+                                    <div class='menu-search'>
+                                        <div id="searchResults" class='menu-search__inner'></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='col-sm-12'>
+                <div class='row justify-content-between align-items-center'
+                    style="gap: 20px; padding: 0 15px; flex-wrap: nowrap">
+                    <div class='form-group ml-auto' style="width: 285px">
+                        <label>Received Amount *</label>
+                        <input id="received-amount" type='text' class='form-control' value="0" />
+                        <div class='text-danger'></div>
+                    </div>
+                    <button id="create-order" class='btn btn-primary mt-2'>Generate Invoice</button>
+                </div>
+            </div>
+        </div>
+
+        <div class='col-md-7'>
+            <div style='height: 500px; display: block; overflow-y: scroll'>
+                <table id="product-table" class='table table-striped table-hover table-bordered text-center'>
+                    <thead class='table-dark'>
+                        <tr>
+                            <th>Image</th>
+                            <th>Barcode</th>
+                            <th>Name</th>
+                            <th>Stock</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <p id="total-price" class='mt-3 font-size-32 font-weight-bold'>Total: 0₫</p>
+            <p id="change-return" class='mt-3 font-size-20'>Return: 0₫</p>
+        </div>
+    </div>
+    <!-- Page end  -->
+    <div id="invoice-POS">
+        <center id="top">
+            <div class="logo"></div>
+            <div class="info">
+                <h2>POS Inc</h2>
+            </div><!--End Info-->
+        </center><!--End InvoiceTop-->
+
+        <div id="mid">
+            <div class="info">
+                <h2>Contact Info</h2>
+                <p id="contact-info">
+                    Address : street city, state 0000</br>
+                    Email : JohnDoe@gmail.com</br>
+                    Phone : 555-555-5555</br>
+                    Date : 555-555-5555</br>
+                </p>
+            </div>
+        </div><!--End Invoice Mid-->
+
+        <div id="bot">
+            <div id="table">
+                <table class="text-center">
+                    <thead>
+                        <tr class="tabletitle">
+                            <td class="item">
+                                <h2>Item</h2>
+                            </td>
+                            <td class="Hours">
+                                <h2>Qty</h2>
+                            </td>
+                            <td class="Rate">
+                                <h2>Sub Total</h2>
+                            </td>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+                    </tbody>
+
+                    
+
+                </table>
+            </div><!--End Table-->
+
+            <div id="legalcopy" class="text-center">
+                <strong>Thank you for your business!</strong>
+            </div>
+
+            <div class="text-right">
+                <button id="print-invoice" class="btn btn-primary">Print</button>
+                <button id="btn-close-invoice" class="btn btn-danger">Close</button>
+            </div>
+
+        </div><!--End InvoiceBot-->
+    </div><!--End Invoice-->
+</div>
+@section Scripts {
+    <script>
+        let hasSentRequest = false
+        let searchTimeout = null
+        let fetchedProducts = []
+        let selectedProducts = []
+
+        function formatCurrency(price) {
+            const formatter = new Intl.NumberFormat('vi-VN', {
+                style: 'decimal',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            })
+
+            return `${formatter.format(price)} ₫`
+        }
+
+        function clearMenuSearch() {
+            $('#searchProduct').val('')
+            $('.menu-search').removeClass('show')
+        }
+
+        function renderProducts(products) {
+            fetchedProducts = products
+
+            const resultsContainer = $('#searchResults')
+            resultsContainer.empty()
+
+            products.forEach(product => {
+                const productHtml = `
+                    <div class='product' data-id='${product._id}'>
+                        <img class='img-fluid rounded avatar-50' src='${product.image}' alt='${product.name}' />
+                        <div class='product-name'>
+                            <h6 class='mb-0'>${product.name}</h6>
+                            <p class='mb-0'>${product.barcode}</p>
+                        </div>
+                        <div class='product-price'>
+                            <h6 class='mb-0'>${formatCurrency(product.retailPrice)}</h6>
+                            <p class='mb-0'>Stock: ${product.stockQuantity}</p>
+                        </div>
+                    </div>
+                `
+                resultsContainer.append(productHtml)
+            })
+        }
+
+        function addProductToTable(product) {
+            const tableBody = $('#product-table tbody')
+
+            const productRow = `
+                <tr data-id=${product._id}>
+                    <td>
+                        <img src='${product.image}' alt='${product.name}' class='img-fluid rounded avatar-50'/>
+                    </td>
+                    <td>${product.barcode}</td>
+                    <td>${product.name}</td>
+                    <td>${product.stockQuantity}</td>
+                    <td style='white-space: nowrap;'>${formatCurrency(product.retailPrice)}</td>
+                    <td>
+                        <input type='number' class='form-control input-quantity' 
+                            value='1' min='1' max='${product.stockQuantity}' />
+                    </td>
+                    <td style='white-space: nowrap;'>${formatCurrency(product.retailPrice)}</td>
+                    <td style='cursor: pointer' onclick="removeProductRow(this)">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="red" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                        </svg>
+                    </td>
+                </tr>
+            `
+
+            tableBody.append(productRow)
+            calculateTotalPrice()
+            calculateReturn()
+        }
+
+        function calculateTotalPrice() {
+            let totalPrice = 0
+            $('#product-table tbody tr').each(function () {
+                const quantity = parseInt($(this).find('.input-quantity').val())
+                const price = parseInt($(this).find('td').eq(4).text().replace(/\D/g, ''))
+                totalPrice += quantity * price
+            })
+
+            $('#total-price').text(`Total: ${formatCurrency(totalPrice)}`)
+        }
+
+        function calculateReturn() {
+            let receivedAmount = parseInt($('#received-amount').val().replace(/\./g, '')) || 0
+            let totalPrice = parseInt($('#total-price').text().replace(/[^0-9]/g, '')) || 0
+            let change = receivedAmount - totalPrice
+
+            if (change >= 0) {
+                $('#change-return').text('Return: ' + formatCurrency(change))
+            } else {
+                $('#change-return').text('Return: 0 ₫')
+            }
+        }
+
+        function removeProductRow(element) {
+            $(element).closest('tr').remove()
+            const selectedProductId = $(element).closest('tr').data('id')
+            selectedProducts = selectedProducts.filter(p => p._id !== selectedProductId)
+            calculateTotalPrice()
+            calculateReturn()
+        }
+
+        function validateInput(field) {
+            let value = field.val().trim()
+            const parent = field.closest('.form-group')
+            const errorContainer = parent.find('.text-danger')
+            let errorMessage = ''
+
+            switch (field.attr('id')) {
+                case 'phone_number':
+                    if (!/^\d{10}$/.test(value)) {
+                        errorMessage = 'Phone number must be 10 digits.'
+                    }
+                    break
+                case 'full_name':
+                    if (value.length === 0) {
+                        errorMessage = 'Full name cannot be empty.'
+                    }
+                    break
+                case 'address':
+                    if (value.length === 0) {
+                        errorMessage = 'Address cannot be empty.'
+                    }
+                    break
+                case 'received-amount':
+                    value = parseInt(value.replace(/\./g, ''))
+                    if (isNaN(value) || parseInt(value) < $('#total-price').text().replace(/\D/g, '')) {
+                        errorMessage = 'Received amount must be greater than total price.'
+                    }
+                    break
+            }
+
+            if (errorMessage) {
+                parent.addClass('errors')
+                errorContainer.text(errorMessage)
+                return false
+            } else {
+                parent.removeClass('errors')
+                errorContainer.text('')
+                return true
+            }
+        }
+
+        function validateAllFields() {
+            let isValid = true
+
+            $('#phone_number, #full_name, #address, #received-amount').each(function () {
+                const fieldValid = validateInput($(this))
+                if (!fieldValid) {
+                    isValid = false
+                }
+            })
+
+            if (selectedProducts.length === 0) {
+                Toastify({
+                    text: 'Please add at least one product.',
+                    backgroundColor: 'red',
+                    delay: 3000
+                }).showToast()
+                isValid = false
+            }
+
+            return isValid
+        }
+
+        function displayInvoice(order) {
+            $('#invoice-POS #contact-info').html(`
+                Phone: ${order.customer.phoneNumber}<br>
+                Full Name: ${order.customer.fullName}<br>
+                Address: ${order.customer.address}<br>
+                Date: ${new Date().toLocaleDateString("en-US")}
+            `)
+
+            const tableBody = $('#invoice-POS #table tbody')
+            tableBody.empty()
+
+            order.products.forEach(product => {
+                const productHtml = `
+                    <tr class="service">
+                        <td class="tableitem">${product.name}</td>
+                        <td class="tableitem">${product.quantity}</td>
+                        <td class="tableitem">${formatCurrency(product.subtotal)}</td>
+                    </tr>
+                `
+                tableBody.append(productHtml)
+            })
+
+            tableBody.append(`
+                <tr class="tabletitle-payment">
+                    <td></td>
+                    <td class="Rate">
+                        <strong>Total</strong>
+                    </td>
+                    <td class="payment">
+                        <strong>${formatCurrency(order.total)}</strong>
+                    </td>
+                </tr>
+            `)
+
+            $('#invoice-POS').addClass('show')
+        }
+
+        $(document).on('focusout', '#received-amount, #phone_number, #full_name, #address', function () {
+            validateInput($(this))
+        })
+
+        $(document).on('input', '#full_name, #address, #received-amount', function () {
+            const parent = $(this).closest('.form-group')
+            const errorContainer = parent.find('.text-danger')
+            parent.removeClass('errors')
+            errorContainer.text('')
+        })
+
+        $('#phone_number').on('input', function () {
+            $(this).closest('.form-group').removeClass('errors').find('.text-danger').text('')
+            $('#full_name').closest('.form-group').removeClass('errors').find('.text-danger').text('')
+            $('#address').closest('.form-group').removeClass('errors').find('.text-danger').text('')
+
+            let value = $(this).val()
+            value = value.replace(/\D/g, '')
+            if (value.length > 10) {
+                value = value.substring(0, 10)
+            }
+            $(this).val(value)
+
+            if (value.length === 10 && !hasSentRequest) {
+                hasSentRequest = true
+                $.ajax({
+                    url: `/customers/phone/${value}`,
+                    method: 'GET',
+                    success: function (response) {
+                        $('#full_name').attr('disabled', true)
+                        $('#address').attr('disabled', true)
+                        $('#full_name').val(response.fullName)
+                        $('#address').val(response.address)
+                    },
+                    error: function (error) {
+                        if (error.status === 404) {
+                            $('#full_name').attr('disabled', false)
+                            $('#address').attr('disabled', false)
+                        }
+                    }
+                })
+            } else if (value.length < 10) {
+                hasSentRequest = false
+                $('#full_name').val('')
+                $('#address').val('')
+                $('#full_name').attr('disabled', true)
+                $('#address').attr('disabled', true)
+                $('#full_name').closest('.form-group').removeClass('errors').find('.text-danger').text('')
+                $('#address').closest('.form-group').removeClass('errors').find('.text-danger').text('')
+            }
+        })
+
+        $('#searchProduct').on('keyup', function () {
+            const key = $(this).val()
+
+            if (/^\d{6}$/.test(key)) {
+                return
+            }
+
+            clearTimeout(searchTimeout)
+
+            if (!key) {
+                $('.menu-search').removeClass('show')
+            }
+
+            searchTimeout = setTimeout(function () {
+                if (key) {
+                    $.ajax({
+                        url: '/products/search',
+                        method: 'GET',
+                        data: { key },
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                renderProducts(data)
+                                $('.menu-search').addClass('show')
+                            } else {
+                                $('.menu-search').removeClass('show')
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching search results:', error)
+                        }
+                    })
+                }
+            }, 800)
+        })
+
+        $(document).on('click', '.product', function () {
+            clearMenuSearch()
+            const productId = $(this).data('id')
+            const selectedProduct = fetchedProducts.find(p => p._id === productId)
+
+            if (selectedProduct) {
+                if (selectedProducts.find(p => p._id === productId)) {
+                    Toastify({
+                        text: 'Product already added',
+                        backgroundColor: 'red',
+                        delay: 3000
+                    }).showToast()
+                    return
+                }
+                selectedProducts.push({ ...selectedProduct, quantity: 1 })
+                addProductToTable(selectedProduct)
+            }
+
+            $('#searchProduct').focus()
+        })
+
+        $('#product-table').on('input', '.input-quantity', function () {
+            const productId = $(this).closest('tr').data('id')
+            const selectedProduct = selectedProducts.find(p => p._id === productId)
+
+            let quantity = parseInt($(this).val())
+            if (quantity < 1 || isNaN(quantity)) {
+                $(this).val(1)
+                quantity = 1
+            } else if (quantity > selectedProduct.stockQuantity) {
+                $(this).val(selectedProduct.stockQuantity)
+                quantity = selectedProduct.stockQuantity
+            }
+            selectedProduct.quantity = quantity
+
+            const subtotalCell = $(this).closest('tr').find('td').eq(6)
+            const subtotal = selectedProduct.retailPrice * quantity
+
+            subtotalCell.text(formatCurrency(subtotal))
+            calculateTotalPrice()
+            calculateReturn()
+        })
+
+        $('#received-amount').on('input', function () {
+            let value = $(this).val().replace(/[^0-9]/g, '')
+            if (value === '') {
+                value = '0'
+            } else if (value.startsWith('0')) {
+                value = value.substring(1)
+            }
+            $(this).val(value.replace(/\B(?=(\d{3})+(?!\d))/g, "."))
+            calculateReturn()
+        })
+
+        $('#create-order').on('click', function () {
+            if (!validateAllFields()) {
+                return
+            }
+
+            const phoneNumber = $('#phone_number').val()
+            const fullName = $('#full_name').val()
+            const address = $('#address').val()
+
+            const products = selectedProducts.map(product => ({
+                productId: product._id,
+                quantity: product.quantity
+            }))
+
+            const productsForInvoice = selectedProducts.map(product => ({
+                name: product.name,
+                quantity: product.quantity,
+                subtotal: product.retailPrice * product.quantity
+            }))
+
+            const orderData = {
+                customer: {
+                    phoneNumber,
+                    fullName,
+                    address,
+                },
+                products: products,
+                payment: {
+                    received: parseInt($('#received-amount').val().replace(/\./g, '')) || 0
+                }
+            }
+
+            const orderDataForInvoice = {
+                customer: {
+                    fullName,
+                    address,
+                    phoneNumber
+                },
+                products: productsForInvoice,
+                total: parseInt($('#total-price').text().replace(/\D/g, ''))
+            }
+
+            $.ajax({
+                url: '/orders',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(orderData),
+                success: function (response) {
+                    Toastify({
+                        text: 'Order created successfully.',
+                        backgroundColor: 'green',
+                        delay: 3000
+                    }).showToast()
+
+                    $('#phone_number, #full_name, #address').val('')
+                    $('#received-amount').val('0 ₫')
+                    $('#product-table tbody').empty()
+                    $('#total-price').text('Total: 0 ₫')
+                    $('#change-return').text('Return: 0 ₫')
+                    selectedProducts = []
+
+                    displayInvoice(orderDataForInvoice)
+                },
+                error: function (xhr) {
+                    alert('Đã xảy ra lỗi khi tạo đơn hàng.')
+                    console.error('Error creating order:', xhr)
+                }
+            })
+        })
+
+        $('#btn-close-invoice').on('click', function () {
+            $('#invoice-POS').removeClass('show')
+        })
+
+        $('#print-invoice').on('click', function () {
+            const { jsPDF } = window.jspdf
+
+            $(this).hide()
+            $('#btn-close-invoice').hide()       
+
+            html2canvas($('#invoice-POS')[0]).then(function (canvas) {
+                const imgData = canvas.toDataURL('image/png')
+                const pdf = new jsPDF()
+
+                const imgWidth = 190
+                const pageHeight = pdf.internal.pageSize.height;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+                let position = 10
+
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight)
+                pdf.save('invoice.pdf')
+
+                ($('#invoice-POS').removeClass('show'))
+                $('#print-invoice').show()
+                $('#btn-close-invoice').show()
+            })
+        })
+    </script>
+}

@@ -70,7 +70,7 @@
                             </a>
                         </li>
                         <li>
-                            <a asp-area="POS" asp-controller="Product" asp-action="Index" class="svg-icon">
+                            <a asp-area="POS" asp-controller="Customer" asp-action="Index" class="svg-icon">
                                 <svg class="svg-icon" id="p-dash8" width="20" height="20"
                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -167,7 +167,9 @@
             </div>
         </div>
     </div>
-    @RenderBody()
+    <div class="content-page">
+        @RenderBody()
+    </div>
     <!-- app JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="@("https://unpkg.com/currency.js@~2.0.4/dist/currency.min.js")"></script>
@@ -186,7 +188,7 @@
             $(`#iq-sidebar-toggle li a[href="/${path}"]`).parent().addClass('active')
         } else if (path === '') {
             $('#iq-sidebar-toggle li').removeClass('active')
-            $(`#iq-sidebar-toggle li a[href="/"]`).parent().addClass('active')
+            $(`#iq-sidebar-toggle li a[href="/POS"]`).parent().addClass('active')
         } else {
             $('#iq-sidebar-toggle li').removeClass('active')
         }

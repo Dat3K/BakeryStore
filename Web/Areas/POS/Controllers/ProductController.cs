@@ -21,5 +21,11 @@ namespace Web.Areas.POS.Controllers
             var products = await _productService.GetAllProductsAsync();
             return View(products);
         }
+
+        [Authorize]
+        public async Task<IActionResult> Create(Guid id)
+        {
+            return View();
+        }
     }
 }

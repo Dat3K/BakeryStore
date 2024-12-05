@@ -65,5 +65,10 @@ namespace Web.Services
 
             await _productRepository.DeleteAsync(id);
         }
+
+        public async Task<List<Product>> GetProductsByCategoryAsync(Guid categoryId)
+        {
+            return await _productRepository.GetProductsByCategoryAsync(categoryId);
+        }
     }
 }

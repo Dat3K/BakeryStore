@@ -9,5 +9,6 @@ namespace Web.Services.Interfaces
         Task AddProductAsync(Product product);
         Task UpdateProductAsync(Product product);
         Task DeleteProductAsync(Guid id);
+        Task<List<Product>> GetProductsByCategoryAsync(Guid categoryId);
     }
 }

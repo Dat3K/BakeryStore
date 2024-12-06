@@ -408,31 +408,45 @@
                 return;
             }
 
-            $.ajax({
-                url: '/POS/POS/Checkout',
-                method: 'POST',
-                success: function(result) {
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Order placed successfully!'
-                        });
-                        loadCurrentOrder();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: result.message || 'Error during checkout'
-                        });
-                    }
+            Swal.fire({
+                title: 'Confirm Checkout',
+                text: 'Are you sure you want to complete this order?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, complete order',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return $.ajax({
+                        url: '/POS/POS/Checkout',
+                        method: 'POST',
+                        contentType: 'application/json'
+                    })
+                    .then(result => {
+                        if (!result.success) {
+                            throw new Error(result.message || 'Error during checkout');
+                        }
+                        return result;
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            error.responseJSON?.message || error.message || 'Error during checkout'
+                        );
+                    });
                 },
-                error: function(xhr, status, error) {
-                    console.error('Error during checkout:', error);
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error during checkout'
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Order completed successfully',
+                        showConfirmButton: true
+                    }).then(() => {
+                        // Clear cart and reload
+                        loadCurrentOrder();
+                        // You might want to redirect to a new order or print receipt here
                     });
                 }
             });

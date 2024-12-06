@@ -138,31 +138,16 @@ namespace Web.Areas.POS.Controllers
             try
             {
                 var user = await _userService.GetCurrentUserAsync() ?? throw new Exception("User not found");
-                // Get the current order
-                var order = await _orderService.GetCurrentOrderAsync(user.Sid);
-                if (order == null)
-                {
-                    return BadRequest(new { success = false, message = "No active cart found" });
-                }
+                var (success, message) = await _orderService.CheckoutAsync(user.Sid, OrderType.Pos.ToString());
 
-                if (order.OrderItems.Count == 0)
-                {
-                    return BadRequest(new { success = false, message = "Cart is empty" });
-                }
+                if (!success)
+                    return BadRequest(new { success = false, message });
 
-                // Update order status to Processing
-                await _orderService.UpdateOrderStatusAsync(order.Id, OrderStatus.Processing);
-
-                return Json(new { 
-                    success = true, 
-                    message = "Order placed successfully",
-                    orderId = order.Id,
-                    total = order.FinalAmount
-                });
+                return Ok(new { success = true, message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Error processing checkout", details = ex.Message });
+                return BadRequest(new { success = false, message = $"Error during checkout: {ex.Message}" });
             }
         }
 

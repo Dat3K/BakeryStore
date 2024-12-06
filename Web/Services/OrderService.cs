@@ -43,7 +43,7 @@ namespace Web.Services
         public async Task<Order> GetCurrentOrderAsync(Guid userId, string orderType = "Online")
         {
             var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
-            
+
             if (order == null)
             {
                 order = new Order
@@ -60,8 +60,8 @@ namespace Web.Services
                 await _unitOfWork.OrderRepository.AddAsync(order);
                 await _unitOfWork.SaveChangesAsync();
             }
-            
-            return order;            
+
+            return order;
         }
 
         public async Task<(bool success, string message)> AddToCartAsync(Guid userId, Guid productId, int quantity, string orderType = "Online")
@@ -69,7 +69,7 @@ namespace Web.Services
             try
             {
                 var product = await _unitOfWork.ProductRepository.GetByIdAsync(productId);
-                
+
                 if (product == null)
                     return (false, "Product not found");
 
@@ -97,7 +97,7 @@ namespace Web.Services
                 }
 
                 var orderItem = order.OrderItems.FirstOrDefault(item => item.ProductId == productId);
-                
+
                 if (orderItem == null)
                 {
                     orderItem = new OrderItem
@@ -133,12 +133,12 @@ namespace Web.Services
             try
             {
                 var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
-                
+
                 if (order == null)
                     return (false, "Order not found");
 
                 var orderItem = order.OrderItems.FirstOrDefault(item => item.ProductId == productId);
-                
+
                 if (orderItem == null)
                     return (false, "Item not found in cart");
 
@@ -185,16 +185,16 @@ namespace Web.Services
                 // Get all order items
                 var orderItems = await _unitOfWork.OrderItemRepository.GetOrderItemsByOrderIdAsync(order.Id);
                 var orderItem = orderItems.FirstOrDefault(item => item.ProductId == productId);
-                
+
                 if (orderItem == null)
                     return (false, "Item not found in cart");
 
                 // Calculate the amount to subtract from order totals
                 var itemTotal = orderItem.Subtotal;
-                
+
                 // Remove the item from order
                 order.OrderItems.Remove(orderItem);
-                
+
                 // Update order totals
                 order.TotalAmount -= itemTotal;
                 order.FinalAmount = order.TotalAmount;
@@ -219,6 +219,47 @@ namespace Web.Services
             catch (Exception ex)
             {
                 return (false, $"Error removing item: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool success, string message)> CheckoutAsync(Guid userId, string orderType = "Online")
+        {
+            try
+            {
+                var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
+                if (order == null)
+                    return (false, "No active order found");
+
+                if (!order.OrderItems.Any())
+                    return (false, "Cart is empty");
+
+                // Validate stock quantities
+                foreach (var item in order.OrderItems)
+                {
+                    var product = await _unitOfWork.ProductRepository.GetByIdAsync(item.ProductId ?? default);
+                    if (product == null)
+                        return (false, $"Product not found: {item.Product?.Name}");
+
+                    if (item.Quantity > product.StockQuantity)
+                        return (false, $"Not enough stock for {item.Product?.Name}. Available: {product.StockQuantity}");
+
+                    // Update product stock
+                    product.StockQuantity -= item.Quantity;
+                    await _unitOfWork.ProductRepository.UpdateAsync(product);
+                }
+
+                // Update order status
+                order.OrderStatus = OrderStatus.Processing.ToString();
+                order.UpdatedAt = DateTime.UtcNow;
+                await _unitOfWork.OrderRepository.UpdateAsync(order);
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return (true, "Order completed successfully");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error during checkout: {ex.Message}");
             }
         }
     }

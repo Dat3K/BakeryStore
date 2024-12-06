@@ -33,6 +33,7 @@ public class UserRepository : Repository<User>, IUserRepository
     public async Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role)
     {
         return await _context.Users
+            .Where(u => u.Role == role.ToString())
             .ToListAsync();
     }
 }

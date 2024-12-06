@@ -19,6 +19,11 @@ namespace Web.Services
             return await _unitOfWork.OrderRepository.GetOrdersByUserIdAsync(userId);
         }
 
+        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId)
+        {
+            return await _unitOfWork.OrderRepository.GetOrdersByUserIdAsync(userId);
+        }
+
         public async Task<Order> GetOrderDetailsAsync(Guid orderId)
         {
             return await _unitOfWork.OrderRepository.GetOrderWithDetailsAsync(orderId);
@@ -183,4 +188,6 @@ namespace Web.Services
             }
         }
     }
+
+    
 }

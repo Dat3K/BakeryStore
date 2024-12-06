@@ -212,8 +212,8 @@ namespace Web.Areas.POS.Controllers
                 }
 
                 existingCategory.Name = category.Name;
+
                 await _categoryService.UpdateCategoryAsync(existingCategory);
-                
                 return Json(new { success = true, message = "Category updated successfully" });
             }
             catch (Exception ex)
@@ -229,17 +229,11 @@ namespace Web.Areas.POS.Controllers
         {
             try
             {
-                var category = await _categoryService.GetCategoryByIdAsync(id);
-                if (category == null)
+                // Check if category is in use
+                var categories = await _categoryService.GetAllCategoriesAsync();
+                if (categories.Any(p => p.Id == id))
                 {
-                    return NotFound(new { success = false, message = "Category not found" });
-                }
-
-                // Check if category has associated products
-                var products = await _productService.GetProductsByCategoryAsync(id);
-                if (products.Count > 0)
-                {
-                    return BadRequest(new { success = false, message = "Cannot delete category that has associated products" });
+                    return Json(new { success = false, message = "Cannot delete category because it is being used by products" });
                 }
 
                 await _categoryService.DeleteCategoryAsync(id);

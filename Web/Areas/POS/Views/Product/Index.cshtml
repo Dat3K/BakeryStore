@@ -292,9 +292,9 @@
                                         <div class='col-md-4'>
                                             <div class='form-group'>
                                                 <label>&nbsp;</label>
-                                                <div>
-                                                    <button type='submit' class='btn btn-primary'>Save</button>
-                                                    <button type='button' class='btn btn-secondary' id="cancelAddCategory">Cancel</button>
+                                                <div class="mt-1 row">
+                                                    <button type='submit' class='btn btn-primary mr-2'>Save</button>
+                                                    <button type='button' class='btn btn-secondary mr-2' id="cancelAddCategory">Cancel</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -750,29 +750,37 @@
           const categoryData = Object.fromEntries(formData.entries());
 
           $.ajax({
-              url: '/categories',
+              url: '/POS/Product/AddCategory',
               method: 'POST',
               contentType: 'application/json',
               data: JSON.stringify(categoryData),
               success: function(response) {
-                  Toastify({
-                      text: 'Category added successfully',
-                      backgroundColor: 'green',
-                      delay: 3000,
-                      position: 'center'
-                  }).showToast();
-                  loadCategories();
-                  $('#addCategoryForm')[0].reset();
-                  $('#addCategoryForm').slideUp();
-                  $('#showAddCategoryBtn').show();
+                  if (response.success) {
+                      Swal.fire({
+                          icon: 'success',
+                          title: 'Success!',
+                          text: response.message,
+                          showConfirmButton: false,
+                          timer: 1500
+                      });
+                      loadCategories(); // Reload categories dropdown
+                      $('#addCategoryForm')[0].reset();
+                      $('#addCategoryForm').slideUp();
+                      $('#showAddCategoryBtn').show();
+                  } else {
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Error!',
+                          text: response.message
+                      });
+                  }
               },
-              error: function(err) {
-                  Toastify({
-                      text: err.responseJSON?.message || 'Failed to add category',
-                      backgroundColor: 'red',
-                      delay: 3000,
-                      position: 'center'
-                  }).showToast();
+              error: function(xhr, status, error) {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error!',
+                      text: xhr.responseJSON?.message || 'Failed to add category'
+                  });
               }
           });
       });
@@ -791,16 +799,7 @@
           }
       });
 
-      // Show/Hide Edit Form
-      $('#editCategoryBtn').click(function() {
-          $('#editCategoryForm').slideDown();
-      });
-
-      $('#cancelEditCategory').click(function() {
-          $('#editCategoryForm').slideUp();
-      });
-
-      // Edit Category
+      // Edit Category Form Submit
       $('#editCategoryForm').on('submit', function(e) {
           e.preventDefault();
           const categoryId = $('#categorySelect').val();
@@ -808,27 +807,36 @@
           const categoryData = Object.fromEntries(formData.entries());
 
           $.ajax({
-              url: `/categories/${categoryId}`,
+              url: `/POS/Product/UpdateCategory/${categoryId}`,
               method: 'PUT',
               contentType: 'application/json',
               data: JSON.stringify(categoryData),
               success: function(response) {
-                  Toastify({
-                      text: 'Category updated successfully',
-                      backgroundColor: 'green',
-                      delay: 3000,
-                      position: 'center'
-                  }).showToast();
-                  loadCategories();
-                  $('#editCategoryForm').slideUp();
+                  if (response.success) {
+                      Swal.fire({
+                          icon: 'success',
+                          title: 'Success!',
+                          text: response.message,
+                          showConfirmButton: false,
+                          timer: 1500
+                      });
+                      loadCategories(); // Reload categories
+                      $('#editCategoryForm').slideUp();
+                      $('#editCategoryForm')[0].reset();
+                  } else {
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Error!',
+                          text: response.message
+                      });
+                  }
               },
-              error: function(err) {
-                  Toastify({
-                      text: err.responseJSON?.message || 'Failed to update category',
-                      backgroundColor: 'red',
-                      delay: 3000,
-                      position: 'center'
-                  }).showToast();
+              error: function(xhr, status, error) {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error!',
+                      text: xhr.responseJSON?.message || 'Failed to update category'
+                  });
               }
           });
       });
@@ -838,9 +846,18 @@
           const categoryId = $('#categorySelect').val();
           const categoryName = $('#categorySelect option:selected').text();
 
+          if (!categoryId) {
+              Swal.fire({
+                  icon: 'warning',
+                  title: 'Warning',
+                  text: 'Please select a category to delete'
+              });
+              return;
+          }
+
           Swal.fire({
-              title: `Delete Category "${categoryName}"?`,
-              text: "You won't be able to revert this!",
+              title: 'Are you sure?',
+              text: `Do you want to delete category "${categoryName}"?`,
               icon: 'warning',
               showCancelButton: true,
               confirmButtonColor: '#d33',
@@ -849,30 +866,50 @@
           }).then((result) => {
               if (result.isConfirmed) {
                   $.ajax({
-                      url: `/categories/${categoryId}`,
+                      url: `/POS/Product/DeleteCategory/${categoryId}`,
                       method: 'DELETE',
-                      success: function() {
-                          Toastify({
-                              text: 'Category deleted successfully',
-                              backgroundColor: 'green',
-                              delay: 3000,
-                              position: 'center'
-                          }).showToast();
-                          loadCategories();
-                          $('#editCategoryForm').hide();
-                          $('#editCategoryBtn, #deleteCategoryBtn').hide();
+                      success: function(response) {
+                          if (response.success) {
+                              Swal.fire({
+                                  icon: 'success',
+                                  title: 'Deleted!',
+                                  text: response.message,
+                                  showConfirmButton: false,
+                                  timer: 1500
+                              });
+                              loadCategories(); // Reload categories
+                              $('#editCategoryForm').slideUp();
+                              $('#editCategoryBtn, #deleteCategoryBtn').hide();
+                          } else {
+                              Swal.fire({
+                                  icon: 'error',
+                                  title: 'Error!',
+                                  text: response.message
+                              });
+                          }
                       },
-                      error: function(err) {
-                          Toastify({
-                              text: err.responseJSON?.message || 'Failed to delete category',
-                              backgroundColor: 'red',
-                              delay: 3000,
-                              position: 'center'
-                          }).showToast();
+                      error: function(xhr, status, error) {
+                          Swal.fire({
+                              icon: 'error',
+                              title: 'Error!',
+                              text: xhr.responseJSON?.message || 'Failed to delete category'
+                          });
                       }
                   });
               }
           });
+      });
+
+      // Show/Hide Edit Form
+      $('#editCategoryBtn').click(function() {
+          const categoryName = $('#categorySelect option:selected').text();
+          $('#editCategoryForm input[name="name"]').val(categoryName);
+          $('#editCategoryForm').slideDown();
+      });
+
+      $('#cancelEditCategory').click(function() {
+          $('#editCategoryForm').slideUp();
+          $('#editCategoryForm')[0].reset();
       });
 
       const currencyFormatter = new Intl.NumberFormat('en-US', {

@@ -4,16 +4,34 @@ using Web.Services.Interfaces;
 using Web.Services.Exceptions;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
 namespace Web.Services
 {
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
+        private readonly DefaultdbContext _context;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(IProductRepository productRepository, DefaultdbContext context)
         {
             _productRepository = productRepository;
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Product>> SearchProductsAsync(string query, int page = 1, int pageSize = 10)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return Array.Empty<Product>();
+
+            var queryLower = query.ToLower();
+            return await _context.Products
+                .Where(p => (p.Name.Contains(queryLower, StringComparison.CurrentCultureIgnoreCase) || 
+                           p.Sku.Contains(queryLower, StringComparison.CurrentCultureIgnoreCase)) &&
+                           p.IsActive == true)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()

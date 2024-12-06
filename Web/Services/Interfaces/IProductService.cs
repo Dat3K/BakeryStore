@@ -11,5 +11,6 @@ namespace Web.Services.Interfaces
         Task UpdateProductAsync(Product product);
         Task DeleteProductAsync(Guid id);
         Task UpdateProductPropertiesAsync(Guid productId, Dictionary<string, object> propertiesToUpdate);
+        Task<IEnumerable<Product>> SearchProductsAsync(string query, int page = 1, int pageSize = 10);
     }
 }

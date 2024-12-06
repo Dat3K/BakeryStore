@@ -97,13 +97,38 @@ namespace Web.Areas.POS.Controllers
 
         private string GenerateProductSku(string productName)
         {
-            // Remove special characters and spaces, convert to uppercase
-            var cleanName = new string(productName.Where(c => char.IsLetterOrDigit(c)).Take(3).ToArray()).ToUpper();
-            
-            // Add timestamp to make it unique
-            var timestamp = DateTime.UtcNow.ToString("yyMMddHHmm");
-            
-            return $"{cleanName}{timestamp}";
+            if (string.IsNullOrEmpty(productName))
+                return string.Concat("SKU", DateTime.Now.Ticks.ToString().AsSpan(0, 8));
+
+            // Remove special characters and spaces, keep letters and numbers
+            var words = productName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var sku = "";
+
+            // Take up to first 3 words
+            for (int i = 0; i < Math.Min(words.Length, 3); i++)
+            {
+                var word = words[i];
+                // Take first 3 letters of each word if available
+                if (word.Length > 0)
+                {
+                    sku += new string(word.Where(c => char.IsLetterOrDigit(c))
+                                        .Take(3)
+                                        .ToArray());
+                }
+            }
+
+            // If SKU is too short, add timestamp
+            if (sku.Length < 3)
+            {
+                sku = string.Concat("SKU", DateTime.Now.Ticks.ToString().AsSpan(0, 8));
+            }
+            else
+            {
+                // Add random numbers for uniqueness
+                sku += DateTime.Now.ToString("MMdd");
+            }
+
+            return sku.ToUpper();
         }
 
         [Authorize]
@@ -119,8 +144,8 @@ namespace Web.Areas.POS.Controllers
                 var response = new
                 {
                     draw = HttpContext.Request.Query["draw"].FirstOrDefault(),
-                    recordsTotal = orderedProducts.Count(),
-                    recordsFiltered = orderedProducts.Count(),
+                    recordsTotal = orderedProducts.Count,
+                    recordsFiltered = orderedProducts.Count,
                     data = orderedProducts
                 };
                 return Json(response, _jsonOptions);
@@ -248,7 +273,6 @@ namespace Web.Areas.POS.Controllers
 
         [Authorize]
         [HttpDelete]
-        [Route("POS/[controller]/DeleteProduct/{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
             try

@@ -77,28 +77,28 @@
                                     </div>
                                     <div class='col-md-6'>
                                         <div class='form-group'>
-                                            <label>Category *</label>
-                                            <select id='productCategoryAdd' name='categoryId' class='custom-select'
-                                                data-style='py-0' required>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class='col-md-6'>
-                                        <div class='form-group'>
-                                            <label>Import Price *</label>
-                                            <input type='text' id='productImportPrice' class='form-control currency-input'
-                                                name='importPrice' placeholder='Enter Cost' data-errors='Please Enter Cost.'
+                                            <label>Cost Price *</label>
+                                            <input type='text' id='productCostPrice' class='form-control currency-input'
+                                                name='costPrice' placeholder='Enter Cost Price' data-errors='Please Enter Cost.'
                                                 required />
                                             <div class='help-block with-errors'></div>
                                         </div>
                                     </div>
                                     <div class='col-md-6'>
                                         <div class='form-group'>
-                                            <label>Retail Price *</label>
-                                            <input type='text' id='productRetailPrice' name='retailPrice'
+                                            <label>Price *</label>
+                                            <input type='text' id='productPrice' name='price'
                                                 class='form-control currency-input' placeholder='Enter Price'
                                                 data-errors='Please Enter Price.' required />
                                             <div class='help-block with-errors'></div>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-6'>
+                                        <div class='form-group'>
+                                            <label>Category *</label>
+                                            <select id='productCategoryAdd' name='categoryId' class='custom-select'
+                                                data-style='py-0' required>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class='col-md-6'>
@@ -270,7 +270,7 @@
                                     <div class='form-group'>
                                         <label for='productCostPrice'>Cost Price</label>
                                         <div class='input-group'>
-                                            <input name="importPrice" type='text' id='productCostPrice'
+                                            <input name="costPrice" type='text' id='productCostPrice'
                                                 class='form-control currency-input'
                                                 placeholder='Enter product cost price'
                                                 aria-describedby='basic-addon2'
@@ -490,7 +490,7 @@
           const productImage = formData.get('image')
           const productCategory = formData.get('categoryId')
           const productPrice = formData.get('productPrice')
-          const productCostPrice = formData.get('importPrice')
+          const productCostPrice = formData.get('costPrice')
           const productQuantity = formData.get('stockQuantity')
 
           const data = {
@@ -498,7 +498,7 @@
               image: productImage,
               categoryId: productCategory,
               productPrice: currency(productPrice, { symbol: '', separator: '.', decimal: ',' }).value,
-              importPrice: currency(productCostPrice, { symbol: '', separator: '.', decimal: ',' }).value,
+              costPrice: currency(productCostPrice, { symbol: '', separator: '.', decimal: ',' }).value,
               stockQuantity: currency(productQuantity, { symbol: '', separator: '.', decimal: ',' }).value
           }
 
@@ -597,7 +597,8 @@
               complete: function () {
                   // Re-enable submit button
                   $('#addProductBtn').prop('disabled', false);
-              }
+              },
+              
           });
       });
 
@@ -633,6 +634,7 @@
                                   'error'
                               );
                           }
+                        $('#productsTable').DataTable().ajax.reload();
                       },
                       error: function(xhr, status, error) {
                           Swal.fire(

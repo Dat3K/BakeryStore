@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Web.Models;
 using Web.Services.Interfaces;
 using Web.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Web.Areas.POS.Controllers
 {
@@ -209,42 +210,37 @@ namespace Web.Areas.POS.Controllers
             try
             {
                 var user = await _userService.GetCurrentUserAsync() ?? throw new Exception("User not found");
-                var (success, message) = await _orderService.RemoveCartItemAsync(
-                    user.Sid,
-                    request.ProductId,
-                    OrderType.Pos.ToString()
-                );
+                var (success, message) = await _orderService.RemoveCartItemAsync(user.Sid, request.ProductId, OrderType.Pos.ToString());
 
-                if (success)
+                if (!success)
                 {
-                    return Json(new { success = true, message = message });
+                    return BadRequest(new { success = false, message });
                 }
-                else
-                {
-                    return BadRequest(new { success = false, message = message });
-                }
+
+                return Ok(new { success = true, message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Error removing item from cart", details = ex.Message });
+                return BadRequest(new { success = false, message = $"Error removing item from cart: {ex.Message}" });
             }
         }
-    }
 
-    public class AddToCartRequest
-    {
-        public Guid ProductId { get; set; }
-        public int Quantity { get; set; }
-    }
+        public class AddToCartRequest
+        {
+            public Guid ProductId { get; set; }
+            public int Quantity { get; set; }
+        }
 
-    public class UpdateCartItemRequest
-    {
-        public Guid ProductId { get; set; }
-        public int Quantity { get; set; }
-    }
+        public class UpdateCartItemRequest
+        {
+            public Guid ProductId { get; set; }
+            public int Quantity { get; set; }
+        }
 
-    public class RemoveFromCartRequest
-    {
-        public Guid ProductId { get; set; }
+        public class RemoveFromCartRequest
+        {
+            [Required]
+            public Guid ProductId { get; set; }
+        }
     }
 }

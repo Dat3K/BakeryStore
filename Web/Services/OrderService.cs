@@ -174,36 +174,52 @@ namespace Web.Services
             }
         }
 
-        public async Task<(bool success, string message)> RemoveCartItemAsync(Guid userId, Guid itemId, string orderType = "Online")
+        public async Task<(bool success, string message)> RemoveCartItemAsync(Guid userId, Guid productId, string orderType = "Online")
         {
             try
             {
                 var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
-                var orderItems = await _unitOfWork.OrderItemRepository.GetOrderItemsByOrderIdAsync(order.Id);
                 if (order == null)
                     return (false, "Order not found");
 
-                var orderItem = orderItems.FirstOrDefault(item => item.Id == itemId);
+                // Get all order items
+                var orderItems = await _unitOfWork.OrderItemRepository.GetOrderItemsByOrderIdAsync(order.Id);
+                var orderItem = orderItems.FirstOrDefault(item => item.ProductId == productId);
                 
                 if (orderItem == null)
-                    return (false, "Item not found");
+                    return (false, "Item not found in cart");
 
+                // Calculate the amount to subtract from order totals
+                var itemTotal = orderItem.Subtotal;
+                
+                // Remove the item from order
                 order.OrderItems.Remove(orderItem);
                 
-                if (order.OrderItems.Count == 0)
+                // Update order totals
+                order.TotalAmount -= itemTotal;
+                order.FinalAmount = order.TotalAmount;
+
+                // Delete the order item
+                await _unitOfWork.OrderItemRepository.DeleteAsync(orderItem.Id);
+
+                // If cart is empty after removal, delete the order
+                if (!orderItems.Any(i => i.Id != orderItem.Id))
                 {
                     await _unitOfWork.OrderRepository.DeleteAsync(order.Id);
                 }
-                await _unitOfWork.OrderItemRepository.DeleteAsync(orderItem.Id);
+                else
+                {
+                    // Update the order
+                    await _unitOfWork.OrderRepository.UpdateAsync(order);
+                }
+
                 await _unitOfWork.SaveChangesAsync();
                 return (true, "Item removed successfully");
             }
             catch (Exception ex)
             {
-                return (false, ex.Message);
+                return (false, $"Error removing item: {ex.Message}");
             }
         }
     }
-
-
 }

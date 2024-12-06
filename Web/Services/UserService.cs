@@ -98,4 +98,10 @@ public class UserService : IUserService
     {
         return await _unitOfWork.UserRepository.GetUsersByRoleAsync(role);
     }
+
+    public async Task<IEnumerable<User>> GetAllCustomersAsync()
+    {
+        return await _unitOfWork.UserRepository.GetUsersByRoleAsync(UserRole.Customer);
+        
+    }
 }

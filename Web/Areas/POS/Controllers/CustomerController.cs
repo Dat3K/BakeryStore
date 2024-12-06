@@ -1,10 +1,23 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Web.Models;
+using Web.Services.Interfaces;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Web.Areas.POS.Controllers
 {
     [Area("POS")]
+    [Authorize]
     public class CustomerController : Controller
     {
+        private readonly IUserService _userService;
+
+        public CustomerController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -15,45 +28,31 @@ namespace Web.Areas.POS.Controllers
             return View();
         }
 
-        // [HttpPost]
-        // [ValidateAntiForgeryToken]
-        // public IActionResult Create(Customer customer)
-        // {
-        //     if (ModelState.IsValid)
-        //     {
-        //         // TODO: Add your customer creation logic here
-        //         return RedirectToAction(nameof(Index));
-        //     }
-        //     return View(customer);
-        // }
+        [HttpGet]
+        [Route("POS/[controller]/GetCustomers")]
+        public async Task<IActionResult> GetCustomers()
+        {
+            try
+            {
+                var users = await _userService.GetAllCustomersAsync();
+                var customers = users.Where(u => u.Role != "Admin")
+                    .Select(u => new
+                    {
+                        u.Sid,
+                        u.Name,
+                        u.Email,
+                        u.Nickname,
+                        u.Picture,
+                        CreatedAt = u.CreatedAt?.ToString("MM/dd/yyyy HH:mm:ss"),
+                        UpdatedAt = u.UpdatedAt?.ToString("MM/dd/yyyy HH:mm:ss")
+                    });
 
-        // public IActionResult Edit(int id)
-        // {
-        //     // TODO: Add your customer retrieval logic here
-        //     return View();
-        // }
-
-        // [HttpPost]
-        // [ValidateAntiForgeryToken]
-        // public IActionResult Edit(int id, Customer customer)
-        // {
-        //     if (id != customer.Id)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     if (ModelState.IsValid)
-        //     {
-        //         // TODO: Add your customer update logic here
-        //         return RedirectToAction(nameof(Index));
-        //     }
-        //     return View(customer);
-        // }
-
-        // public IActionResult Delete(int id)
-        // {
-        //     // TODO: Add your customer deletion logic here
-        //     return RedirectToAction(nameof(Index));
-        // }
+                return Json(new { data = customers });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
     }
 }

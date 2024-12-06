@@ -7,5 +7,6 @@ public interface IUserService
 {
     Task<User?> GetCurrentUserAsync();
     Task<User?> GetByNameAsync(string name);
+    Task<IEnumerable<User>> GetAllCustomersAsync();
     Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role);
 }

@@ -10,7 +10,7 @@ namespace Web.Areas.POS.Controllers
         {
             return View();
         }
-
+        
         [HttpPost]
         public IActionResult ProcessSale([FromBody] SaleRequest request)
         {

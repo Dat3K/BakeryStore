@@ -24,10 +24,10 @@ namespace Web.Services
             if (string.IsNullOrWhiteSpace(query))
                 return Array.Empty<Product>();
 
-            var queryLower = query.ToLower();
+            var queryLower = $"%{query.ToLower()}%";
             return await _context.Products
-                .Where(p => (p.Name.Contains(queryLower, StringComparison.CurrentCultureIgnoreCase) || 
-                           p.Sku.Contains(queryLower, StringComparison.CurrentCultureIgnoreCase)) &&
+                .Where(p => EF.Functions.Like(p.Name.ToLower(), queryLower) || 
+                           EF.Functions.Like(p.Sku.ToLower(), queryLower) &&
                            p.IsActive == true)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)

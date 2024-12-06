@@ -1,359 +1,406 @@
+@{
+    ViewData["Title"] = "POS System";
+}
+
 <style>
-    .search-group {
-        position: relative;
+    .pos-layout {
+        height: calc(100vh - 100px);
+        background: #f4f6f9;
     }
 
-    .menu-search {
-        display: none;
-        position: absolute;
-        left: 0;
-        bottom: 55px;
-        z-index: 10;
-        width: 100%;
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+        height: calc(100vh - 180px);
+        overflow-y: auto;
     }
 
-    .menu-search.show {
-        display: block;
-        z-index: 99;
-    }
-
-    .menu-search__inner {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0px 40px 90px 20px rgba(200, 200, 200, 0.4);
-    }
-
-    .product {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px;
-        border: 1px solid #000;
-        border-radius: 10px;
+    .product-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
         cursor: pointer;
     }
 
-    .product .product-name {
-        flex-grow: 1;
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
-    .product .product-price {
-        flex-shrink: 0;
-        text-align: center;
+    .product-card img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
     }
 
-    .product img {
-        flex-shrink: 0;
+    .product-info {
+        padding: 0.8rem;
     }
 
-    .product:hover {
-        background-color: #f2eeee;
+    .product-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #2d3748;
     }
 
-    .input-quantity {
-        width: 80px;
+    .product-price {
+        color: #48bb78;
+        font-weight: 600;
     }
 
-    #product-table td {
-        padding: 15px 10px !important;
+    .product-stock {
+        font-size: 0.8rem;
+        color: #718096;
     }
 
-    .form-group {
-        margin-bottom: 0;
+    .cart-section {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
-    .form-group.errors label {
-        color: red;
+    .cart-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
     }
 
-    .form-group.errors input {
-        border-color: red;
+    .cart-items {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
     }
 
-    .form-group .text-danger {
-        font-size: 13px;
-        color: red !important;
-        min-height: 30px;
+    .cart-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-bottom: 1px solid #e2e8f0;
     }
 
-    #invoice-POS {
-        position: fixed;
-        z-index: 999;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
-        padding: 2mm;
-        margin: 0 auto;
-        width: 450px;
-        background: #fff;
+    .cart-item-info {
+        flex: 1;
+    }
+
+    .cart-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cart-footer {
+        padding: 1rem;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        outline: none;
+    }
+
+    .search-box input:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+
+    .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 1000;
+        max-height: 300px;
+        overflow-y: auto;
         display: none;
     }
 
-    #invoice-POS.show {
+    .search-results.show {
         display: block;
     }
 
-    #invoice-POS ::selection {
-        background: #f31544;
-        color: #fff;
+    .btn-quantity {
+        padding: 0.25rem 0.5rem;
+        border: none;
+        background: #e2e8f0;
+        border-radius: 4px;
+        cursor: pointer;
     }
 
-    #invoice-POS ::moz-selection {
-        background: #f31544;
-        color: #fff;
+    .btn-quantity:hover {
+        background: #cbd5e0;
     }
 
-    #invoice-POS h1 {
-        font-size: 1.5em;
-        color: #222;
+    .total-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #e2e8f0;
     }
 
-    #invoice-POS h2 {
-        font-size: 0.9em;
-    }
-
-    #invoice-POS h3 {
-        font-size: 1.2em;
-        font-weight: 300;
-        line-height: 2em;
-    }
-
-    #invoice-POS p {
-        font-size: 0.7em;
-        color: #666;
-        line-height: 1.2em;
-    }
-
-    #invoice-POS #top,
-    #invoice-POS #mid {
-        /* Targets all id with 'col-' */
-        border-bottom: 1px solid #eee;
-    }
-
-    #invoice-POS #top {
-        min-height: 100px;
-    }
-
-    #invoice-POS #mid {
-        min-height: 80px;
-    }
-
-    #invoice-POS #bot {
-        min-height: 50px;
-    }
-
-    #invoice-POS #top .logo {
-        height: 60px;
-        width: 60px;
-        background: url(images/logo.png) no-repeat;
-        background-size: 60px 60px;
-    }
-
-    #invoice-POS .clientlogo {
-        float: left;
-        height: 60px;
-        width: 60px;
-        background: url(images/logo.png) no-repeat;
-        background-size: 60px 60px;
-        border-radius: 50px;
-    }
-
-    #invoice-POS .info {
-        display: block;
-        margin-left: 0;
-    }
-
-    #invoice-POS .title {
-        float: right;
-    }
-
-    #invoice-POS .title p {
-        text-align: right;
-    }
-
-    #invoice-POS table {
+    .checkout-btn {
         width: 100%;
-        border-collapse: collapse;
+        padding: 1rem;
+        background: #48bb78;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
     }
 
-    #invoice-POS td {
-        word-break: break-word;
-        max-width: 100px;
-    }
-
-    #invoice-POS .tabletitle {
-        background: #eee;
-    }
-
-    #invoice-POS .service {
-        border-bottom: 1px solid #eee;
-    }
-
-    #invoice-POS #legalcopy {
-        margin-top: 5mm;
+    .checkout-btn:hover {
+        background: #38a169;
     }
 </style>
-<div class='container-fluid add-form-list'>
-    <div class='row'>
-        <div class='col-sm-12 col-md-5'>
-            <div class='col-sm-12'>
-                <div class='card'>
-                    <div class='card-header d-flex justify-content-between'>
-                        <div class='header-title'>
-                            <h4 class='card-title'>Customer</h4>
-                        </div>
-                    </div>
-                    <div class='card-body'>
 
-                        <div class='row'>
-                            <div class='col-md-6'>
-                                <div class='form-group'>
-                                    <label>Phone Number *</label>
-                                    <input type='text' class='form-control' placeholder='Enter Phone Number'
-                                        id="phone_number" />
-                                    <div class='text-danger'></div>
-                                </div>
-                            </div>
-                            <div class='col-md-6'>
-                                <div class='form-group'>
-                                    <label>Name *</label>
-                                    <input type='text' class='form-control' placeholder='Enter Name' id="full_name"
-                                        disabled />
-                                    <div class='text-danger'></div>
-                                </div>
-                            </div>
-                            <div class='col-md-12'>
-                                <div class='form-group'>
-                                    <label>Address *</label>
-                                    <input type='text' class='form-control' placeholder='Enter Address' id="address"
-                                        disabled />
-                                    <div class='text-danger'></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="pos-layout">
+    <div class="container-fluid">
+        <div class="row h-100">
+            <!-- Products Section -->
+            <div class="col-lg-8">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search products by name or SKU..." class="form-control">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                <div class="product-grid" id="productGrid">
+                    <!-- Products will be loaded here -->
                 </div>
             </div>
 
-            <div class='col-sm-12'>
-                <div class='card'>
-                    <div class='card-body'>
-                        <div class='row'>
-                            <div class='col-md-12'>
-                                <div class='form-group search-group'>
-                                    <label>Search Product</label>
-                                    <input id="searchProduct" type='text' class='form-control'
-                                        placeholder='Enter Name or Barcode' />
-                                    <div class='menu-search'>
-                                        <div id="searchResults" class='menu-search__inner'></div>
-                                    </div>
-                                </div>
+            <!-- Cart Section -->
+            <div class="col-lg-4">
+                <div class="cart-section">
+                    <div class="cart-header">
+                        <h4 class="mb-0">Shopping Cart</h4>
+                    </div>
+                    <div class="cart-items" id="cartItems">
+                        <!-- Cart items will be added here -->
+                    </div>
+                    <div class="cart-footer">
+                        <div class="total-section">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Total:</span>
+                                <span id="total" class="font-weight-bold">$0.00</span>
                             </div>
                         </div>
+                        <button class="checkout-btn" id="checkoutBtn">
+                            Proceed to Checkout
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class='col-sm-12'>
-                <div class='row justify-content-between align-items-center'
-                    style="gap: 20px; padding: 0 15px; flex-wrap: nowrap">
-                    <div class='form-group ml-auto' style="width: 285px">
-                        <label>Received Amount *</label>
-                        <input id="received-amount" type='text' class='form-control' value="0" />
-                        <div class='text-danger'></div>
-                    </div>
-                    <button id="create-order" class='btn btn-primary mt-2'>Generate Invoice</button>
-                </div>
-            </div>
-        </div>
-
-        <div class='col-md-7'>
-            <div style='height: 500px; display: block; overflow-y: scroll'>
-                <table id="product-table" class='table table-striped table-hover table-bordered text-center'>
-                    <thead class='table-dark'>
-                        <tr>
-                            <th>Image</th>
-                            <th>Barcode</th>
-                            <th>Name</th>
-                            <th>Stock</th>
-                            <th>Unit Price</th>
-                            <th>Quantity</th>
-                            <th>Subtotal</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <p id="total-price" class='mt-3 font-size-32 font-weight-bold'>Total: 0₫</p>
-            <p id="change-return" class='mt-3 font-size-20'>Return: 0₫</p>
         </div>
     </div>
-    <!-- Page end  -->
-    <div id="invoice-POS">
-        <center id="top">
-            <div class="logo"></div>
-            <div class="info">
-                <h2>POS Inc</h2>
-            </div><!--End Info-->
-        </center><!--End InvoiceTop-->
-
-        <div id="mid">
-            <div class="info">
-                <h2>Contact Info</h2>
-                <p id="contact-info">
-                    Address : street city, state 0000</br>
-                    Email : JohnDoe@gmail.com</br>
-                    Phone : 555-555-5555</br>
-                    Date : 555-555-5555</br>
-                </p>
-            </div>
-        </div><!--End Invoice Mid-->
-
-        <div id="bot">
-            <div id="table">
-                <table class="text-center">
-                    <thead>
-                        <tr class="tabletitle">
-                            <td class="item">
-                                <h2>Item</h2>
-                            </td>
-                            <td class="Hours">
-                                <h2>Qty</h2>
-                            </td>
-                            <td class="Rate">
-                                <h2>Sub Total</h2>
-                            </td>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        
-                    </tbody>
-
-                    
-
-                </table>
-            </div><!--End Table-->
-
-            <div id="legalcopy" class="text-center">
-                <strong>Thank you for your business!</strong>
-            </div>
-
-            <div class="text-right">
-                <button id="print-invoice" class="btn btn-primary">Print</button>
-                <button id="btn-close-invoice" class="btn btn-danger">Close</button>
-            </div>
-
-        </div><!--End InvoiceBot-->
-    </div><!--End Invoice-->
 </div>
+
 @section Scripts {
     <script>
+        let cart = [];
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const productGrid = document.getElementById('productGrid');
+        const cartItems = document.getElementById('cartItems');
         
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(value);
+        }
+
+        // Search products
+        const searchProducts = debounce(async (query) => {
+            if (!query || query.length < 2) {
+                searchResults.innerHTML = '';
+                searchResults.classList.remove('show');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/POS/POS/SearchProducts?query=${encodeURIComponent(query)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                
+                if (result.data && result.data.length > 0) {
+                    displaySearchResults(result.data);
+                    searchResults.classList.add('show');
+                } else {
+                    searchResults.innerHTML = '<div class="p-3 text-muted">No products found</div>';
+                    searchResults.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Error searching products:', error);
+                searchResults.innerHTML = '<div class="p-3 text-danger">An error occurred while searching</div>';
+                searchResults.classList.add('show');
+            }
+        }, 300);
+
+        // Display search results
+        function displaySearchResults(products) {
+            searchResults.innerHTML = products.map(product => `
+                <div class="p-2 border-bottom hover:bg-gray-100 cursor-pointer" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                    <div class="d-flex align-items-center">
+                        <img src="${product.thumbnail || '/images/no-image.png'}" alt="${product.name}" 
+                             class="mr-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                        <div class="flex-grow-1">
+                            <div class="font-weight-bold">${product.name}</div>
+                            <div class="small text-muted">SKU: ${product.sku}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-success font-weight-bold">${formatCurrency(product.price)}</div>
+                            <div class="small text-muted">Stock: ${product.stockQuantity}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Add to cart
+        function addToCart(product) {
+            if (!product || !product.id) {
+                console.error('Invalid product data:', product);
+                return;
+            }
+
+            const existingItem = cart.find(item => item.id === product.id);
+            
+            if (existingItem) {
+                if (existingItem.quantity < product.stockQuantity) {
+                    existingItem.quantity += 1;
+                } else {
+                    alert('Insufficient stock quantity!');
+                    return;
+                }
+            } else {
+                if (product.stockQuantity > 0) {
+                    cart.push({
+                        ...product,
+                        quantity: 1
+                    });
+                } else {
+                    alert('Product is out of stock!');
+                    return;
+                }
+            }
+            
+            updateCartDisplay();
+            searchResults.classList.remove('show');
+            searchInput.value = '';
+        }
+
+        // Update cart display
+        function updateCartDisplay() {
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="font-weight-bold">${item.name}</div>
+                        <div class="text-muted small">${formatCurrency(item.price)} x ${item.quantity}</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="btn-quantity" onclick="updateQuantity('${item.id}', ${item.quantity - 1})"
+                                ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                        <span class="mx-2">${item.quantity}</span>
+                        <button class="btn-quantity" onclick="updateQuantity('${item.id}', ${item.quantity + 1})"
+                                ${item.quantity >= item.stockQuantity ? 'disabled' : ''}>+</button>
+                        <button class="btn btn-sm btn-danger ml-2" onclick="removeFromCart('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            updateTotals();
+        }
+
+        // Update quantity
+        function updateQuantity(productId, newQuantity) {
+            const item = cart.find(item => item.id === productId);
+            if (!item) return;
+
+            if (newQuantity < 1) {
+                removeFromCart(productId);
+                return;
+            }
+
+            if (newQuantity > item.stockQuantity) {
+                alert('Insufficient stock quantity!');
+                return;
+            }
+
+            item.quantity = newQuantity;
+            updateCartDisplay();
+        }
+
+        // Remove from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDisplay();
+        }
+
+        // Update totals
+        function updateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('total').textContent = formatCurrency(subtotal);
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', (e) => searchProducts(e.target.value));
+        
+        // Close search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchResults.contains(e.target) && e.target !== searchInput) {
+                searchResults.classList.remove('show');
+            }
+        });
+
+        // Checkout handler
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Please add items to cart before checkout!');
+                return;
+            }
+            // Implement checkout logic here
+            console.log('Checking out with items:', cart);
+        });
     </script>
 }

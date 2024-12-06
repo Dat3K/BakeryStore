@@ -27,16 +27,18 @@ namespace Web.Areas.POS.Controllers
                 return Json(new { data = Array.Empty<object>() });
             }
 
+            Console.WriteLine($"Search query: {query}");
+
             try
             {
                 var products = await _productService.SearchProductsAsync(query, page, pageSize);
                 var productData = products.Select(p => new
                 {
-                    _id = p.Id,
+                    id = p.Id,
                     name = p.Name,
-                    barcode = p.Sku,
-                    image = p.Thumbnail,
-                    retailPrice = p.Price,
+                    sku = p.Sku,
+                    thumbnail = p.Thumbnail,
+                    price = p.Price,
                     stockQuantity = p.StockQuantity
                 });
 

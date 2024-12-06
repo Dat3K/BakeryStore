@@ -2,6 +2,8 @@ using Web.Data.Repositories.Interfaces;
 using Web.Models;
 using Web.Services.Interfaces;
 using Web.Services.Exceptions;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Web.Services
 {
@@ -69,6 +71,24 @@ namespace Web.Services
         public async Task<List<Product>> GetProductsByCategoryAsync(Guid categoryId)
         {
             return await _productRepository.GetProductsByCategoryAsync(categoryId);
+        }
+
+        public async Task UpdateProductPropertiesAsync(Guid productId, Dictionary<string, object> propertiesToUpdate)
+        {
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product == null)
+                throw new NotFoundException($"Product with ID {productId} was not found");
+
+            foreach (var property in propertiesToUpdate)
+            {
+                var prop = typeof(Product).GetProperty(property.Key);
+                if (prop != null && prop.CanWrite)
+                {
+                    prop.SetValue(product, property.Value);
+                }
+            }
+
+            await _productRepository.UpdateAsync(product);
         }
     }
 }

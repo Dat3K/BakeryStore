@@ -272,6 +272,103 @@ namespace Web.Areas.POS.Controllers
         }
 
         [Authorize]
+        [HttpPost]
+        [Route("POS/[controller]/UpdateProduct")]
+        public async Task<IActionResult> UpdateProduct([FromForm] Product updatedProduct, IFormFile image)
+        {
+            try
+            {
+                var existingProduct = await _productService.GetProductByIdAsync(updatedProduct.Id);
+                if (existingProduct == null)
+                {
+                    return Json(new { success = false, message = "Product not found" });
+                }
+
+                bool hasChanges = false;
+
+                // Check and update each field only if it has changed
+                if (!string.IsNullOrEmpty(updatedProduct.Name) && updatedProduct.Name != existingProduct.Name)
+                {
+                    existingProduct.Name = updatedProduct.Name;
+                    hasChanges = true;
+                }
+
+                if (updatedProduct.Price != existingProduct.Price)
+                {
+                    existingProduct.Price = updatedProduct.Price;
+                    hasChanges = true;
+                }
+
+                if (updatedProduct.CostPrice != existingProduct.CostPrice)
+                {
+                    existingProduct.CostPrice = updatedProduct.CostPrice;
+                    hasChanges = true;
+                }
+
+                if (updatedProduct.StockQuantity != existingProduct.StockQuantity)
+                {
+                    existingProduct.StockQuantity = updatedProduct.StockQuantity;
+                    hasChanges = true;
+                }
+
+                if (updatedProduct.CategoryId != existingProduct.CategoryId)
+                {
+                    existingProduct.CategoryId = updatedProduct.CategoryId;
+                    hasChanges = true;
+                }
+
+                // Handle image update
+                if (image != null && image.Length > 0)
+                {
+                    // Delete old image if exists
+                    if (!string.IsNullOrEmpty(existingProduct.Thumbnail))
+                    {
+                        try
+                        {
+                            string publicId = ExtractCloudinaryPublicId(existingProduct.Thumbnail);
+                            await _cloudinaryService.DeleteImageAsync(publicId);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log error but continue with update
+                            Console.WriteLine($"Failed to delete old image: {ex.Message}");
+                        }
+                    }
+
+                    // Upload new image
+                    var imageUrl = await _cloudinaryService.UploadImageAsync(image);
+                    existingProduct.Thumbnail = imageUrl;
+                    hasChanges = true;
+                }
+
+                if (hasChanges)
+                {
+                    existingProduct.UpdatedAt = DateTime.UtcNow;
+                    
+                    // Update only the changed properties
+                    await _productService.UpdateProductPropertiesAsync(existingProduct.Id, new Dictionary<string, object>
+                    {
+                        { nameof(Product.Name), existingProduct.Name },
+                        { nameof(Product.Price), existingProduct.Price },
+                        { nameof(Product.CostPrice), existingProduct.CostPrice },
+                        { nameof(Product.StockQuantity), existingProduct.StockQuantity },
+                        { nameof(Product.CategoryId), existingProduct.CategoryId },
+                        { nameof(Product.Thumbnail), existingProduct.Thumbnail },
+                        { nameof(Product.UpdatedAt), existingProduct.UpdatedAt }
+                    });
+
+                    return Json(new { success = true, message = "Product updated successfully" });
+                }
+
+                return Json(new { success = true, message = "No changes detected" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {

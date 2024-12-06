@@ -39,6 +39,149 @@
         height: 200px;
         margin-top: 10px;
     }
+
+    /* Modern DataTable Styling */
+    .data-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .data-table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        padding: 15px;
+        border-bottom: 2px solid #dee2e6;
+        white-space: nowrap;
+    }
+
+    .data-table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .data-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .data-table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #dee2e6;
+        color: #495057;
+    }
+
+    /* Status badges */
+    .badge {
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-weight: 500;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .badge:hover {
+        transform: translateY(-1px);
+    }
+
+    /* DataTable controls styling */
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 4px 24px 4px 8px;
+        margin: 0 8px;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 6px 12px;
+        margin-left: 8px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 4px;
+        padding: 6px 12px;
+        margin: 0 2px;
+        border: none;
+        background: #f8f9fa;
+        color: #495057 !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #e9ecef !important;
+        border: none;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #0d6efd !important;
+        color: white !important;
+        border: none;
+    }
+
+    .dataTables_wrapper .dataTables_info {
+        color: #6c757d;
+        padding-top: 16px;
+    }
+
+    /* Product image styling */
+    .product-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    /* Action buttons */
+    .list-action {
+        gap: 8px;
+    }
+
+    .list-action .badge {
+        cursor: pointer;
+        border: none;
+        padding: 8px;
+        height: 32px;
+        width: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .list-action .badge i {
+        font-size: 14px;
+    }
+
+    /* Price columns */
+    .price-column {
+        font-weight: 500;
+        color: #198754;
+    }
+
+    /* Stock quantity */
+    .stock-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .stock-low {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .stock-good {
+        background-color: #d4edda;
+        color: #155724;
+    }
 </style>
 
 <div class='container-fluid'>
@@ -229,12 +372,12 @@
                             <form id='editProductForm'>
                                 <div class='card-body px-0 bukmark'>
                                     <!-- ID sản phẩm (ẩn) -->
-                                    <input type='hidden' id='productId' name='productId' />
+                                    <input type='hidden' id='productId' name='id' />
                                     <!-- Tên sản phẩm -->
                                     <div class='form-group'>
                                         <label for='productName'>Product Name</label>
                                         <input name="name" type='text' id='productName' class='form-control'
-                                            placeholder='Enter product name' />
+                                            placeholder='Enter product name' required />
                                     </div>
                                     <!-- Mã vạch -->
                                     <div class='form-group'>
@@ -251,19 +394,17 @@
                                     <!-- Danh mục -->
                                     <div class='form-group'>
                                         <label for='productCategory'>Category</label>
-                                        <select name="categoryId" class="custom-select" id="productCategory">
-
+                                        <select name="categoryId" class="custom-select" id="productCategory" required>
                                         </select>
                                     </div>
                                     <!-- Giá bán -->
                                     <div class='form-group'>
                                         <label for='productPrice'>Price</label>
                                         <div class='input-group'>
-                                            <input name="productPrice" type='text' id='productPrice'
-                                                class='form-control currency-input format-number-input'
+                                            <input name="price" type='text' id='productPrice'
+                                                class='form-control currency-input'
                                                 placeholder='Enter product price'
-                                                aria-describedby='basic-addon2'
-                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
+                                                required />
                                         </div>
                                     </div>
                                     <!-- Giá nhập -->
@@ -273,29 +414,28 @@
                                             <input name="costPrice" type='text' id='productCostPrice'
                                                 class='form-control currency-input'
                                                 placeholder='Enter product cost price'
-                                                aria-describedby='basic-addon2'
-                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
+                                                required />
                                         </div>
                                     </div>
                                     <!-- Số lượng -->
                                     <div class='form-group'>
                                         <label for='productQuantity'>Quantity</label>
-                                        <input name="stockQuantity" type='text' id='productQuantity'
-                                            class='form-control' placeholder='Enter product quantity' />
+                                        <input name="stockQuantity" type='number' id='productQuantity'
+                                            class='form-control' placeholder='Enter product quantity' required />
                                     </div>
 
                                 </div>
-                            </form>
-                            <div class='card-footer border-0'>
-                                <div class='d-flex flex-wrap align-items-center justify-content-end'>
-                                    <button type='button' class='btn btn-secondary mr-3' data-dismiss='modal'>
-                                        Cancel
-                                    </button>
-                                    <button type='submit' class='btn btn-primary' id='saveProductChanges'>
-                                        Save Changes
-                                    </button>
+                                <div class='card-footer border-0'>
+                                    <div class='d-flex flex-wrap align-items-center justify-content-end'>
+                                        <button type='button' class='btn btn-secondary mr-3' data-dismiss='modal'>
+                                            Cancel
+                                        </button>
+                                        <button type='submit' class='btn btn-primary' id='saveProductChanges'>
+                                            Save Changes
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -312,52 +452,97 @@
       $('#productsTable').DataTable({
           processing: true,
           serverSide: false,
-          order: [],
-          lengthMenu: [10, 20, 30, 50],
-          columnDefs: [{ className: 'dt-center', targets: '_all' }],
+          order: [[7, "desc"]],
+          lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+          columnDefs: [
+              { className: 'dt-center', targets: '_all' },
+              { type: 'date', targets: [6,7] },
+              { className: 'price-column', targets: [3,4] }
+          ],
+          dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+               '<"row"<"col-sm-12"tr>>' +
+               '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+          language: {
+              search: "_INPUT_",
+              searchPlaceholder: "Search products...",
+              lengthMenu: "_MENU_ products per page",
+              info: "Showing _START_ to _END_ of _TOTAL_ products",
+              infoEmpty: "No products found",
+              infoFiltered: "(filtered from _MAX_ total products)",
+              paginate: {
+                  first: '<i class="fas fa-angle-double-left"></i>',
+                  previous: '<i class="fas fa-angle-left"></i>',
+                  next: '<i class="fas fa-angle-right"></i>',
+                  last: '<i class="fas fa-angle-double-right"></i>'
+              }
+          },
           ajax: {
               url: '/POS/Product/GetAllProducts',
               type: 'GET',
-              dataSrc: 'data' // Specify that our data is in the 'data' property of the response
+              dataSrc: 'data'
           },
           columns: [
               {
-                  data: 'Sku',
-                  sortable: false
+                  data: null,
+                  render: function (data) {
+                      return `<span class="fw-bold text-truncate w-100" title="${data.Sku}">${data.Sku}</span>`
+                  }
               },
               {
                   data: null,
                   render: function (data) {
                       return `<div class='d-flex align-items-center'>
-                          <img src="${data.Thumbnail}" class='img-fluid rounded avatar-50 mr-3' alt='image' />
-                          <p class='mb-0'>${data.Name}</p>
+                          <img src="${data.Thumbnail}" class='product-image mr-3' alt='${data.Name}' />
+                          <div>
+                              <p class='mb-0 font-weight-medium'>${data.Name}</p>
+                              <small class='text-muted text-truncate'>${data.Description}</small>
+                          </div>
                       </div>`
                   }
               },
-              { data: 'Category.Name' },
+              { 
+                  data: 'Category.Name',
+                  render: function(data) {
+                      return `<span class="badge bg-info">${data}</span>`
+                  }
+              },
               {
                   data: 'Price',
                   render: function (data) {
-                      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(data)
+                      return `<span class="fw-bold">${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(data)}</span>`
                   }
               },
               {
                   data: 'CostPrice',
                   render: function (data) {
-                      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(data)
+                      return `<span class="fw-bold">${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(data)}</span>`
                   }
               },
-              { data: 'StockQuantity' },
+              {
+                  data: 'StockQuantity',
+                  render: function(data) {
+                      const badgeClass = data < 10 ? 'stock-low' : 'stock-good';
+                      return `<span class="stock-badge ${badgeClass}">${data}</span>`
+                  }
+              },
               { 
                   data: 'CreatedAt',
                   render: function (data) {
-                      return new Date(data).toLocaleString('en-GB', { timeZone: 'UTC' })
+                      const date = new Date(data);
+                      return `<div>
+                          <div>${date.toLocaleDateString('en-GB')}</div>
+                          <small class="text-muted">${date.toLocaleTimeString('en-GB')}</small>
+                      </div>`
                   }
               },
               { 
                   data: 'UpdatedAt',
                   render: function (data) {
-                      return new Date(data).toLocaleString('en-GB', { timeZone: 'UTC' })
+                      const date = new Date(data);
+                      return `<div>
+                          <div>${date.toLocaleDateString('en-GB')}</div>
+                          <small class="text-muted">${date.toLocaleTimeString('en-GB')}</small>
+                      </div>`
                   }
               },
               {
@@ -365,22 +550,22 @@
                   sortable: false,
                   render: function (data, type, row) {
                       return `<div class='d-flex align-items-center justify-content-center list-action'>
-                          <button class='badge bg-success mr-2 edit-product' data-toggle='modal' data-placement='top'
+                          <button class='badge bg-success edit-product' data-toggle='modal' data-placement='top'
                               data-target='#edit-note' title='Edit' data-original-title='Edit'
                               data-id='${data}' data-name='${row.Name}' data-sku='${row.Sku}'
                               data-thumbnail='${row.Thumbnail}' data-categoryid='${row.CategoryId}'
                               data-price='${row.Price}' data-cost-price='${row.CostPrice}'
-                              data-quantity='${row.StockQuantity}' href='#'>
-                              <i class='ri-pencil-line mr-0'></i>
+                              data-quantity='${row.StockQuantity}'>
+                              <i class='ri-pencil-line'></i>
                           </button>
-                          <button class='badge bg-warning mr-2 delete-product' data-name='${row.Name}' data-id='${data}' href='#'>
-                              <i class='ri-delete-bin-line mr-0'></i>
+                          <button class='badge bg-danger delete-product' data-name='${row.Name}' data-id='${data}'>
+                              <i class='ri-delete-bin-line'></i>
                           </button>
                       </div>`
                   }
               }
           ]
-      })
+      });
 
       const loadCategories = () => $.ajax({
           url: '/POS/Product/GetAllCategories',
@@ -406,48 +591,19 @@
 
       loadCategories()
 
-      let currentRowUpdate = null
-      /*--------------------------------------------------------------------- 
-          edit-note 
-          -----------------------------------------------------------------------*/
-      $('#edit-note').on('show.bs.modal', function (event) {
-          // Lấy nút mở modal
-          const button = $(event.relatedTarget)
-          currentRowUpdate = $('#productsTable').DataTable().row(button.parents('tr'))
+      $('#addProductButton').on('click', function() {
+          $('#addProductSection').slideDown();
+          // Initialize currency inputs for add form
+          initializeCurrencyInputs();
+      });
 
+      $('#resetAddProduct').on('click', function() {
+          $('#addProductForm')[0].reset();
+          $('#addProductImagePreview').addClass('d-none');
+          // Reinitialize currency inputs after reset
+          initializeCurrencyInputs();
+      });
 
-          // Lấy dữ liệu từ các thuộc tính `data-*`
-          const productId = button.data('id')
-          const productName = button.data('name')
-          const productSku = button.data('sku')
-          const productImage = button.data('thumbnail')
-          const productCategoryId = button.data('categoryid')
-          const productPrice = formatNumber(button.data('price'))
-          const productCostPrice = formatNumber(button.data('cost-price'))
-          const productQuantity = formatNumber(button.data('quantity'))
-
-          // Đặt dữ liệu vào các trường trong modal
-          const modal = $(this)
-          modal.find('#productId').val(productId)
-          modal.find('#productName').val(productName)
-          modal.find('#productSku').val(productSku)
-          modal.find('#productImage').attr('src', productImage)
-          modal.find('#productCategory').val(productCategoryId).change()
-          modal.find('#productPrice').val(productPrice)
-          modal.find('#productCostPrice').val(productCostPrice)
-          modal.find('#productQuantity').val(productQuantity)
-      })
-
-
-      $('#addProductButton').click(function () {
-          $('#addProductSection').toggle()
-      })
-
-      $('#resetAddProduct').click(function () {
-          $('#addProductImagePreview').addClass('d-none')
-      })
-
-      let imagePreviewUpdate = null
       /*--------------------------------------------------------------------- 
           show-images 
           -----------------------------------------------------------------------*/
@@ -479,126 +635,54 @@
           $('#addProductImagePreview').removeClass('d-none')
       })
 
-      /*--------------------------------------------------------------------- 
-          update product 
-          -----------------------------------------------------------------------*/
-      $('#saveProductChanges').on('click', function (e) {
-          e.preventDefault()
-          const formData = new FormData($('#editProductForm')[0])
-          const productId = formData.get('productId')
-          const productName = formData.get('name')
-          const productImage = formData.get('image')
-          const productCategory = formData.get('categoryId')
-          const productPrice = formData.get('productPrice')
-          const productCostPrice = formData.get('costPrice')
-          const productQuantity = formData.get('stockQuantity')
-
-          const data = {
-              name: productName,
-              image: productImage,
-              categoryId: productCategory,
-              productPrice: currency(productPrice, { symbol: '', separator: '.', decimal: ',' }).value,
-              costPrice: currency(productCostPrice, { symbol: '', separator: '.', decimal: ',' }).value,
-              stockQuantity: currency(productQuantity, { symbol: '', separator: '.', decimal: ',' }).value
-          }
-
-          formData.set('data', JSON.stringify(data))
-
-          $.ajax({
-              url: `/products/${productId}`,
-              type: 'PUT',
-              data: formData,
-              processData: false,
-              contentType: false,
-              beforeSend: () => {
-                  $('#saveProductChanges').text('Updating...')
-                  $('#saveProductChanges').prop('disabled', true)
-              },
-              success: (response) => {
-                  Swal.fire({
-                      icon: 'success',
-                      title: 'Success',
-                      text: 'Product updated successfully',
-                      timer: 500
-                  })
-                  $('#edit-note').modal('hide')
-                  currentRowUpdate.data(response).invalidate()
-                  $('#productsTable').DataTable().one('draw', function() {
-                      const rowNode = currentRowUpdate.node()
-                      const imageElement = rowNode.querySelector('img')
-                      imageElement.src = response.image
-                  })
-                  currentRowUpdate.draw(false)
-              },
-              error: (error) => {
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: error.responseJSON.message || 'An error occurred',
-                      showConfirmButton: true,
-                  })
-              },
-              complete: () => {
-                  $('#saveProductChanges').text('Save Changes')
-                  $('#saveProductChanges').prop('disabled', false)
-              }
-          })
-      })
 
       /*--------------------------------------------------------------------- 
           add product and upload image to server 
           -----------------------------------------------------------------------*/
-      $('#addProductForm').on('submit', function (event) {
-          event.preventDefault();
-          
-          // Disable submit button to prevent double submission
-          $('#addProductBtn').prop('disabled', true);
-          
+      $('#addProductForm').on('submit', function(e) {
+          e.preventDefault();
           const formData = new FormData(this);
+
+          // Parse currency values before sending
+          const price = parseCurrency(formData.get('price'));
+          const costPrice = parseCurrency(formData.get('costPrice'));
           
+          formData.set('price', price);
+          formData.set('costPrice', costPrice);
+
           $.ajax({
               url: '/POS/Product/AddProduct',
               type: 'POST',
               data: formData,
               processData: false,
               contentType: false,
-              success: function (response) {
+              success: function(response) {
                   if (response.success) {
-                      // Show success message
+                      $('#addProductSection').slideUp();
+                      $('#productsTable').DataTable().ajax.reload();
+                      $('#addProductForm')[0].reset();
+                      $('#addProductImagePreview').addClass('d-none');
+                      
                       Swal.fire({
                           icon: 'success',
-                          title: 'Success!',
+                          title: 'Success',
                           text: response.message
-                      }).then(() => {
-                          // Reset form
-                          $('#addProductForm')[0].reset();
-                          
-                          // Hide add product section
-                          $('#addProductSection').hide();
-                          
-                          // Refresh product table
-                          $('#productsTable').DataTable().ajax.reload();
                       });
                   } else {
                       Swal.fire({
                           icon: 'error',
-                          title: 'Error!',
+                          title: 'Error',
                           text: response.message
                       });
                   }
               },
-              error: function (xhr, status, error) {
+              error: function(xhr, status, error) {
                   Swal.fire({
                       icon: 'error',
-                      title: 'Error!',
-                      text: 'An error occurred while adding the product. Please try again.'
+                      title: 'Error',
+                      text: 'An error occurred while adding the product.'
                   });
-              },
-              complete: function () {
-                  // Re-enable submit button
-                  $('#addProductBtn').prop('disabled', false);
-              },
-              
+              }
           });
       });
 
@@ -621,12 +705,12 @@
                       type: 'DELETE',
                       success: function(response) {
                           if (response.success) {
-                              Swal.fire(
-                                  'Deleted!',
-                                  response.message,
-                                  'success'
-                              );
-                              table.ajax.reload();
+                            Swal.fire(
+                                'Deleted!',
+                                response.message,
+                                'success'
+                            );
+                            $('#productsTable').DataTable().ajax.reload();
                           } else {
                               Swal.fire(
                                   'Error!',
@@ -634,7 +718,6 @@
                                   'error'
                               );
                           }
-                        $('#productsTable').DataTable().ajax.reload();
                       },
                       error: function(xhr, status, error) {
                           Swal.fire(
@@ -792,63 +875,196 @@
           });
       });
 
-      const formatter = new Intl.NumberFormat('en-US', {
+      const currencyFormatter = new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'USD',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 20
       });
 
-      function formatUSD(number) {
-          return formatter.format(number);
+      // Format number to USD currency
+      function formatCurrency(amount) {
+          if (!amount) return '';
+          // Handle string numbers
+          if (typeof amount === 'string') {
+              amount = parseFloat(amount);
+          }
+          return currencyFormatter.format(amount);
       }
 
-      // Handle currency input fields
-      function handleCurrencyInput(e) {
-          // Get the input value and remove all non-numeric characters except decimal point
-          let value = e.target.value.replace(/[^\d.]/g, '');
-          
-          // Ensure only one decimal point
-          const decimalPoints = value.match(/\./g);
-          if (decimalPoints && decimalPoints.length > 1) {
-              value = value.replace(/\.(?=.*\.)/g, '');
-          }
-
-          // Limit to 2 decimal places
-          if (value.includes('.')) {
-              const parts = value.split('.');
-              value = parts[0] + '.' + parts[1].slice(0, 2);
-          }
-
-          // Update the input value
-          e.target.value = value;
+      // Parse currency string to number
+      function parseCurrency(value) {
+          if (!value) return 0;
+          // Remove currency symbol and thousand separators, keep decimal point
+          return parseFloat(value.replace(/[^0-9.-]/g, '')) || 0;
       }
 
-      // Apply currency formatting on blur
-      function formatCurrencyOnBlur(e) {
-          const value = e.target.value;
-          if (value) {
-              const number = parseFloat(value);
-              if (!isNaN(number)) {
-                  e.target.value = number.toFixed(2);
+      // Format input as currency while typing
+      function formatCurrencyInput(input) {
+          const cursorPosition = input.selectionStart;
+          let value = input.value;
+
+          // Remove currency symbol and thousand separators, keep decimal point
+          value = value.replace(/[^0-9.]/g, '');
+
+          // Handle multiple decimal points
+          const parts = value.split('.');
+          if (parts.length > 2) {
+              value = parts[0] + '.' + parts.slice(1).join('');
+          }
+
+          // Only format if we have a valid number
+          if (value && !isNaN(parseFloat(value))) {
+              const formattedValue = formatCurrency(value);
+              input.value = formattedValue;
+
+              // Adjust cursor position based on formatting changes
+              const newPosition = cursorPosition + 
+                  (formattedValue.length - value.length) + 
+                  (value.includes('.') ? 0 : 1);
+              input.setSelectionRange(newPosition, newPosition);
+          } else {
+              input.value = value;
+          }
+      }
+
+      // Initialize currency inputs
+      function initializeCurrencyInputs() {
+          const currencyInputs = document.querySelectorAll('.currency-input');
+          currencyInputs.forEach(input => {
+              // Initial formatting
+              if (input.value) {
+                  formatCurrencyInput(input);
               }
-          }
-      }
 
-      // Add event listeners to currency input fields
-      document.querySelectorAll('.currency-input').forEach(input => {
-          input.addEventListener('input', handleCurrencyInput);
-          input.addEventListener('blur', formatCurrencyOnBlur);
-      });
+              // Handle input events
+              input.addEventListener('input', (e) => {
+                  const value = e.target.value;
+                  // Allow typing decimal point
+                  if (value === '.' || value.endsWith('.')) {
+                      e.target.value = value;
+                      return;
+                  }
+                  formatCurrencyInput(e.target);
+              });
 
-      // Format currency values in table cells
-      function formatTableCurrencies() {
-          document.querySelectorAll('.currency-cell').forEach(cell => {
-              const value = parseFloat(cell.textContent);
-              if (!isNaN(value)) {
-                  cell.textContent = formatUSD(value);
-              }
+              // Handle focus
+              input.addEventListener('focus', (e) => {
+                  const value = parseCurrency(e.target.value);
+                  // Show plain number without currency formatting when focused
+                  e.target.value = value ? value.toString() : '';
+              });
+
+              // Handle blur
+              input.addEventListener('blur', (e) => {
+                  const value = e.target.value;
+                  if (value) {
+                      const numericValue = parseFloat(value);
+                      if (!isNaN(numericValue)) {
+                          e.target.value = formatCurrency(numericValue);
+                      }
+                  } else {
+                      e.target.value = '';
+                  }
+              });
+
+              // Handle keydown
+              input.addEventListener('keydown', (e) => {
+                  // Allow: backspace, delete, tab, escape, enter, decimal point, period
+                  if ([46, 8, 9, 27, 13, 110, 190].includes(e.keyCode) ||
+                      // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                      (([65, 67, 86, 88].includes(e.keyCode)) && e.ctrlKey) ||
+                      // Allow: home, end, left, right
+                      (e.keyCode >= 35 && e.keyCode <= 39) ||
+                      // Allow: numbers and number pad
+                      ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105))) {
+                      return;
+                  }
+                  e.preventDefault();
+              });
           });
       }
+
+      // Initialize currency inputs on document ready
+      $(document).ready(function() {
+          initializeCurrencyInputs();
+      });
+
+      // Edit modal show event
+      $('#edit-note').on('show.bs.modal', function (event) {
+          const button = $(event.relatedTarget);
+          currentRowUpdate = $('#productsTable').DataTable().row(button.parents('tr'));
+
+          // Get data from button attributes
+          const productId = button.data('id');
+          const productName = button.data('name');
+          const productSku = button.data('sku');
+          const productImage = button.data('thumbnail');
+          const productCategoryId = button.data('categoryid');
+          const productPrice = button.data('price');
+          const productCostPrice = button.data('cost-price');
+          const productQuantity = button.data('quantity');
+
+          // Set values in modal fields
+          const modal = $(this);
+          modal.find('#productId').val(productId);
+          modal.find('#productName').val(productName);
+          modal.find('#productSku').val(productSku);
+          modal.find('#productImage').attr('src', productImage);
+          modal.find('#productCategory').val(productCategoryId);
+          
+          // Format currency values
+          modal.find('#productPrice').val(formatCurrency(productPrice));
+          modal.find('#productCostPrice').val(formatCurrency(productCostPrice));
+          modal.find('#productQuantity').val(productQuantity);
+
+          // Initialize currency inputs after setting values
+          initializeCurrencyInputs();
+      });
+
+      // Handle form submission
+      $('#editProductForm').on('submit', function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          
+          // Parse currency values before sending
+          const price = parseCurrency(formData.get('price'));
+          const costPrice = parseCurrency(formData.get('costPrice'));
+          
+          formData.set('price', price);
+          formData.set('costPrice', costPrice);
+
+          $.ajax({
+              url: '/POS/Product/UpdateProduct',
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function (response) {
+                  if (response.success) {
+                      $('#edit-note').modal('hide');
+                      $('#productsTable').DataTable().ajax.reload();
+                      Swal.fire({
+                          icon: 'success',
+                          title: 'Success',
+                          text: response.message
+                      });
+                  } else {
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          text: response.message
+                      });
+                  }
+              },
+              error: function (xhr, status, error) {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'An error occurred while updating the product.'
+                  });
+              }
+          });
+      });
   </script>
 }

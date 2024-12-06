@@ -22,7 +22,7 @@ namespace Web.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Order> GetOrderWithDetailsAsync(Guid orderId)
+        public async Task<Order> GetOrderWithDetailsAsync(Guid orderId )
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
@@ -40,12 +40,12 @@ namespace Web.Data.Repositories
             }
         }
 
-        public async Task<Order> GetCurrentOrderAsync(Guid userId)
+        public async Task<Order> GetCurrentOrderAsync(Guid userId, string orderType)
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(o => o.UserId == userId && o.OrderType == "Online" && o.OrderStatus == "Pending");
+                .FirstOrDefaultAsync(o => o.UserId == userId && o.OrderType == orderType && o.OrderStatus == "Pending");
         }
     }
 }

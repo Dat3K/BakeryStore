@@ -40,9 +40,9 @@ namespace Web.Services
             return $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8)}";
         }
 
-        public async Task<Order> GetCurrentOrderAsync(Guid userId)
+        public async Task<Order> GetCurrentOrderAsync(Guid userId, string orderType = "Online")
         {
-            var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId);
+            var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
             
             if (order == null)
             {
@@ -50,7 +50,7 @@ namespace Web.Services
                 {
                     UserId = userId,
                     OrderStatus = "Pending",
-                    OrderType = "Online",
+                    OrderType = orderType,
                     CreatedAt = DateTime.UtcNow,
                     OrderNumber = GenerateOrderNumber(),
                     PaymentStatus = "Pending",
@@ -64,7 +64,7 @@ namespace Web.Services
             return order;            
         }
 
-        public async Task<(bool success, string message)> AddToCartAsync(Guid userId, Guid productId, int quantity)
+        public async Task<(bool success, string message)> AddToCartAsync(Guid userId, Guid productId, int quantity, string orderType = "Online")
         {
             try
             {
@@ -79,15 +79,19 @@ namespace Web.Services
                 if (product.StockQuantity < quantity)
                     return (false, "Not enough stock available");
 
-                var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId);
+                var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
                 if (order == null)
                 {
                     order = new Order
                     {
                         UserId = userId,
-                        OrderStatus = "Pending",
-                        OrderType = "Online",
-                        CreatedAt = DateTime.UtcNow
+                        OrderStatus = OrderStatus.Pending.ToString(),
+                        OrderType = orderType,
+                        CreatedAt = DateTime.UtcNow,
+                        OrderNumber = GenerateOrderNumber(),
+                        PaymentStatus = PaymentStatus.Pending.ToString(),
+                        TotalAmount = 0,
+                        FinalAmount = 0
                     };
                     await _unitOfWork.OrderRepository.AddAsync(order);
                 }
@@ -101,14 +105,19 @@ namespace Web.Services
                         OrderId = order.Id,
                         ProductId = productId,
                         Quantity = quantity,
-                        UnitPrice = product.Price
+                        UnitPrice = product.Price,
+                        Subtotal = product.Price * quantity
                     };
                     order.OrderItems.Add(orderItem);
                 }
                 else
                 {
                     orderItem.Quantity += quantity;
+                    orderItem.Subtotal += product.Price * quantity;
                 }
+
+                order.TotalAmount += product.Price * quantity;
+                order.FinalAmount += product.Price * quantity;
 
                 await _unitOfWork.SaveChangesAsync();
                 return (true, "Item added to cart successfully");
@@ -119,19 +128,19 @@ namespace Web.Services
             }
         }
 
-        public async Task<(bool success, string message)> UpdateCartItemQuantityAsync(Guid userId, Guid itemId, int quantity)
+        public async Task<(bool success, string message)> UpdateCartItemQuantityAsync(Guid userId, Guid productId, int quantity, string orderType = "Online")
         {
             try
             {
-                var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId);
+                var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
                 
                 if (order == null)
                     return (false, "Order not found");
 
-                var orderItem = order.OrderItems.FirstOrDefault(item => item.Id == itemId);
+                var orderItem = order.OrderItems.FirstOrDefault(item => item.ProductId == productId);
                 
                 if (orderItem == null)
-                    return (false, "Item not found");
+                    return (false, "Item not found in cart");
 
                 if (quantity <= 0)
                 {
@@ -139,14 +148,21 @@ namespace Web.Services
                 }
                 else
                 {
-                    var product = await _unitOfWork.ProductRepository.GetByIdAsync(orderItem.ProductId ?? Guid.Empty);
+                    var product = await _unitOfWork.ProductRepository.GetByIdAsync(productId);
                     if (product == null)
                         return (false, "Product not found");
 
                     if (product.StockQuantity < quantity)
                         return (false, "Not enough stock available");
 
+                    // Calculate the price difference
+                    var oldSubtotal = orderItem.Subtotal;
                     orderItem.Quantity = quantity;
+                    orderItem.Subtotal = product.Price * quantity;
+
+                    // Update order totals
+                    order.TotalAmount = order.TotalAmount - oldSubtotal + orderItem.Subtotal;
+                    order.FinalAmount = order.TotalAmount;
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -158,11 +174,11 @@ namespace Web.Services
             }
         }
 
-        public async Task<(bool success, string message)> RemoveCartItemAsync(Guid userId, Guid itemId)
+        public async Task<(bool success, string message)> RemoveCartItemAsync(Guid userId, Guid itemId, string orderType = "Online")
         {
             try
             {
-                var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId);
+                var order = await _unitOfWork.OrderRepository.GetCurrentOrderAsync(userId, orderType);
                 var orderItems = await _unitOfWork.OrderItemRepository.GetOrderItemsByOrderIdAsync(order.Id);
                 if (order == null)
                     return (false, "Order not found");
@@ -189,5 +205,5 @@ namespace Web.Services
         }
     }
 
-    
+
 }

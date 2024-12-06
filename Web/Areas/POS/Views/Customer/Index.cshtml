@@ -287,14 +287,14 @@
                                 </thead>
                                 <tbody>`;
                 items.forEach(item => {
-                    total += item.Subtotal || 0;
+                    total += item.subtotal || 0;
                     html += `
                         <tr>
                             <td>${item.product.productName || 'N/A'}</td>
                             <td>${item.product.productSku || 'N/A'}</td>
                             <td class="text-end">${formatCurrency(item.unitPrice || 0)}</td>
                             <td class="text-center">${item.quantity || 0}</td>
-                            <td class="text-end">${formatCurrency(item.Subtotal || 0)}</td>
+                            <td class="text-end">${formatCurrency(item.subtotal || 0)}</td>
                         </tr>`;
                 });
 

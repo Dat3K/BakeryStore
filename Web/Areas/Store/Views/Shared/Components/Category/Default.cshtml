@@ -4,6 +4,7 @@
     <a asp-action="Index" 
        asp-controller="Shop" 
        asp-area="Store"
+       asp-route-pageNumber="1"
        class="@(string.IsNullOrEmpty(Model.SelectedCategory) ? "active" : "")">
         All Products
     </a>
@@ -15,6 +16,7 @@
            asp-controller="Shop" 
            asp-area="Store" 
            asp-route-category="@category.Name"
+           asp-route-pageNumber="1"
            class="@(Model.SelectedCategory == category.Name ? "active" : "")">
             @category.Name
         </a>

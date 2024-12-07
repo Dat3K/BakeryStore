@@ -68,6 +68,12 @@ Bakery Store là một ứng dụng web được xây dựng bằng ASP.NET Core
    }
    ```
 
+## Đăng nhập vào dự án
+- Đăng kí trực tiếp bằng cách nhấn vào biểu tượng `User` góc trên bên phải chọn vào đăng kí và tiến hành đăng kí
+- Nếu không đăng kí thành công thì cũng có thể dùng account có sẵn như sau:
+- Tài khoản: `caribou4472@mailbai.com`
+- Mật khẩu `Caribou4472@mailbai.com`
+
 ## Cấu trúc Project
 - `Areas`: Chứa các module của admin
 - `Controllers`: Xử lý logic điều hướng

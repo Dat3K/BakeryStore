@@ -14,5 +14,7 @@ namespace Web.Services.Interfaces
         Task<(bool success, string message)> RemoveCartItemAsync(Guid userId, Guid itemId, string orderType = "Online");
         Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId);
         Task<(bool success, string message)> CheckoutAsync(Guid userId, string orderType = "Online");
+        Task<(bool success, string message)> UpdateOrderAsync(Order order);
+        Task<(bool success, string message)> PlaceOrderAsync(Order order);
     }
 }

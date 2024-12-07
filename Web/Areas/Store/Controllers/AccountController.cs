@@ -155,6 +155,15 @@ namespace Web.Areas.Store.Controllers
             }
         }
 
+        /// <summary>
+        /// Checks if the current user is authenticated
+        /// </summary>
+        /// <returns>JSON result indicating authentication status</returns>
+        [HttpGet]
+        public IActionResult IsAuthenticated()
+        {
+            return Json(new { isAuthenticated = User.Identity?.IsAuthenticated ?? false });
+        }
         
     }
 }

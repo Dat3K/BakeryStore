@@ -17,35 +17,59 @@ $(document).ready(function() {
 
     // Handle Add to Cart button clicks
     function addToCart(productId, quantity) {
+        // First check if user is authenticated
         $.ajax({
-            url: '/Store/Cart/AddToCart',
-            type: 'POST',
-            data: {
-                productId: productId,
-                quantity: quantity
-            },
+            url: '/Store/Account/IsAuthenticated',
+            type: 'GET',
             success: function(response) {
-                if (response.success) {
-                    updateCartCount();
+                if (!response.isAuthenticated) {
                     Swal.fire({
-                        title: 'Added to Cart',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 1500
+                        title: 'Please Login',
+                        text: 'You need to login to add items to cart',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Login',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/Store/Account/Login';
+                        }
                     });
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: response.message || 'Failed to add item to cart',
-                        icon: 'error'
-                    });
+                    return;
                 }
-            },
-            error: function() {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Failed to add item to cart',
-                    icon: 'error'
+
+                // If authenticated, proceed with adding to cart
+                $.ajax({
+                    url: '/Store/Cart/AddToCart',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: quantity
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            updateCartCount();
+                            Swal.fire({
+                                title: 'Added to Cart',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: response.message || 'Failed to add item to cart',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to add item to cart',
+                            icon: 'error'
+                        });
+                    }
                 });
             }
         });

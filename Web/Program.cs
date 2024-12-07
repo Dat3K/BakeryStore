@@ -105,6 +105,6 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "POS",
-    pattern: "{area=POS}/{controller=Dashboard}/{action=Index}/{id?}");
+    pattern: "{area=POS}/{controller=POS}/{action=Index}/{id?}");
 
 app.Run();

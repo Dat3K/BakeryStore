@@ -1,12 +1,18 @@
+@model Web.Models.Order
+@{
+    ViewData["Title"] = "Checkout";
+}
+
 <!--Page Title-->
-<section class="page-title centred" style="background-image: url(assets/images/background/page-title.jpg);">
+<section class="page-title centred" style="background-image: url(https://images.pexels.com/photos/7621136/pexels-photo-7621136.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1);">
     <div class="auto-container">
         <div class="content-box">
             <div class="title">
                 <h1>Checkout</h1>
             </div>
             <ul class="bread-crumb clearfix">
-                <li><a href="index.html">Home</a></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/Store/Cart">Cart</a></li>
                 <li>Checkout</li>
             </ul>
         </div>
@@ -14,182 +20,299 @@
 </section>
 <!--End Page Title-->
 
-
 <!-- checkout-section -->
-<section class="checkout-section">
-    <div class="container">
+<section class="checkout-section sec-pad">
+    <div class="auto-container">
         <div class="row">
-            <div class="col-lg-6 col-md-12 col-sm-12 left-column">
+            <!-- Left Column - Shipping Info -->
+            <div class="col-lg-8 col-md-12 col-sm-12 left-column">
                 <div class="inner-box">
                     <div class="billing-info">
-                        <h4 class="sub-title">Billing Details</h4>
-                        <form action="#" method="post" class="billing-form">
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label>First Name*</label>
-                                    <div class="field-input">
-                                        <input type="text" name="first_name">
+                        <h3 class="sub-title">Shipping Information</h3>
+                        <form id="checkoutForm" method="post" action="@Url.Action("PlaceOrder", "Cart", new { area = "Store" })">
+                            <div class="billing-details">
+                                <!-- Shipping Address Section -->
+                                <div class="address-box mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">Delivery Address</h5>
+                                        @if (string.IsNullOrEmpty(Model.ShippingAddress))
+                                        {
+                                            <button type="button" id="addAddress" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-plus"></i> Add Address
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" id="changeAddress" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Change
+                                            </button>
+                                        }
+                                    </div>
+                                    
+                                    <div class="address-content p-3 bg-light rounded">
+                                        @if (!string.IsNullOrEmpty(Model.ShippingAddress))
+                                        {
+                                            <div class="current-address">
+                                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                                <span>@Model.ShippingAddress</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-muted">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                Please add your delivery address
+                                            </div>
+                                        }
+                                        <input type="hidden" id="shippingAddress" name="ShippingAddress" value="@Model.ShippingAddress" />
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label>Last Name*</label>
-                                    <div class="field-input">
-                                        <input type="text" name="last_name">
-                                    </div>
+
+                                <!-- Order Notes -->
+                                <div class="order-notes mb-4">
+                                    <h5 class="mb-3">Order Notes (Optional)</h5>
+                                    <textarea class="form-control" name="Notes" rows="3" 
+                                            placeholder="Notes about your order, e.g. special notes for delivery">@Model.Notes</textarea>
                                 </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 form-group">
-                                    <label>Company Name*</label>
-                                    <div class="field-input">
-                                        <input type="text" name="company_name">
-                                    </div>
+
+                                <!-- Payment Method -->
+                                <div class="payment-method mb-4">
+                                    <h5 class="mb-3">Payment Method</h5>
+                                    <select class="form-control" name="PaymentMethod">
+                                        <option value="Cash" selected>Cash on Delivery</option>
+                                        <option value="CreditCard">Credit Card</option>
+                                        <option value="BankTransfer">Bank Transfer</option>
+                                        <option value="EWallet">E-Wallet</option>
+                                    </select>
                                 </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 form-group">
-                                    <label>Email Address*</label>
-                                    <div class="field-input">
-                                        <input type="email" name="email">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label>Phone Number*</label>
-                                    <div class="field-input">
-                                        <input type="text" name="phone">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label>Country*</label>
-                                    <div class="select-column select-box">
-                                        <select class="selectmenu" id="ui-id-1">
-                                            <option selected="selected">Select Option</option>
-                                            <option>United State</option>
-                                            <option>Australia</option>
-                                            <option>Canada</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 form-group">
-                                    <label>Address*</label>
-                                    <div class="field-input">
-                                        <input type="text" name="address" class="address">
-                                        <input type="text" name="address">
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 form-group">
-                                    <label>Town/City*</label>
-                                    <div class="field-input">
-                                        <input type="text" name="town_city">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label>State*</label>
-                                    <div class="select-column select-box">
-                                        <select class="selectmenu" id="ui-id-2">
-                                            <option selected="selected">Select Option</option>
-                                            <option>United State</option>
-                                            <option>Australia</option>
-                                            <option>Canada</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label>Zip Code*</label>
-                                    <div class="field-input">
-                                        <input type="text" name="zip">
-                                    </div>
-                                </div>
-                                <div class="form-group col-lg-12 col-md-12 col-sm-12">
-                                    <div class="create-acc">
-                                        <div class="custom-controls-stacked">
-                                            <label class="custom-control material-checkbox">
-                                                <input type="checkbox" class="material-control-input">
-                                                <span class="material-control-indicator"></span>
-                                                <span class="description">Create an Account?</span>
-                                            </label>
-                                        </div> 
+                            </div>
+
+                            <!-- Right Column - Order Summary -->
+                            <div class="col-lg-4 col-md-12 col-sm-12 right-column">
+                                <div class="inner-box sticky-top" style="top: 30px;">
+                                    <div class="order-summary">
+                                        <h3 class="sub-title mb-4">Order Summary</h3>
+                                        
+                                        <!-- Cart Items -->
+                                        <div class="cart-items-container mb-4">
+                                            @foreach (var item in Model.OrderItems)
+                                            {
+                                                <div class="cart-item d-flex align-items-center mb-3">
+                                                    <div class="item-image me-3">
+                                                        <img src="@item.Product?.Thumbnail" alt="@item.Product?.Name" 
+                                                             style="width: 60px; height: 60px; object-fit: cover;" class="rounded" />
+                                                    </div>
+                                                    <div class="item-details flex-grow-1">
+                                                        <h6 class="mb-1">@item.Product?.Name</h6>
+                                                        <div class="text-muted small">
+                                                            <span>Quantity: @item.Quantity</span>
+                                                            <span class="mx-2">|</span>
+                                                            <span>$@item.UnitPrice each</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item-price text-end">
+                                                        <span class="amount">$@item.Subtotal</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <!-- Price Summary -->
+                                        <div class="price-summary">
+                                            <div class="summary-item d-flex justify-content-between mb-2">
+                                                <span>Subtotal</span>
+                                                <span class="amount">$@Model.TotalAmount</span>
+                                            </div>
+                                            @if (Model.DiscountAmount > 0)
+                                            {
+                                                <div class="summary-item d-flex justify-content-between mb-2">
+                                                    <span>Discount</span>
+                                                    <span class="text-success">-$@Model.DiscountAmount</span>
+                                                </div>
+                                            }
+                                            <div class="summary-item d-flex justify-content-between mb-2">
+                                                <span>Shipping</span>
+                                                <span class="text-success">Free</span>
+                                            </div>
+                                            <hr class="my-3">
+                                            <div class="summary-item d-flex justify-content-between mb-3">
+                                                <strong>Total</strong>
+                                                <strong class="amount text-primary">$@Model.FinalAmount</strong>
+                                            </div>
+
+                                            <!-- Place Order Button -->
+                                            <button type="submit" class="theme-btn-two w-100" 
+                                                    @(string.IsNullOrEmpty(Model.ShippingAddress) ? "disabled" : "")>
+                                                <i class="fas fa-lock me-2"></i>Place Order
+                                            </button>
+                                            
+                                            @if (string.IsNullOrEmpty(Model.ShippingAddress))
+                                            {
+                                                <div class="text-center mt-2">
+                                                    <small class="text-muted">Please add a delivery address to proceed</small>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </form>
-                    </div>
-                    <div class="additional-info">
-                        <div class="note-book">
-                            <label>Order Notes</label>
-                            <textarea name="note_box" placeholder="Notes about your order, e.g. special notes for your delivery"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-12 col-sm-12 right-column">
-                <div class="inner-box">
-                    <div class="order-info">
-                        <h4 class="sub-title">Your Order</h4>
-                        <div class="order-product">
-                            <ul class="order-list clearfix">
-                                <li class="title clearfix">
-                                    <p>Product</p>
-                                    <span>Total</span>
-                                </li>
-                                <li>
-                                    <div class="single-box clearfix">
-                                        <img src="assets/images/resource/shop/order-1.jpg" alt="">
-                                        <h6>Vanilla Ice Cream x 1</h6>
-                                        <span>$35.00</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="single-box clearfix">
-                                        <img src="assets/images/resource/shop/order-2.jpg" alt="">
-                                        <h6>Cone Ice Cream x 1</h6>
-                                        <span>$25.00</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="single-box clearfix">
-                                        <img src="assets/images/resource/shop/order-3.jpg" alt="">
-                                        <h6>Slice Super Cake x 1</h6>
-                                        <span>$90.00</span>
-                                    </div>
-                                </li>
-                                <li class="sub-total clearfix">
-                                    <h6>Sub Total</h6>
-                                    <span>$150.50</span>
-                                </li>
-                                <li class="order-total clearfix">
-                                    <h6>Order Total</h6>
-                                    <span>$150.50</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="payment-info">
-                        <h4 class="sub-title">Payment Proccess</h4>
-                        <div class="payment-inner">
-                            <div class="option-block">
-                                <div class="custom-controls-stacked">
-                                    <label class="custom-control material-checkbox">
-                                        <input type="checkbox" class="material-control-input">
-                                        <span class="material-control-indicator"></span>
-                                        <span class="description">Direct bank transfer</span>
-                                    </label>
-                                </div>
-                                <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                            </div>
-                            <div class="option-block">
-                                <div class="custom-controls-stacked">
-                                    <label class="custom-control material-checkbox">
-                                        <input type="checkbox" class="material-control-input">
-                                        <span class="material-control-indicator"></span>
-                                        <span class="description">Paypal<a href="checkout.html">What is paypal?</a></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="btn-box">
-                                <a href="checkout.html" class="theme-btn-one">Place Your Order</a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- checkout-section end -->
+
+<!-- Address Modal -->
+<div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-labelledby="addressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addressModalLabel">
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    Delivery Address
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addressForm">
+                    <div class="form-group">
+                        <label for="address">Enter your complete delivery address*</label>
+                        <textarea class="form-control" id="address" name="address" rows="4" required 
+                                placeholder="House/Apartment No., Street, Area, City, State, ZIP Code"></textarea>
+                        <small class="text-muted">
+                            Please provide a complete and accurate address to ensure smooth delivery
+                        </small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="saveAddress">
+                    <i class="fas fa-check me-1"></i>Save Address
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            // Check if we already have an address
+            var hasAddress = @(!string.IsNullOrEmpty(Model.ShippingAddress) ? "true" : "false");
+            
+            // Only show modal on load if we don't have an address
+            if (!hasAddress) {
+                $('#addressModal').modal('show');
+            }
+
+            // Handle add/change address button
+            $('#addAddress, #changeAddress').on('click', function(e) {
+                e.preventDefault();
+                $('#addressModal').modal('show');
+            });
+
+            // Handle save address button click
+            $('#saveAddress').on('click', function(e) {
+                e.preventDefault();
+                var address = $('#address').val();
+                
+                if (!address) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Please enter your delivery address',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                // Show loading state
+                var $btn = $(this);
+                $btn.prop('disabled', true);
+                $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+
+                // Make the AJAX call
+                $.ajax({
+                    url: '/Store/Cart/SaveAddress',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(address),
+                    success: function(response) {
+                        if (response.success) {
+                            // Update the UI
+                            $('.current-address span').text(response.address);
+                            $('#shippingAddress').val(response.address);
+                            
+                            // Enable the place order button
+                            $('button[type="submit"]').prop('disabled', false);
+                            $('.text-muted small').hide();
+                            
+                            // Show success message
+                            Swal.fire({
+                                title: 'Success',
+                                text: 'Address saved successfully',
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            
+                            // Hide modal
+                            $('#addressModal').modal('hide');
+                            
+                            // Reload page to reflect changes
+                            location.reload();
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: response.message || 'Failed to save address',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to save address. Please try again.',
+                            icon: 'error'
+                        });
+                    },
+                    complete: function() {
+                        // Reset button state
+                        $btn.prop('disabled', false);
+                        $btn.html('<i class="fas fa-check me-1"></i>Save Address');
+                    }
+                });
+            });
+
+            // Load current address when modal is shown
+            $('#addressModal').on('shown.bs.modal', function() {
+                var currentAddress = $('#shippingAddress').val();
+                if (currentAddress) {
+                    $('#address').val(currentAddress);
+                }
+            });
+
+            // Handle form submission
+            $('#checkoutForm').on('submit', function(e) {
+                var address = $('#shippingAddress').val();
+                
+                if (!address) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Please add a delivery address before placing the order',
+                        icon: 'error'
+                    });
+                    return false;
+                }
+            });
+        });
+    </script>
+}

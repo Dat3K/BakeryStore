@@ -1,0 +1,180 @@
+@model Web.Models.Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<!--Page Title-->
+<section class="page-title centred" style="background-image: url(https://images.pexels.com/photos/7621360/pexels-photo-7621360.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1);">
+    <div class="auto-container">
+        <div class="content-box">
+            <div class="title">
+                <h1>Order Confirmation</h1>
+            </div>
+            <ul class="bread-crumb clearfix">
+                <li><a href="/">Home</a></li>
+                <li><a href="/Store/Cart">Cart</a></li>
+                <li>Order Confirmation</li>
+            </ul>
+        </div>
+    </div>
+</section>
+<!--End Page Title-->
+
+<!-- Order Confirmation Section -->
+<section class="confirmation-section sec-pad">
+    <div class="auto-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-12">
+                <div class="confirmation-box bg-white p-5 rounded shadow-sm">
+                    <!-- Success Message -->
+                    <div class="text-center mb-5">
+                        <div class="success-icon mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                        </div>
+                        <h2 class="mb-3">Thank You for Your Order!</h2>
+                        <p class="text-muted">Order #@Model.Id has been placed successfully</p>
+                    </div>
+
+                    <!-- Order Details -->
+                    <div class="order-details mb-5">
+                        <h4 class="mb-4">Order Details</h4>
+                        <div class="details-grid">
+                            <div class="row">
+                                <div class="col-sm-6 mb-3">
+                                    <div class="detail-item">
+                                        <span class="label text-muted">Order Status:</span>
+                                        <span class="value text-primary">@Model.OrderStatus</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <div class="detail-item">
+                                        <span class="label text-muted">Order Date:</span>
+                                        <span class="value">@Model.CreatedAt</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <div class="detail-item">
+                                        <span class="label text-muted">Payment Method:</span>
+                                        <span class="value">@Model.PaymentMethod</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <div class="detail-item">
+                                        <span class="label text-muted">Payment Status:</span>
+                                        <span class="value">@Model.PaymentStatus</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="shipping-info mb-5">
+                        <h4 class="mb-4">Shipping Information</h4>
+                        <div class="address-box p-3 bg-light rounded">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            @Model.ShippingAddress
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="order-items mb-5">
+                        <h4 class="mb-4">Order Items</h4>
+                        <div class="items-list">
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <div class="item-row d-flex align-items-center p-3 border-bottom">
+                                    <div class="item-image me-3">
+                                        <img src="@item.Product?.Thumbnail" alt="@item.Product?.Name" 
+                                             style="width: 60px; height: 60px; object-fit: cover;" class="rounded" />
+                                    </div>
+                                    <div class="item-details flex-grow-1">
+                                        <h6 class="mb-1">@item.Product?.Name</h6>
+                                        <div class="text-muted small">
+                                            <span>Quantity: @item.Quantity</span>
+                                            <span class="mx-2">|</span>
+                                            <span>$@item.UnitPrice each</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-price text-end">
+                                        <span class="amount">$@item.Subtotal</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="order-summary mb-5">
+                        <h4 class="mb-4">Order Summary</h4>
+                        <div class="summary-items">
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span class="amount">$@Model.TotalAmount</span>
+                            </div>
+                            @if (Model.DiscountAmount > 0)
+                            {
+                                <div class="summary-item d-flex justify-content-between mb-2">
+                                    <span>Discount</span>
+                                    <span class="text-success">-$@Model.DiscountAmount</span>
+                                </div>
+                            }
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Shipping</span>
+                                <span class="text-success">Free</span>
+                            </div>
+                            <hr class="my-3">
+                            <div class="summary-item d-flex justify-content-between">
+                                <strong>Total</strong>
+                                <strong class="amount text-primary">$@Model.FinalAmount</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons text-center">
+                        <a href="/" class="theme-btn-one">Continue Shopping</a>
+                        <a href="#" class="theme-btn-two ms-3" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>Print Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .confirmation-section {
+        background-color: #f8f9fa;
+    }
+    .confirmation-box {
+        border-radius: 15px;
+    }
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+    .detail-item .label {
+        font-size: 0.9rem;
+        margin-bottom: 0.2rem;
+    }
+    .detail-item .value {
+        font-weight: 500;
+    }
+    .items-list .item-row:last-child {
+        border-bottom: none !important;
+    }
+    @@media print {
+        .page-title, .header, .footer, .action-buttons {
+            display: none !important;
+        }
+        .confirmation-box {
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+        body {
+            background-color: white !important;
+        }
+    }
+</style>

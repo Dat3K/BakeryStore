@@ -262,5 +262,65 @@ namespace Web.Services
                 return (false, $"Error during checkout: {ex.Message}");
             }
         }
+
+        public async Task<(bool success, string message)> UpdateOrderAsync(Order order)
+        {
+            try
+            {
+                if (order == null)
+                    return (false, "Order cannot be null");
+
+                var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(order.Id);
+                if (existingOrder == null)
+                    return (false, $"Order with ID {order.Id} not found");
+
+                // Update order properties
+                await _unitOfWork.OrderRepository.UpdateAsync(order);
+                await _unitOfWork.SaveChangesAsync();
+
+                return (true, "Order updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error updating order: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool success, string message)> PlaceOrderAsync(Order order)
+        {
+            try
+            {
+                if (order == null)
+                    return (false, "Order cannot be null");
+
+                if (string.IsNullOrEmpty(order.ShippingAddress))
+                    return (false, "Shipping address is required");
+
+                if (!order.OrderItems.Any())
+                    return (false, "Cart is empty");
+
+                // Get fresh order data from database
+                var currentOrder = await _unitOfWork.OrderRepository.GetOrderWithDetailsAsync(order.Id);
+                if (currentOrder == null)
+                    return (false, "Order not found");
+
+                // Update essential order details
+                currentOrder.OrderStatus = OrderStatus.Processing.ToString();
+                currentOrder.ShippingAddress = order.ShippingAddress;
+                currentOrder.PaymentMethod = order.PaymentMethod;
+                currentOrder.Notes = order.Notes;
+                currentOrder.UpdatedAt = DateTime.UtcNow;
+
+                // Save changes
+                await _unitOfWork.OrderRepository.UpdateAsync(currentOrder);
+                await _unitOfWork.SaveChangesAsync();
+
+                return (true, "Order placed successfully");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error placing order: {ex.Message}");
+            }
+        }
     }
 }

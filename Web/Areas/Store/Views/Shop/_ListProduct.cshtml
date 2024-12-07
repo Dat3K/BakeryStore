@@ -1,17 +1,66 @@
 <div class="row clearfix">
     @foreach (var product in Model.Items)
     {
-        <div class="col-lg-4 col-md-6 col-sm-12 shop-block">
-            <div class="shop-block-one">
-                <div class="inner-box">
-                    <figure class="image-box">
-                        <img src="@product.Thumbnail" alt="@product.Name" style="width: 300px; height: 300px; object-fit: cover;">
-                    </figure>
-                    <div class="lower-content">
-                        <span class="price-box">$@product.Price</span>
-                        <h3 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@product.Id">@product.Name</a></h3>
-                        <div class="cart-btn">
-                                <a href="javascript:void(0)" onclick="addToCart('@product.Id', 1)" class="theme-btn-two addtocart-btn">Add to cart</a>
+        <div class="col-lg-4 col-md-6 col-sm-12 shop-block mb-4">
+            <div class="shop-block-one h-100">
+                <div class="inner-box bg-white rounded-lg shadow-sm h-100">
+                    <div class="product-image-wrapper position-relative">
+                        <figure class="image-box mb-0">
+                            <img src="@product.Thumbnail" alt="@product.Name" 
+                                 style="width: 100%; height: 300px; object-fit: cover;"
+                                 class="rounded-top">
+                            @if (product.StockQuantity > 0)
+                            {
+                                <div class="stock-badge" 
+                                     style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 255, 0.95); 
+                                            padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-box text-success"></i>
+                                    <span class="ms-1">@product.StockQuantity in stock</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="stock-badge" 
+                                     style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); 
+                                            color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-times-circle"></i>
+                                    <span class="ms-1">Out of stock</span>
+                                </div>
+                            }
+                            <div class="quick-view-btn position-absolute" 
+                                 style="bottom: 10px; left: 50%; transform: translateX(-50%); opacity: 0; transition: all 0.3s ease;">
+                                <a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@product.Id"
+                                   class="btn btn-light shadow-sm px-4">
+                                    <i class="fas fa-eye me-2"></i>Quick View
+                                </a>
+                            </div>
+                        </figure>
+                    </div>
+                    <div class="lower-content p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3 class="mb-0" style="font-size: 1.25rem;">
+                                <a asp-area="Store" asp-controller="Shop" asp-action="Detail" asp-route-id="@product.Id"
+                                   class="text-dark text-decoration-none product-name">@product.Name</a>
+                            </h3>
+                            <span class="price-box badge bg-primary rounded-pill ms-2" style="font-size: 1rem;">
+                                $@product.Price
+                            </span>
+                        </div>
+                        <div class="cart-btn mt-3">
+                            @if (product.StockQuantity > 0)
+                            {
+                                <button onclick="addToCart('@product.Id', 1)" 
+                                        class="theme-btn-two w-100 addtocart-btn">
+                                    <i class="fas fa-shopping-cart me-2"></i>Add to cart
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="theme-btn-two w-100" disabled 
+                                        style="opacity: 0.6; cursor: not-allowed; background-color: #6c757d;">
+                                    <i class="fas fa-times-circle me-2"></i>Out of stock
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>
@@ -19,3 +68,138 @@
         </div>
     }
 </div>
+
+<style>
+    .shop-block-one {
+        transition: all 0.3s ease;
+    }
+
+    .shop-block-one:hover {
+        transform: translateY(-5px);
+    }
+
+    .shop-block-one:hover .quick-view-btn {
+        opacity: 1;
+        bottom: 20px;
+    }
+
+    .product-image-wrapper {
+        overflow: hidden;
+    }
+
+    .product-image-wrapper img {
+        transition: all 0.5s ease;
+    }
+
+    .shop-block-one:hover .product-image-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .product-name {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .product-name:hover {
+        color: #E3A087 !important;
+    }
+
+    .addtocart-btn {
+        transition: all 0.3s ease;
+    }
+
+    .addtocart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(227, 160, 135, 0.3);
+    }
+
+    /* Loading Animation */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #E3A087;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    function showLoading() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = '<div class="loading-spinner"></div>';
+        document.body.appendChild(overlay);
+    }
+
+    function hideLoading() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+    }
+
+    async function addToCart(productId, quantity) {
+        try {
+            showLoading();
+            const response = await fetch('/Store/Cart/AddToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                    quantity: quantity
+                })
+            });
+
+            const result = await response.json();
+            hideLoading();
+
+            if (result.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Product added to cart',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    position: 'top-end',
+                    toast: true
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: result.message || 'Failed to add product to cart',
+                    icon: 'error'
+                });
+            }
+        } catch (error) {
+            hideLoading();
+            Swal.fire({
+                title: 'Error',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    }
+</script>

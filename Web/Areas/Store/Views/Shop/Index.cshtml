@@ -2,12 +2,11 @@
 @model PaginatedResult<Product>
 
 <!--Page Title-->
-<section class="page-title centred" style="background-image: url('@Url.Content("~/Store/images/cakes/header-shop.jpg")');"
->
+<section class="page-title centred" style="background-image: url('https://images.pexels.com/photos/1775034/pexels-photo-1775034.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
     <div class="auto-container">
         <div class="content-box">
             <div class="title">
-                <h1>All Products</h1>
+                <h1>Our Delicious Products</h1>
             </div>
             <ul class="bread-crumb clearfix">
                 <li><a asp-action="Index" asp-controller="Home">Home</a></li>
@@ -24,15 +23,18 @@
         <div class="row clearfix">
             <div class="col-lg-3 col-md-12 col-sm-12 sidebar-side">
                 <div class="shop-sidebar default-sidebar">
-                    <div class="sidebar-widget sidebar-search">
-                        <form asp-action="Index" method="get" id="searchForm">
-                            <div class="form-group">
+                    <!-- Search Widget -->
+                    <div class="sidebar-widget sidebar-search mb-4">
+                        <form asp-action="Index" method="get" id="searchForm" class="position-relative">
+                            <div class="form-group mb-0">
                                 <input type="search" 
                                        name="searchTerm" 
                                        value="@ViewData["SearchTerm"]" 
-                                       placeholder="Search..." 
-                                       class="form-control">
-                                <button type="submit"><i class="icon-Search"></i></button>
+                                       placeholder="Search products..." 
+                                       class="form-control rounded-pill py-2 px-4">
+                                <button type="submit" class="theme-btn-one">
+                                    <i class="icon-Search"></i>
+                                </button>
                             </div>
                             <!-- Hidden inputs to preserve other filter values -->
                             <input type="hidden" name="category" value="@ViewData["SelectedCategory"]" />
@@ -41,70 +43,80 @@
                             <input type="hidden" name="maxPrice" id="current-max-price" />
                         </form>
                     </div>
-                    <div class="sidebar-widget sidebar-categories">
+
+                    <!-- Categories Widget -->
+                    <div class="sidebar-widget sidebar-categories mb-4">
                         <div class="widget-title">
-                            <h3>Shop by Categories</h3>
+                            <h3 class="mb-4">Categories</h3>
                         </div>
                         <div class="widget-content">
-                            <ul class="categories-list clearfix">
+                            <ul class="categories-list">
                                 @await Component.InvokeAsync("Category")
                             </ul>
                         </div>
                     </div>
 
-                    <div class="sidebar-widget price-range mb-50">
-                        <h4 class="pro-sidebar-title mb-3">Price Range</h4>
-                        <div class="price-filter d-flex align-items-center">
-                            <div class="price-slider-amount w-100 mr-3">
-                                <input type="number" id="min-price" name="min-price" placeholder="Min Price" class="form-control"/>
+                    <!-- Price Range Widget -->
+                    <div class="sidebar-widget price-range mb-4">
+                        <h4 class="widget-title mb-4">Price Range</h4>
+                        <div class="price-filter">
+                            <div class="price-slider-amount mb-3">
+                                <input type="number" id="min-price" name="min-price" placeholder="Min Price" 
+                                       class="form-control rounded-pill mb-2"/>
                             </div>
-                            <span class="mr-3">to</span>
-                            <div class="price-slider-amount w-100 mr-3">
-                                <input type="number" id="max-price" name="max-price" placeholder="Max Price" class="form-control"/>
+                            <div class="price-slider-amount mb-3">
+                                <input type="number" id="max-price" name="max-price" placeholder="Max Price" 
+                                       class="form-control rounded-pill"/>
                             </div>
-                            <button type="button" onclick="filterByPrice()" class="btn btn-primary" style="background-color: #E3A087; border-color: #E3A087;">Filter</button>
+                            <button type="button" onclick="filterByPrice()" 
+                                    class="theme-btn-one w-100">
+                                <i class="fas fa-filter me-2"></i>Apply Filter
+                            </button>
                         </div>
                     </div>
 
-
+                    <!-- Featured Products Widget -->
                     <div class="sidebar-widget post-widget">
                         <div class="widget-title">
-                            <h3>Featured Products</h3>
+                            <h3 class="mb-4">Featured Products</h3>
                         </div>
                         <div class="post-inner">
-                            <div class="post">
-                                <figure class="image-box"><a href="shop-details.html"><img
-                                            src="~/Store/images/resource/shop/post-1.jpg" alt=""></a></figure>
-                                <h5><a href="shop-details.html">Vanilla Ice Cream</a></h5>
-                                <p>$50.00</p>
-                            </div>
-                            <div class="post">
-                                <figure class="image-box"><a href="shop-details.html"><img
-                                            src="~/Store/images/resource/shop/post-2.jpg" alt=""></a></figure>
-                                <h5><a href="shop-details.html">Donuts Cake</a></h5>
-                                <p>$35.00</p>
-                            </div>
-                            <div class="post">
-                                <figure class="image-box"><a href="shop-details.html"><img
-                                            src="~/Store/images/resource/shop/post-3.jpg" alt=""></a></figure>
-                                <h5><a href="shop-details.html">Corne Ice Cream</a></h5>
-                                <p>$60.00</p>
+                            <div class="featured-products">
+                                <!-- Featured Product Items -->
+                                <div class="featured-item mb-3 p-2 bg-white rounded shadow-sm">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <img src="~/Store/images/resource/shop/post-1.jpg" alt="" 
+                                                 class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1">Vanilla Ice Cream</h6>
+                                            <p class="mb-0 text-primary">$50.00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Add more featured items similarly -->
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Main Content -->
             <div class="col-lg-9 col-md-12 col-sm-12 content-side">
                 <div class="our-shop">
-                    <div class="item-shorting clearfix">
-                        <div class="left-column pull-left clearfix">
-                            <div class="text">
-                                <p>Showing @Model.CurrentPage of @Model.TotalPages pages - Total items: @Model.TotalItems</p>
+                    <!-- Sorting and Results Info -->
+                    <div class="item-shorting clearfix bg-white p-3 rounded shadow-sm mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <p class="mb-0 text-muted">
+                                    Showing page @Model.CurrentPage of @Model.TotalPages 
+                                    <span class="badge bg-primary rounded-pill ms-2">@Model.TotalItems items</span>
+                                </p>
                             </div>
-                        </div>
-                        <div class="right-column pull-right clearfix">
-                            <div class="short-box clearfix">
-                                <select id="sort-select" onchange="sortProducts(this.value)">
+                            <div class="col-md-6">
+                                <select id="sort-select" onchange="sortProducts(this.value)" 
+                                        class="form-select rounded-pill">
                                     <option value="@ProductSortOrder.Default" selected="@(ViewData["CurrentSortOrder"] as ProductSortOrder? == ProductSortOrder.Default)">Default Sorting</option>
                                     <option value="@ProductSortOrder.NameAsc" selected="@(ViewData["CurrentSortOrder"] as ProductSortOrder? == ProductSortOrder.NameAsc)">Name (A-Z)</option>
                                     <option value="@ProductSortOrder.NameDesc" selected="@(ViewData["CurrentSortOrder"] as ProductSortOrder? == ProductSortOrder.NameDesc)">Name (Z-A)</option>
@@ -115,62 +127,259 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Product Grid -->
                     @await Html.PartialAsync("_ListProduct", Model)
-                    @await Html.PartialAsync("_Pagination", Model)
+
+                    <!-- Pagination -->
+                    <div class="pagination-wrapper text-center mt-4">
+                        @await Html.PartialAsync("_Pagination", Model)
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- shop-page-section end -->
 
-<script>
-    function filterByPrice() {
-        var minPrice = document.getElementById('min-price').value;
-        var maxPrice = document.getElementById('max-price').value;
-        
-        // Update hidden fields in search form
-        document.getElementById('current-min-price').value = minPrice;
-        document.getElementById('current-max-price').value = maxPrice;
-        
-        // Submit the search form
-        document.getElementById('searchForm').submit();
-    }
+@section Styles {
+    <style>
+        /* General Styles */
+        .shop-page-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
 
-    function sortProducts(sortOrder) {
-        var urlParams = new URLSearchParams(window.location.search);
-        
-        // Update sort order
-        urlParams.set('sortOrder', sortOrder);
-        
-        // Keep other parameters
-        var category = urlParams.get('category');
-        if(category) urlParams.set('category', category);
-        
-        var minPrice = urlParams.get('minPrice');
-        if(minPrice) urlParams.set('minPrice', minPrice);
-        
-        var maxPrice = urlParams.get('maxPrice');
-        if(maxPrice) urlParams.set('maxPrice', maxPrice);
-        
-        var searchTerm = urlParams.get('searchTerm');
-        if(searchTerm) urlParams.set('searchTerm', searchTerm);
-        
-        // Reset to page 1 when sorting
-        urlParams.set('pageNumber', 1);
-        
-        // Redirect with new parameters
-        window.location.href = window.location.pathname + '?' + urlParams.toString();
-    }
+        /* Sidebar Styles */
+        .sidebar-widget {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
 
-    // Set initial values if they exist in URL
-    window.onload = function() {
-        var urlParams = new URLSearchParams(window.location.search);
-        
-        var minPrice = urlParams.get('minPrice');
-        var maxPrice = urlParams.get('maxPrice');
-        
-        if(minPrice) document.getElementById('min-price').value = minPrice;
-        if(maxPrice) document.getElementById('max-price').value = maxPrice;
-    }
-</script>
+        .widget-title h3 {
+            font-size: 1.5rem;
+            color: #333;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .widget-title h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: #E3A087;
+        }
+
+        /* Categories List */
+        .categories-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .categories-list li a {
+            display: block;
+            padding: 10px 15px;
+            color: #666;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .categories-list li a:hover {
+            background: #f8f9fa;
+            color: #E3A087;
+            transform: translateX(5px);
+        }
+
+        /* Search Box */
+        .sidebar-search .form-control {
+            border: 2px solid #eee;
+            padding-right: 45px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-search .form-control:focus {
+            border-color: #E3A087;
+            box-shadow: none;
+        }
+
+        /* Price Range */
+        .price-filter input {
+            border: 2px solid #eee;
+        }
+
+        .price-filter input:focus {
+            border-color: #E3A087;
+            box-shadow: none;
+        }
+
+        /* Featured Products */
+        .featured-item {
+            transition: all 0.3s ease;
+        }
+
+        .featured-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Sorting Section */
+        .item-shorting {
+            border-radius: 15px;
+        }
+
+        .form-select {
+            border: 2px solid #eee;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            border-color: #E3A087;
+            box-shadow: none;
+        }
+
+        /* Responsive Adjustments */
+        @@media (max-width: 991px) {
+            .sidebar-side {
+                margin-bottom: 40px;
+            }
+        }
+
+        /* Animation */
+        .shop-block-one {
+            transition: all 0.3s ease;
+        }
+
+        .shop-block-one:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #E3A087;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d88d6f;
+        }
+
+        /* Button Styles */
+        .theme-btn-one {
+            background-color: #E3A087;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn-one:hover {
+            background-color: #d88d6f;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function filterByPrice() {
+            var minPrice = document.getElementById('min-price').value;
+            var maxPrice = document.getElementById('max-price').value;
+            
+            // Validate price range
+            if (minPrice && maxPrice && parseFloat(minPrice) > parseFloat(maxPrice)) {
+                Swal.fire({
+                    title: 'Invalid Price Range',
+                    text: 'Maximum price should be greater than minimum price',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
+            // Update hidden fields
+            document.getElementById('current-min-price').value = minPrice;
+            document.getElementById('current-max-price').value = maxPrice;
+            
+            // Show loading state
+            Swal.fire({
+                title: 'Filtering Products',
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Submit form
+            document.getElementById('searchForm').submit();
+        }
+
+        function sortProducts(sortOrder) {
+            var urlParams = new URLSearchParams(window.location.search);
+            
+            // Update sort order
+            urlParams.set('sortOrder', sortOrder);
+            
+            // Keep other parameters
+            ['category', 'minPrice', 'maxPrice', 'searchTerm'].forEach(param => {
+                const value = urlParams.get(param);
+                if(value) urlParams.set(param, value);
+            });
+            
+            // Reset to page 1
+            urlParams.set('pageNumber', 1);
+            
+            // Show loading state
+            Swal.fire({
+                title: 'Sorting Products',
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Redirect
+            window.location.href = window.location.pathname + '?' + urlParams.toString();
+        }
+
+        // Initialize
+        $(document).ready(function() {
+            // Set initial values
+            var urlParams = new URLSearchParams(window.location.search);
+            ['minPrice', 'maxPrice'].forEach(param => {
+                const value = urlParams.get(param);
+                if(value) $(`#${param}`).val(value);
+            });
+
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Add smooth scroll
+            $('.categories-list a').click(function(e) {
+                e.preventDefault();
+                var target = $(this).attr('href');
+                $('html, body').animate({
+                    scrollTop: $(target).offset().top - 100
+                }, 800);
+            });
+        });
+    </script>
+}
